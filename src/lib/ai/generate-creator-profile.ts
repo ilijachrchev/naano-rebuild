@@ -66,14 +66,13 @@ export async function generateCreatorProfile(
     throw new Error("OpenAI returned no creator profile");
   }
 
-  return {
-    mode: "ai",
-    profile: {
-      headline: stripSourceMarkers(response.output_parsed.headline),
-      suggestedCountry: stripSourceMarkers(response.output_parsed.suggestedCountry),
-      suggestedIndustries: response.output_parsed.suggestedIndustries.map(stripSourceMarkers),
-      suggestedPricePerPostCents: response.output_parsed.suggestedPricePerPostCents,
-      audienceSummary: stripSourceMarkers(response.output_parsed.audienceSummary),
-    },
-  };
+  const sanitizedProfile = generatedCreatorProfileSchema.parse({
+    headline: stripSourceMarkers(response.output_parsed.headline),
+    suggestedCountry: stripSourceMarkers(response.output_parsed.suggestedCountry),
+    suggestedIndustries: response.output_parsed.suggestedIndustries.map(stripSourceMarkers),
+    suggestedPricePerPostCents: response.output_parsed.suggestedPricePerPostCents,
+    audienceSummary: stripSourceMarkers(response.output_parsed.audienceSummary),
+  });
+
+  return { mode: "ai", profile: sanitizedProfile };
 }

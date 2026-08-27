@@ -39,11 +39,21 @@ async function getAuthenticatedUserId() {
 
   if (!userId) return { supabase, userId: null, accountRole: null };
 
-  const { data: userData, error } = await supabase.auth.getUser();
+  const [{ data: userData, error }, { data: creator, error: creatorError }] =
+    await Promise.all([
+      supabase.auth.getUser(),
+      supabase.from("creators").select("id").eq("id", userId).maybeSingle(),
+    ]);
+
   return {
     supabase,
     userId,
-    accountRole: error ? null : userData.user.app_metadata?.role,
+    accountRole:
+      error || creatorError
+        ? "unknown"
+        : creator || userData.user.app_metadata?.role === "creator"
+        ? "creator"
+        : "brand",
   };
 }
 
@@ -67,6 +77,9 @@ export async function createWorkspaceAction(
   }
   if (accountRole === "creator") {
     redirect("/creator/onboarding");
+  }
+  if (accountRole === "unknown") {
+    return { error: "We couldn't verify this account's access." };
   }
 
   const { data: existingMembership } = await supabase
@@ -127,6 +140,9 @@ export async function generateBrandProfileAction(
   }
   if (accountRole === "creator") {
     redirect("/creator");
+  }
+  if (accountRole === "unknown") {
+    return { error: "We couldn't verify this account's access." };
   }
 
   const { data: workspace, error: workspaceError } = await supabase

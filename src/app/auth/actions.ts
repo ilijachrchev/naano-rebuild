@@ -88,7 +88,18 @@ export async function brandAuthAction(
       return { error: "That email and password don't match.", message: null };
     }
 
-    if (data.user.app_metadata?.role === "creator") {
+    const { data: creator, error: creatorError } = await supabase
+      .from("creators")
+      .select("id")
+      .eq("id", data.user.id)
+      .maybeSingle();
+
+    if (creatorError) {
+      await supabase.auth.signOut();
+      return { error: "We couldn't verify this account's access.", message: null };
+    }
+
+    if (creator || data.user.app_metadata?.role === "creator") {
       await supabase.auth.signOut();
       return {
         error: "This is a creator account. Use the creator sign-in instead.",

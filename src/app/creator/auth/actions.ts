@@ -4,6 +4,10 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 
+import {
+  signCreatorSignupIntent,
+  verifyCreatorSignupIntent,
+} from "@/lib/auth/creator-signup-intent";
 import { createAdminSupabaseClient } from "@/lib/supabase/admin";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
@@ -53,14 +57,47 @@ export async function creatorAuthAction(
       return { error: "That email and password don't match.", message: null };
     }
 
-    const { data: creator, error: creatorError } = await supabase
-      .from("creators")
-      .select("id")
-      .eq("id", data.user.id)
-      .maybeSingle();
+    const [
+      { data: creator, error: creatorError },
+      { data: brandMembership, error: membershipError },
+    ] = await Promise.all([
+      supabase.from("creators").select("id").eq("id", data.user.id).maybeSingle(),
+      supabase
+        .from("workspace_members")
+        .select("workspace_id")
+        .eq("user_id", data.user.id)
+        .limit(1)
+        .maybeSingle(),
+    ]);
     const signedUpAsCreator = data.user.app_metadata?.role === "creator";
+    const hasCreatorSignupIntent =
+      data.user.user_metadata?.signup_role === "creator" &&
+      typeof data.user.email === "string" &&
+      verifyCreatorSignupIntent(
+        data.user.email,
+        data.user.user_metadata?.signup_role_signature,
+      );
 
-    if (creatorError || (!creator && !signedUpAsCreator)) {
+    if (creatorError || membershipError) {
+      await supabase.auth.signOut();
+      return { error: "We couldn't verify this account's access.", message: null };
+    }
+
+    if (!creator && !signedUpAsCreator && hasCreatorSignupIntent && !brandMembership) {
+      const admin = createAdminSupabaseClient();
+      const { error: roleError } = await admin.auth.admin.updateUserById(data.user.id, {
+        app_metadata: { role: "creator" },
+      });
+
+      if (roleError) {
+        await supabase.auth.signOut();
+        return { error: "We couldn't finish assigning creator access.", message: null };
+      }
+
+      redirect("/creator/onboarding");
+    }
+
+    if (!creator && !signedUpAsCreator) {
       await supabase.auth.signOut();
       return {
         error: "This is a brand account. Use the brand sign-in instead.",
@@ -78,6 +115,8 @@ export async function creatorAuthAction(
       emailRedirectTo: await getCreatorEmailRedirectUrl(),
       data: {
         full_name: parsed.data.fullName,
+        signup_role: "creator",
+        signup_role_signature: signCreatorSignupIntent(parsed.data.email),
       },
     },
   });
@@ -100,8 +139,9 @@ export async function creatorAuthAction(
 
   if (roleError) {
     console.error("Creator role assignment failed", roleError);
+    await supabase.auth.signOut();
     return {
-      error: "Your account was created, but creator access could not be assigned. Please contact support.",
+      error: "Your account was created, but creator access could not be assigned. Sign in here to retry.",
       message: null,
     };
   }
