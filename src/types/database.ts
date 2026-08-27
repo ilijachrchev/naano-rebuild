@@ -128,7 +128,7 @@ export type Database = {
           {
             foreignKeyName: "briefs_campaign_id_fkey"
             columns: ["campaign_id"]
-            isOneToOne: false
+            isOneToOne: true
             referencedRelation: "campaigns"
             referencedColumns: ["id"]
           },
@@ -373,12 +373,14 @@ export type Database = {
           approval_required: boolean | null
           brief_id: string | null
           campaign_id: string | null
+          content_url: string | null
           created_at: string | null
           creator_id: string
           current_offer_id: string | null
           deleted_at: string | null
           deliverables: string | null
           id: string
+          idempotency_key: string | null
           offer_type: Database["public"]["Enums"]["offer_type"] | null
           origin: Database["public"]["Enums"]["collab_origin"]
           post_by: string | null
@@ -395,12 +397,14 @@ export type Database = {
           approval_required?: boolean | null
           brief_id?: string | null
           campaign_id?: string | null
+          content_url?: string | null
           created_at?: string | null
           creator_id: string
           current_offer_id?: string | null
           deleted_at?: string | null
           deliverables?: string | null
           id?: string
+          idempotency_key?: string | null
           offer_type?: Database["public"]["Enums"]["offer_type"] | null
           origin: Database["public"]["Enums"]["collab_origin"]
           post_by?: string | null
@@ -417,12 +421,14 @@ export type Database = {
           approval_required?: boolean | null
           brief_id?: string | null
           campaign_id?: string | null
+          content_url?: string | null
           created_at?: string | null
           creator_id?: string
           current_offer_id?: string | null
           deleted_at?: string | null
           deliverables?: string | null
           id?: string
+          idempotency_key?: string | null
           offer_type?: Database["public"]["Enums"]["offer_type"] | null
           origin?: Database["public"]["Enums"]["collab_origin"]
           post_by?: string | null
@@ -1103,7 +1109,47 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      accept_or_decline_offer: {
+        Args: {
+          p_action: string
+          p_collaboration_id: string
+          p_creator_id: string
+        }
+        Returns: string
+      }
+      approve_and_settle_collaboration: {
+        Args: {
+          p_actor_id: string
+          p_collaboration_id: string
+          p_workspace_id: string
+        }
+        Returns: string
+      }
+      create_brand_invite: {
+        Args: {
+          p_approval_required: boolean
+          p_brief_id?: string
+          p_creator_id: string
+          p_currency: string
+          p_fee_cents: number
+          p_idempotency_key: string
+          p_list_price_cents: number
+          p_offer_type: Database["public"]["Enums"]["offer_type"]
+          p_post_by: string
+          p_proposer_id: string
+          p_workspace_id: string
+        }
+        Returns: string
+      }
       is_member: { Args: { ws: string }; Returns: boolean }
+      submit_collaboration_content: {
+        Args: {
+          p_collaboration_id: string
+          p_content_url: string
+          p_creator_id: string
+        }
+        Returns: string
+      }
       wallet_available_cents: {
         Args: { iso_currency: string; ws: string }
         Returns: number
@@ -1290,3 +1336,4 @@ export const Constants = {
     },
   },
 } as const
+

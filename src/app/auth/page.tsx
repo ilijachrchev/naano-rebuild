@@ -8,8 +8,16 @@ import {
   EvidenceMark,
 } from "@/components/brand/dossier";
 import { getBrandContext, getBrandDestination } from "@/lib/brand/context";
+import { getCreatorContext } from "@/lib/creator/context";
 
 export default async function AuthPage() {
+  const creatorContext = await getCreatorContext();
+
+  if (creatorContext.creator) redirect("/creator");
+  if (creatorContext.userId && creatorContext.registeredAsCreator) {
+    redirect("/creator/onboarding");
+  }
+
   const context = await getBrandContext();
 
   if (context.userId) {
