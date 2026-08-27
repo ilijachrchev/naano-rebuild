@@ -348,6 +348,9 @@ export function CreatorMarketplace({ creators }: { creators: MarketplaceCreator[
       if (sort === "followers") return right.followers - left.followers;
       if (sort === "views") return right.estimatedViews - left.estimatedViews;
       if (sort === "price-ascending" || sort === "price-descending") {
+        if (left.pricePerPostCents === null && right.pricePerPostCents === null) {
+          return right.matchScore - left.matchScore;
+        }
         if (left.pricePerPostCents === null) return 1;
         if (right.pricePerPostCents === null) return -1;
         return sort === "price-ascending"
