@@ -6,7 +6,12 @@ import { getCreatorContext } from "@/lib/creator/context";
 import { getCreatorPayouts } from "@/lib/creator/data";
 
 const moneyFormat = new Intl.NumberFormat("en-IE", { style: "currency", currency: "EUR" });
-const dateFormat = new Intl.DateTimeFormat("en", { day: "numeric", month: "short", year: "numeric" });
+const dateFormat = new Intl.DateTimeFormat("en", {
+  day: "numeric",
+  month: "short",
+  year: "numeric",
+  timeZone: "UTC",
+});
 
 const statusLabels = {
   pending: "Pending",

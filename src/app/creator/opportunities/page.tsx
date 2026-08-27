@@ -6,7 +6,21 @@ import { CreatorShell } from "@/components/creator/shell";
 import { getCreatorContext } from "@/lib/creator/context";
 import { getIncomingInvites } from "@/lib/creator/data";
 
-const dateFormat = new Intl.DateTimeFormat("en", { day: "numeric", month: "short", year: "numeric" });
+const dateFormat = new Intl.DateTimeFormat("en", {
+  day: "numeric",
+  month: "short",
+  year: "numeric",
+  timeZone: "UTC",
+});
+const deadlineFormat = new Intl.DateTimeFormat("en", {
+  day: "numeric",
+  month: "short",
+  year: "numeric",
+  hour: "2-digit",
+  minute: "2-digit",
+  hourCycle: "h23",
+  timeZone: "UTC",
+});
 
 function formatMoney(amountCents: number, currency: string) {
   try {
@@ -18,6 +32,10 @@ function formatMoney(amountCents: number, currency: string) {
 
 function formatDate(value: string | null) {
   return value ? dateFormat.format(new Date(value)) : "Not specified";
+}
+
+function formatDeadline(value: string | null) {
+  return value ? `${deadlineFormat.format(new Date(value))} UTC` : "Not specified";
 }
 
 export default async function CreatorOpportunitiesPage() {
@@ -106,7 +124,7 @@ export default async function CreatorOpportunitiesPage() {
                       </p>
                     ) : null}
                     <p className="mt-5 text-xs leading-5 text-carbon/54">
-                      Respond by <strong className="text-carbon">{formatDate(invite.responseDeadline)}</strong>
+                      Respond by <strong className="text-carbon">{formatDeadline(invite.responseDeadline)}</strong>
                     </p>
                     <InviteDecisionForm collaborationId={invite.id} expired={invite.expired} />
                   </aside>

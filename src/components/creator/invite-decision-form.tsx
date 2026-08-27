@@ -41,11 +41,15 @@ export function InviteDecisionForm({
           Decline
         </button>
       </div>
-      {expired ? (
-        <p className="mt-3 text-sm text-danger">The response window has ended.</p>
-      ) : null}
-      {state.error ? <p className="mt-3 text-sm text-danger">{state.error}</p> : null}
-      {state.message ? <p className="mt-3 text-sm font-bold text-aubergine">{state.message}</p> : null}
+      <div aria-live="polite">
+        {expired ? (
+          <p className="mt-3 text-sm text-danger">The response window has ended.</p>
+        ) : null}
+        {state.error ? <p className="mt-3 text-sm text-danger">{state.error}</p> : null}
+        {state.message ? (
+          <p className="mt-3 text-sm font-bold text-aubergine">{state.message}</p>
+        ) : null}
+      </div>
     </form>
   );
 }
