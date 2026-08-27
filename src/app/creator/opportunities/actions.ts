@@ -60,7 +60,7 @@ export async function decideInviteAction(
 
   const { data: offer, error: offerError } = await supabase
     .from("collaboration_offers")
-    .select("id, accepted_at, expires_at")
+    .select("id, expires_at")
     .eq("id", collaboration.current_offer_id)
     .eq("collaboration_id", collaboration.id)
     .maybeSingle();
@@ -73,51 +73,17 @@ export async function decideInviteAction(
     return { error: "The response window for this invitation has ended.", message: null };
   }
 
-  const respondedAt = new Date().toISOString();
   const admin = createAdminSupabaseClient();
+  const { data: updatedCollaborationId, error: updateError } = await admin.rpc(
+    "accept_or_decline_offer",
+    {
+      p_creator_id: userId,
+      p_collaboration_id: collaboration.id,
+      p_action: parsed.data.decision,
+    },
+  );
 
-  if (parsed.data.decision === "accept" && !offer.accepted_at) {
-    const { data: acceptedOffer, error: acceptOfferError } = await admin
-      .from("collaboration_offers")
-      .update({ accepted_at: respondedAt })
-      .eq("id", offer.id)
-      .eq("collaboration_id", collaboration.id)
-      .is("accepted_at", null)
-      .select("id")
-      .maybeSingle();
-
-    if (acceptOfferError || !acceptedOffer) {
-      return { error: "We couldn't accept this offer. Please try again.", message: null };
-    }
-  }
-
-  const collaborationUpdate =
-    parsed.data.decision === "accept"
-      ? {
-          status: "accepted" as const,
-          accepted_offer_id: offer.id,
-          responded_at: respondedAt,
-          updated_at: respondedAt,
-        }
-      : {
-          status: "declined" as const,
-          responded_at: respondedAt,
-          updated_at: respondedAt,
-        };
-
-  const { data: updatedCollaboration, error: updateError } = await admin
-    .from("collaborations")
-    .update(collaborationUpdate)
-    .eq("id", collaboration.id)
-    .eq("creator_id", userId)
-    .eq("current_offer_id", offer.id)
-    .eq("origin", "brand_invite")
-    .eq("status", "requested")
-    .is("deleted_at", null)
-    .select("id")
-    .maybeSingle();
-
-  if (updateError || !updatedCollaboration) {
+  if (updateError || updatedCollaborationId !== collaboration.id) {
     return { error: "This invitation changed before your response was saved.", message: null };
   }
 
