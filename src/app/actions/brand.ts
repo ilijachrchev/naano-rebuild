@@ -35,7 +35,16 @@ const onboardingSchema = z.object({
 async function getAuthenticatedUserId() {
   const supabase = await createServerSupabaseClient();
   const { data } = await supabase.auth.getClaims();
-  return { supabase, userId: data?.claims?.sub ?? null };
+  const userId = data?.claims?.sub ?? null;
+
+  if (!userId) return { supabase, userId: null, accountRole: null };
+
+  const { data: userData, error } = await supabase.auth.getUser();
+  return {
+    supabase,
+    userId,
+    accountRole: error ? null : userData.user.app_metadata?.role,
+  };
 }
 
 export async function createWorkspaceAction(
@@ -51,10 +60,13 @@ export async function createWorkspaceAction(
     return { error: parsed.error.issues[0]?.message ?? "Check your workspace details." };
   }
 
-  const { supabase, userId } = await getAuthenticatedUserId();
+  const { supabase, userId, accountRole } = await getAuthenticatedUserId();
 
   if (!userId) {
     redirect("/auth");
+  }
+  if (accountRole === "creator") {
+    redirect("/creator/onboarding");
   }
 
   const { data: existingMembership } = await supabase
@@ -108,10 +120,13 @@ export async function generateBrandProfileAction(
     return { error: "This workspace link is invalid. Return to setup and try again." };
   }
 
-  const { supabase, userId } = await getAuthenticatedUserId();
+  const { supabase, userId, accountRole } = await getAuthenticatedUserId();
 
   if (!userId) {
     redirect("/auth");
+  }
+  if (accountRole === "creator") {
+    redirect("/creator");
   }
 
   const { data: workspace, error: workspaceError } = await supabase

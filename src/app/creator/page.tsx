@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
-import { CreatorProfileMissing } from "@/components/creator/no-profile";
 import { CreatorShell } from "@/components/creator/shell";
 import { getCreatorContext } from "@/lib/creator/context";
 import { getCreatorOverviewStats } from "@/lib/creator/data";
@@ -22,8 +21,9 @@ function initials(displayName: string) {
 
 export default async function CreatorOverviewPage() {
   const context = await getCreatorContext();
-  if (!context.userId) redirect("/auth");
-  if (!context.creator) return <CreatorProfileMissing />;
+  if (!context.userId) redirect("/creator/auth");
+  if (!context.registeredAsCreator) redirect("/auth");
+  if (!context.creator) redirect("/creator/onboarding");
 
   const creator = context.creator;
   const stats = await getCreatorOverviewStats(creator.id);

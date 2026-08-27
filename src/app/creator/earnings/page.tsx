@@ -1,6 +1,5 @@
 import { redirect } from "next/navigation";
 
-import { CreatorProfileMissing } from "@/components/creator/no-profile";
 import { CreatorShell } from "@/components/creator/shell";
 import { getCreatorContext } from "@/lib/creator/context";
 import { getCreatorPayouts } from "@/lib/creator/data";
@@ -22,8 +21,9 @@ const statusLabels = {
 
 export default async function CreatorEarningsPage() {
   const context = await getCreatorContext();
-  if (!context.userId) redirect("/auth");
-  if (!context.creator) return <CreatorProfileMissing />;
+  if (!context.userId) redirect("/creator/auth");
+  if (!context.registeredAsCreator) redirect("/auth");
+  if (!context.creator) redirect("/creator/onboarding");
 
   const payouts = await getCreatorPayouts(context.creator.id);
   const totalCents = payouts.reduce((total, payout) => total + payout.amountCents, 0);

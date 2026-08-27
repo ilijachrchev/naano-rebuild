@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 
-import { signOutBrand } from "@/app/auth/actions";
+import { signOutCreator } from "@/app/creator/auth/actions";
 import { BrandMark } from "@/components/brand/dossier";
 
 const navigation = [
@@ -67,7 +67,7 @@ export function CreatorShell({
           </ul>
         </nav>
 
-        <form action={signOutBrand} className="mt-auto hidden border-white/18 border-t pt-6 lg:block">
+        <form action={signOutCreator} className="mt-auto hidden border-white/18 border-t pt-6 lg:block">
           <button className="cursor-pointer border-0 bg-transparent p-0 text-sm font-semibold text-mineral/65 hover:text-signal">
             Sign out
           </button>

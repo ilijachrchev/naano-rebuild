@@ -38,7 +38,7 @@ export async function decideInviteAction(
   const supabase = await createServerSupabaseClient();
   const { data: claimsData } = await supabase.auth.getClaims();
   const userId = claimsData?.claims?.sub ?? null;
-  if (!userId) redirect("/auth");
+  if (!userId) redirect("/creator/auth");
 
   const { data: collaboration, error: collaborationError } = await supabase
     .from("collaborations")
