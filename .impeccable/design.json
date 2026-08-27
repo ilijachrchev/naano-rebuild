@@ -1,0 +1,185 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-08-27T15:16:14.4221865+02:00",
+  "title": "Design System: naano Signal Dossier",
+  "extensions": {
+    "colorMeta": {
+      "carbon": {
+        "role": "neutral",
+        "displayName": "Carbon",
+        "canonical": "#17151d",
+        "tonalRamp": ["oklch(15% 0.0160 296.39)", "oklch(26.4% 0.0160 296.39)", "oklch(37.9% 0.0160 296.39)", "oklch(49.3% 0.0160 296.39)", "oklch(60.7% 0.0160 296.39)", "oklch(72.1% 0.0160 296.39)", "oklch(83.6% 0.0160 296.39)", "oklch(95% 0.0160 296.39)"]
+      },
+      "mineral": {
+        "role": "neutral",
+        "displayName": "Mineral",
+        "canonical": "#f2f3ec",
+        "tonalRamp": ["oklch(15% 0.0093 113.16)", "oklch(26.4% 0.0093 113.16)", "oklch(37.9% 0.0093 113.16)", "oklch(49.3% 0.0093 113.16)", "oklch(60.7% 0.0093 113.16)", "oklch(72.1% 0.0093 113.16)", "oklch(83.6% 0.0093 113.16)", "oklch(95% 0.0093 113.16)"]
+      },
+      "paper": {
+        "role": "neutral",
+        "displayName": "Paper",
+        "canonical": "#fafaf6",
+        "tonalRamp": ["oklch(15% 0.0053 106.50)", "oklch(26.4% 0.0053 106.50)", "oklch(37.9% 0.0053 106.50)", "oklch(49.3% 0.0053 106.50)", "oklch(60.7% 0.0053 106.50)", "oklch(72.1% 0.0053 106.50)", "oklch(83.6% 0.0053 106.50)", "oklch(95% 0.0053 106.50)"]
+      },
+      "aubergine": {
+        "role": "primary",
+        "displayName": "Dossier Aubergine",
+        "canonical": "#6b315d",
+        "tonalRamp": ["oklch(15% 0.1015 337.35)", "oklch(26.4% 0.1015 337.35)", "oklch(37.9% 0.1015 337.35)", "oklch(49.3% 0.1015 337.35)", "oklch(60.7% 0.1015 337.35)", "oklch(72.1% 0.1015 337.35)", "oklch(83.6% 0.1015 337.35)", "oklch(95% 0.1015 337.35)"]
+      },
+      "aubergine-deep": {
+        "role": "primary",
+        "displayName": "Deep Aubergine",
+        "canonical": "#512247",
+        "tonalRamp": ["oklch(15% 0.0873 336.18)", "oklch(26.4% 0.0873 336.18)", "oklch(37.9% 0.0873 336.18)", "oklch(49.3% 0.0873 336.18)", "oklch(60.7% 0.0873 336.18)", "oklch(72.1% 0.0873 336.18)", "oklch(83.6% 0.0873 336.18)", "oklch(95% 0.0873 336.18)"]
+      },
+      "signal": {
+        "role": "tertiary",
+        "displayName": "Acid Signal",
+        "canonical": "#c9f56a",
+        "tonalRamp": ["oklch(15% 0.1727 124.47)", "oklch(26.4% 0.1727 124.47)", "oklch(37.9% 0.1727 124.47)", "oklch(49.3% 0.1727 124.47)", "oklch(60.7% 0.1727 124.47)", "oklch(72.1% 0.1727 124.47)", "oklch(83.6% 0.1727 124.47)", "oklch(95% 0.1727 124.47)"]
+      },
+      "mist": {
+        "role": "neutral",
+        "displayName": "Mist",
+        "canonical": "#d8dccf",
+        "tonalRamp": ["oklch(15% 0.0180 120.71)", "oklch(26.4% 0.0180 120.71)", "oklch(37.9% 0.0180 120.71)", "oklch(49.3% 0.0180 120.71)", "oklch(60.7% 0.0180 120.71)", "oklch(72.1% 0.0180 120.71)", "oklch(83.6% 0.0180 120.71)", "oklch(95% 0.0180 120.71)"]
+      },
+      "danger": {
+        "role": "secondary",
+        "displayName": "Evidence Danger",
+        "canonical": "#9e354f",
+        "tonalRamp": ["oklch(15% 0.1400 8.98)", "oklch(26.4% 0.1400 8.98)", "oklch(37.9% 0.1400 8.98)", "oklch(49.3% 0.1400 8.98)", "oklch(60.7% 0.1400 8.98)", "oklch(72.1% 0.1400 8.98)", "oklch(83.6% 0.1400 8.98)", "oklch(95% 0.1400 8.98)"]
+      },
+      "white": {
+        "role": "neutral",
+        "displayName": "White",
+        "canonical": "#ffffff",
+        "tonalRamp": ["oklch(15% 0 0)", "oklch(26.4% 0 0)", "oklch(37.9% 0 0)", "oklch(49.3% 0 0)", "oklch(60.7% 0 0)", "oklch(72.1% 0 0)", "oklch(83.6% 0 0)", "oklch(95% 0 0)"]
+      }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "First-viewport statements and the largest onboarding claim." },
+      "headline": { "displayName": "Headline", "purpose": "Page questions and workspace-specific dossier headings." },
+      "title": { "displayName": "Title", "purpose": "Evidence propositions and section-level editorial statements." },
+      "body": { "displayName": "Body", "purpose": "Explanations, product guidance, form values, and controls." },
+      "label": { "displayName": "Label", "purpose": "Field labels, evidence categories, state labels, and tab captions." }
+    },
+    "shadows": [
+      { "name": "action-lift", "value": "0 10px 28px rgb(23 21 29 / 0.2)", "purpose": "Enabled primary-button hover feedback only." }
+    ],
+    "motion": [
+      { "name": "field-state", "value": "160ms ease-out", "purpose": "Field border and fill transitions." },
+      { "name": "action-state", "value": "180ms ease-out", "purpose": "Primary-button color, shadow, and lift transitions." },
+      { "name": "evidence-scan", "value": "1.7s cubic-bezier(0.22, 1, 0.36, 1) infinite", "purpose": "Research progress line revealing from left to right." },
+      { "name": "reduced-motion", "value": "0.01ms", "purpose": "Collapses animation and transition duration when reduced motion is requested." }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "640px" },
+      { "name": "lg", "value": "1024px" },
+      { "name": "xl", "value": "1280px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The single high-emphasis action used to advance brand setup and analysis.",
+      "html": "<button class=\"ds-btn-primary\"><span>Generate brand profile</span><svg aria-hidden=\"true\" viewBox=\"0 0 24 24\"><path d=\"M5 12h13M14 7l5 5-5 5\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\"/></svg></button>",
+      "css": ".ds-btn-primary { display:inline-flex; min-height:3.65rem; align-items:center; justify-content:space-between; gap:1.5rem; border:0; border-radius:.25rem; background:var(--aubergine); color:#fff; cursor:pointer; padding:.95rem 1.15rem; font-family:var(--font-body),sans-serif; font-weight:700; transition:background-color 180ms ease-out,box-shadow 180ms ease-out,transform 180ms ease-out; } .ds-btn-primary svg { width:1.25rem; height:1.25rem; } .ds-btn-primary:hover:not(:disabled) { background:var(--aubergine-deep); box-shadow:0 10px 28px rgb(23 21 29 / .2); transform:translateY(-1px); } .ds-btn-primary:focus-visible { outline:3px solid var(--signal); outline-offset:3px; } .ds-btn-primary:active:not(:disabled) { transform:translateY(0); } .ds-btn-primary:disabled { cursor:wait; opacity:.66; }"
+    },
+    {
+      "name": "Dark Text Field",
+      "kind": "input",
+      "refersTo": "input-dark",
+      "description": "An inverse field for forms placed on the Carbon narrative plane.",
+      "html": "<label class=\"ds-field-dark\"><span>Work email</span><input type=\"email\" placeholder=\"you@company.com\" /></label>",
+      "css": ".ds-field-dark { display:block; color:var(--mineral); font-family:var(--font-body),sans-serif; } .ds-field-dark > span { display:block; margin-bottom:.55rem; font-size:.72rem; font-weight:700; letter-spacing:.13em; text-transform:uppercase; } .ds-field-dark input { width:100%; border:1px solid rgb(242 243 236 / .48); border-radius:.25rem; background:rgb(255 255 255 / .025); color:var(--mineral); caret-color:var(--signal); min-height:3.2rem; padding:.75rem 1rem; font:inherit; transition:border-color 160ms ease-out,background-color 160ms ease-out; } .ds-field-dark input::placeholder { color:rgb(242 243 236 / .57); } .ds-field-dark input:hover,.ds-field-dark input:focus { border-color:var(--signal); background:rgb(255 255 255 / .055); outline:none; }"
+    },
+    {
+      "name": "Light Text Field",
+      "kind": "input",
+      "refersTo": "input-light",
+      "description": "The dossier-surface field for workspace name and company website.",
+      "html": "<label class=\"ds-field-light\"><span>Company website</span><input type=\"url\" placeholder=\"acme.com\" /></label>",
+      "css": ".ds-field-light { display:block; color:var(--carbon); font-family:var(--font-body),sans-serif; } .ds-field-light > span { display:block; margin-bottom:.55rem; font-size:.72rem; font-weight:700; letter-spacing:.13em; text-transform:uppercase; } .ds-field-light input { width:100%; border:1px solid rgb(23 21 29 / .28); border-radius:.25rem; background:rgb(255 255 255 / .38); color:var(--carbon); caret-color:var(--signal); min-height:3.2rem; padding:.75rem 1rem; font:inherit; transition:border-color 160ms ease-out,background-color 160ms ease-out; } .ds-field-light input::placeholder { color:#666763; } .ds-field-light input:hover,.ds-field-light input:focus { border-color:var(--signal); background:#fff; outline:none; }"
+    },
+    {
+      "name": "Brand Mark",
+      "kind": "custom",
+      "description": "The lowercase condensed wordmark with its Acid Signal stop.",
+      "html": "<div class=\"ds-brand-mark\"><span>naano</span><i aria-hidden=\"true\"></i></div>",
+      "css": ".ds-brand-mark { display:flex; align-items:center; gap:.75rem; color:var(--carbon); } .ds-brand-mark span { font-family:var(--font-display),sans-serif; font-size:2rem; font-weight:700; line-height:1; letter-spacing:-.035em; } .ds-brand-mark i { width:.625rem; height:.625rem; background:var(--signal); }"
+    },
+    {
+      "name": "Indexed Progress Rail",
+      "kind": "nav",
+      "description": "The four-step orientation rail that keeps the onboarding journey legible.",
+      "html": "<nav class=\"ds-progress\" aria-label=\"Onboarding progress\"><ol><li class=\"ds-complete\"><b>01</b><span>Access</span></li><li class=\"ds-active\" aria-current=\"step\"><b>02</b><span>Workspace</span><i aria-hidden=\"true\"></i></li><li><b>03</b><span>Profile</span></li><li><b>04</b><span>Dashboard</span></li></ol></nav>",
+      "css": ".ds-progress { width:106px; background:var(--carbon); color:var(--mineral); border-right:1px solid rgb(255 255 255 / .18); font-family:var(--font-body),sans-serif; } .ds-progress ol { display:grid; grid-template-rows:repeat(4,1fr); min-height:480px; margin:0; padding:0; list-style:none; } .ds-progress li { position:relative; display:flex; flex-direction:column; justify-content:center; padding:.75rem 1.25rem; border-bottom:1px solid rgb(255 255 255 / .18); color:rgb(242 243 236 / .48); } .ds-progress li.ds-complete { color:var(--mineral); } .ds-progress li.ds-active { color:var(--signal); } .ds-progress b { font-family:var(--font-display),sans-serif; font-size:1.5rem; line-height:1; letter-spacing:-.035em; } .ds-progress span { margin-top:.25rem; font-size:.7rem; font-weight:700; letter-spacing:.1em; text-transform:uppercase; } .ds-progress i { position:absolute; top:50%; right:-1px; width:.875rem; height:2.25rem; transform:translateY(-50%); background:var(--signal); clip-path:polygon(0 0,100% 50%,0 100%); }"
+    },
+    {
+      "name": "Clipped Dossier Tabs",
+      "kind": "nav",
+      "refersTo": "tab-active",
+      "description": "Overlapping file-index tabs that echo the current onboarding step above the paper plane.",
+      "html": "<div class=\"ds-tabs\"><span><b>01</b> Access</span><span class=\"ds-tab-active\"><b>02</b> Workspace</span><span><b>03</b> Profile</span><span><b>04</b> Dashboard</span></div>",
+      "css": ".ds-tabs { display:flex; height:4rem; overflow:hidden; border-bottom:1px solid rgb(23 21 29 / .16); background:rgb(216 220 207 / .55); font-family:var(--font-body),sans-serif; } .ds-tabs span { display:flex; min-width:9rem; align-items:center; gap:.5rem; margin-right:-.5rem; padding:0 1.25rem; border-right:1px solid rgb(23 21 29 / .2); background:rgb(216 220 207 / .55); color:rgb(23 21 29 / .52); clip-path:polygon(0 0,calc(100% - 14px) 0,100% 100%,0 100%); font-size:.7rem; font-weight:700; letter-spacing:.11em; text-transform:uppercase; } .ds-tabs span.ds-tab-active { background:var(--paper); color:var(--carbon); } .ds-tabs span b { font:inherit; } .ds-tabs span.ds-tab-active b { color:var(--aubergine); }"
+    },
+    {
+      "name": "Evidence Mark",
+      "kind": "chip",
+      "refersTo": "evidence-mark",
+      "description": "A compact confirmation used only after a signal has been captured or resolved.",
+      "html": "<div class=\"ds-evidence-mark\"><span><svg aria-hidden=\"true\" viewBox=\"0 0 24 24\"><path d=\"m5.5 12.5 4 4 9-10\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.2\"/></svg></span>Position found</div>",
+      "css": ".ds-evidence-mark { display:flex; align-items:center; gap:.75rem; color:var(--carbon); font-family:var(--font-body),sans-serif; font-size:.7rem; font-weight:700; letter-spacing:.1em; text-transform:uppercase; } .ds-evidence-mark > span { display:flex; width:2rem; height:2rem; align-items:center; justify-content:center; border-radius:9999px; background:var(--signal); color:var(--carbon); } .ds-evidence-mark svg { width:1rem; height:1rem; }"
+    },
+    {
+      "name": "Dashboard Navigation Item",
+      "kind": "nav",
+      "description": "An indexed Carbon-sidebar destination with a flat Acid Signal active state.",
+      "html": "<div class=\"ds-dashboard-nav\"><button class=\"ds-nav-active\">Overview <span>01</span></button><button disabled>Creators <span>02</span></button></div>",
+      "css": ".ds-dashboard-nav { display:grid; gap:.25rem; width:220px; padding:1rem; background:var(--carbon); font-family:var(--font-body),sans-serif; } .ds-dashboard-nav button { display:flex; width:100%; align-items:center; justify-content:space-between; border:0; padding:.75rem; background:transparent; color:rgb(242 243 236 / .46); font:inherit; font-size:.875rem; font-weight:600; text-align:left; } .ds-dashboard-nav button.ds-nav-active { background:var(--signal); color:var(--carbon); } .ds-dashboard-nav button:focus-visible { outline:3px solid var(--signal); outline-offset:3px; } .ds-dashboard-nav span { font-family:var(--font-display),sans-serif; font-size:1rem; font-weight:700; letter-spacing:-.035em; }"
+    },
+    {
+      "name": "Paper Evidence Tile",
+      "kind": "card",
+      "description": "A square factual tile used inside a hairline evidence grid.",
+      "html": "<article class=\"ds-evidence-tile\"><span>01</span><p>Workspace created</p></article>",
+      "css": ".ds-evidence-tile { width:220px; border:1px solid rgb(23 21 29 / .18); background:var(--paper); color:var(--carbon); padding:1.25rem; font-family:var(--font-body),sans-serif; } .ds-evidence-tile span { color:var(--aubergine); font-family:var(--font-display),sans-serif; font-size:1.5rem; font-weight:700; letter-spacing:-.035em; } .ds-evidence-tile p { margin:.5rem 0 0; font-size:.875rem; font-weight:700; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "Signal Dossier",
+    "overview": "Signal Dossier treats brand onboarding and campaign intelligence as an editorial evidence file: measured, indexed, and useful before it is decorative. Carbon framing holds a mineral-and-paper working surface, while fine rules, ordered numerals, and clipped tabs make progress and provenance legible.\n\nThe atmosphere is forensic but not cold. Aubergine carries deliberate actions, acid-lime marks verified evidence and current state, and the condensed display face gives the dossier a strong editorial voice without sacrificing Manrope's operational clarity. The system rejects generic centered SaaS wizard styling, the former naano-blue reflex, and orange accenting.",
+    "keyCharacteristics": [
+      "Editorial evidence surfaces with a subtle paper grain.",
+      "Carbon framing, mineral working planes, aubergine controls, and sparse acid-lime state marks.",
+      "Indexed progress, clipped file tabs, precise hairlines, and zero ornamental card chrome.",
+      "Condensed, high-impact headings paired with calm, readable body copy."
+    ],
+    "rules": [
+      { "name": "The Signal Is Evidence Rule", "body": "Acid-lime marks verified, active, selected, or keyboard-focused information; it is never a broad decorative fill.", "section": "colors" },
+      { "name": "The No Blue, No Orange Rule", "body": "Keep the shipped carbon, mineral, aubergine, and acid-lime identity; do not revive a naano-blue palette or introduce orange.", "section": "colors" },
+      { "name": "The Condensed Evidence Rule", "body": "Use Barlow Condensed for declarative headings, ordered indexes, and the wordmark; keep operating copy and controls in Manrope.", "section": "typography" },
+      { "name": "The Tight Display Rule", "body": "Large display text is bold and tightly tracked (`-0.035em`) with compact line-height; do not loosen it into generic marketing type.", "section": "typography" },
+      { "name": "The Indexed Journey Rule", "body": "Multi-step brand setup keeps the numbered progress system visible; spatial orientation is part of the trust model.", "section": "layout" },
+      { "name": "The Flat Evidence Rule", "body": "Keep information surfaces flat at rest; use hairlines, tone, and paper texture to organize evidence.", "section": "elevation" },
+      { "name": "The Cut-Paper Rule", "body": "Use clipped geometry only for index and progress wayfinding; do not spread novelty silhouettes across ordinary content.", "section": "shapes" }
+    ],
+    "dos": [
+      "Do build information hierarchy with indexed numerals, hairlines, tonal planes, and evidence labels.",
+      "Do reserve Acid Signal for verified evidence, current state, selection, and keyboard focus.",
+      "Do pair bold condensed declarations with readable Manrope explanations and controls.",
+      "Do preserve the carbon frame and paper evidence relationship when extending brand workflows."
+    ],
+    "donts": [
+      "Don't turn the product into a centered, rounded-card SaaS wizard.",
+      "Don't use Acid Signal as a large decorative background or as routine body text.",
+      "Don't introduce blue or orange accents into the shipped palette.",
+      "Don't add ambient card shadows, pill-shaped controls, or decorative clipping to ordinary content."
+    ]
+  }
+}
