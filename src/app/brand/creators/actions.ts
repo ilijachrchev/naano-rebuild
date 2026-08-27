@@ -46,10 +46,8 @@ function validatePostBy(value: string) {
 
   const now = new Date();
   const today = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate());
-  const latest = today + 366 * 24 * 60 * 60 * 1_000;
 
   if (postBy < today) return "The post-by date cannot be in the past.";
-  if (postBy > latest) return "Choose a post-by date within the next year.";
   return null;
 }
 
@@ -172,14 +170,16 @@ export async function createBrandInviteAction(
     });
     return {
       status: "error",
-      message: "We couldn't send the offer. No funds were reserved. Please try again.",
+      message:
+        "We couldn't confirm whether the offer was sent. Check Collaborations before trying again to avoid reserving the fee twice.",
     };
   }
 
   if (!collaborationId) {
     return {
       status: "error",
-      message: "We couldn't confirm the offer. No funds were reserved. Please try again.",
+      message:
+        "We couldn't confirm whether the offer was sent. Check Collaborations before trying again to avoid reserving the fee twice.",
     };
   }
 
@@ -190,6 +190,7 @@ export async function createBrandInviteAction(
   return {
     status: "success",
     collaborationId,
-    message: "Offer sent. The fee is reserved in your wallet for the 48-hour response window.",
+    message:
+      "Offer sent. The fee is reserved in your wallet while the offer is pending, and the creator has been asked to respond within 48 hours.",
   };
 }

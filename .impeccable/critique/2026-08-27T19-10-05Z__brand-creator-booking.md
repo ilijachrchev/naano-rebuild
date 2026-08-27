@@ -1,8 +1,8 @@
 ---
 score: 29
 p0: 0
-p1: 0
-verdict: ship
+p1: 1
+verdict: review
 timestamp: 2026-08-27T19-10-05Z
 slug: brand-creator-booking
 ---
@@ -12,7 +12,7 @@ Method: dual-agent (A: impeccable_design · B: impeccable_detector)
 
 ## Verdict
 
-Ship after the recorded corrections. The offer flow extends Signal Dossier consistently and gives the wallet reservation an appropriately explicit, evidence-led review state.
+Ready for review after the recorded UI corrections. The offer flow extends Signal Dossier consistently and gives the wallet reservation an appropriately explicit, evidence-led review state; central RPC idempotency remains a money-path follow-up.
 
 ## Design health
 
@@ -42,7 +42,8 @@ Ship after the recorded corrections. The offer flow extends Signal Dossier consi
 2. **Resolved — P1:** The submission lacked a consolidated financial review. A reservation evidence grid now repeats the fee, brief, post-by date, and approval requirement immediately above submission.
 3. **Resolved — P2:** Invalid custom prices silently disabled submission. The field now exposes an inline error and `aria-invalid` state.
 4. **Resolved — P2:** ARIA tabs lacked arrow, Home, and End key behavior; filter results were not announced. Roving focus and a polite result status were added.
-5. **Deferred — P2:** Wallet release/cancellation behavior is not described because that lifecycle is not implemented in this slice. The PR must identify the wallet top-up and downstream collaboration surfaces as existing mocks rather than promise unsupported recovery behavior.
+5. **Resolved — P2:** Copy no longer implies that the hold is automatically released after 48 hours. It truthfully states that the fee remains reserved while the offer is pending and that the creator is asked to respond within 48 hours.
+6. **Deferred — P1 money-path contract:** The central RPC does not accept an idempotency key. An ambiguous lost response can therefore leave the caller unable to distinguish a committed reservation from a failed request. The UI now directs the user to check Collaborations before retrying; database-enforced idempotency remains a required follow-up and must be explicit in the PR.
 
 ## Detector and browser evidence
 

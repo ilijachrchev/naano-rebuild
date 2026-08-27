@@ -117,7 +117,7 @@ export function BookingOfferForm({
           <p className="text-xs font-bold tracking-[0.12em] uppercase">Offer reserved</p>
         </div>
         <h3 className="display-type mt-5 max-w-2xl text-4xl leading-none sm:text-5xl">
-          {creator.displayName} has 48 hours to respond.
+          Offer sent to {creator.displayName}.
         </h3>
         <p className="mt-5 max-w-2xl text-sm leading-6 text-carbon/64">{state.message}</p>
         <div className="mt-8 flex flex-wrap gap-3 border-carbon/18 border-t pt-6">
@@ -361,7 +361,7 @@ export function BookingOfferForm({
 
       <div className="flex flex-wrap items-center justify-between gap-4 border-carbon/18 border-t pt-6">
         <p className="max-w-lg text-xs leading-5 text-carbon/52">
-          Sending reserves the offer amount immediately. The creator has 48 hours to respond.
+          Sending reserves the offer amount immediately. The creator is asked to respond within 48 hours.
         </p>
         <SubmitOfferButton disabled={!canSubmit} />
       </div>
