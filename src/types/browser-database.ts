@@ -1,6 +1,7 @@
 import type { Database } from "./database";
 
 type ServerWriteOnlyTable =
+  | "brand_profiles"
   | "click_events"
   | "collaboration_deliverables"
   | "collaboration_events"
@@ -10,7 +11,9 @@ type ServerWriteOnlyTable =
   | "payouts"
   | "posts"
   | "tracking_links"
-  | "wallet_transactions";
+  | "wallet_transactions"
+  | "workspace_members"
+  | "workspaces";
 
 type ReadOnlyTable<Table> = Table extends {
   Insert: unknown;
