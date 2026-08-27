@@ -1,19 +1,43 @@
 import { Reveal } from "./motion";
 import { CheckIcon, CtaButton } from "./ui";
 
-const SELF_SERVE = [
-  "Browse the vetted, ICP-matched roster",
-  "AI-assisted briefs you can edit",
-  "Book at a fixed price per post",
-  "Tracked links on every post",
-];
+type Plan = {
+  name: string;
+  blurb: string;
+  priceLead: string;
+  priceSub: string;
+  features: string[];
+  featured?: boolean;
+};
 
-const TEAMS = [
-  "Everything in self-serve",
-  "Negotiated rates and bundles",
-  "Qualified-click attribution to pipeline",
-  "Company-level engagement reporting",
-];
+const SELF_SERVE: Plan = {
+  name: "Self-serve",
+  blurb: "For marketers booking their first creators.",
+  priceLead: "Per post",
+  priceSub: "Fixed rate + pay per qualified click",
+  features: [
+    "Browse the ICP-matched creator roster",
+    "AI-assisted briefs you can edit",
+    "Book at a fixed price per post",
+    "Tracked links on every post",
+    "Wallet and simple checkout",
+  ],
+};
+
+const TEAMS: Plan = {
+  name: "Teams",
+  blurb: "For programs proving pipeline at scale.",
+  priceLead: "Volume",
+  priceSub: "Negotiated rates + full attribution",
+  featured: true,
+  features: [
+    "Everything in Self-serve",
+    "Negotiated rates and creator bundles",
+    "Qualified-click attribution to pipeline",
+    "Company-level engagement reporting",
+    "The analytics dashboard",
+  ],
+};
 
 export function Pricing() {
   return (
@@ -30,58 +54,80 @@ export function Pricing() {
           </p>
         </Reveal>
 
-        <div className="mt-12 grid gap-6 lg:grid-cols-[1fr_1.15fr]">
-          {/* Self-serve — quiet */}
-          <Reveal className="nn-card flex flex-col p-7 sm:p-8">
-            <h3 className="nn-display text-2xl text-nn-ink">Self-serve</h3>
-            <p className="mt-2 text-[0.95rem] text-nn-muted">
-              For marketers booking their first creators.
-            </p>
-            <ul className="mt-6 flex flex-1 list-none flex-col gap-3 p-0">
-              {SELF_SERVE.map((item) => (
-                <li key={item} className="flex items-center gap-3 text-[0.95rem] text-nn-ink">
-                  <CheckIcon className="h-4 w-4 shrink-0 text-nn-blue" />
-                  {item}
-                </li>
-              ))}
-            </ul>
-            <CtaButton href="/auth" variant="secondary" className="mt-8 w-full">
-              Start free
-            </CtaButton>
-          </Reveal>
-
-          {/* Teams — featured */}
-          <Reveal
-            delay={110}
-            className="relative flex flex-col overflow-hidden rounded-[var(--nn-radius)] border border-nn-blue/30 bg-nn-blue-50 p-7 shadow-[0_28px_60px_-40px_rgb(47_91_255_/_0.6)] sm:p-8"
-          >
-            <span className="absolute top-6 right-6 nn-chip bg-nn-white">
-              Most measured
-            </span>
-            <h3 className="nn-display text-2xl text-nn-ink">Teams</h3>
-            <p className="mt-2 text-[0.95rem] text-nn-muted">
-              For programs proving pipeline at scale.
-            </p>
-            <ul className="mt-6 flex flex-1 list-none flex-col gap-3 p-0">
-              {TEAMS.map((item) => (
-                <li key={item} className="flex items-center gap-3 text-[0.95rem] font-medium text-nn-ink">
-                  <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-nn-blue text-nn-white">
-                    <CheckIcon className="h-3 w-3" />
-                  </span>
-                  {item}
-                </li>
-              ))}
-            </ul>
-            <CtaButton href="/auth" className="mt-8 w-full">
-              Get started
-            </CtaButton>
-          </Reveal>
+        <div className="mx-auto mt-12 grid max-w-4xl items-stretch gap-6 lg:grid-cols-2">
+          <PlanCard plan={SELF_SERVE} cta="Start free" ctaVariant="secondary" />
+          <PlanCard plan={TEAMS} cta="Get started" ctaVariant="primary" />
         </div>
 
-        <p className="mt-6 text-sm text-nn-muted">
-          Pricing scales with qualified clicks. Exact plans are being finalized.
+        <p className="mt-6 text-center text-sm text-nn-muted">
+          Illustrative plans — exact pricing scales with qualified clicks and is
+          being finalized.
         </p>
       </div>
     </section>
+  );
+}
+
+function PlanCard({
+  plan,
+  cta,
+  ctaVariant,
+}: {
+  plan: Plan;
+  cta: string;
+  ctaVariant: "primary" | "secondary";
+}) {
+  const featured = plan.featured;
+  return (
+    <Reveal
+      delay={featured ? 110 : 0}
+      className={
+        featured
+          ? "relative flex flex-col overflow-hidden rounded-[var(--nn-radius)] border-2 border-nn-blue bg-nn-white p-7 shadow-[0_36px_70px_-44px_rgb(31_68_255_/_0.65)] sm:p-9 lg:-mt-3 lg:mb-3"
+          : "relative flex flex-col rounded-[var(--nn-radius)] border border-nn-line bg-nn-white p-7 sm:p-9"
+      }
+    >
+      {featured ? (
+        <span className="absolute top-0 right-0 rounded-bl-xl bg-nn-blue px-3.5 py-1.5 text-[0.7rem] font-bold tracking-[0.12em] text-nn-white uppercase">
+          Recommended
+        </span>
+      ) : null}
+
+      <h3 className="nn-display text-2xl text-nn-ink">{plan.name}</h3>
+      <p className="mt-1.5 text-[0.95rem] text-nn-muted">{plan.blurb}</p>
+
+      <div className="mt-6 border-t border-nn-line pt-6">
+        <p className="nn-display text-3xl text-nn-ink">{plan.priceLead}</p>
+        <p className="mt-1 text-sm text-nn-muted">{plan.priceSub}</p>
+      </div>
+
+      <ul className="mt-6 flex flex-1 list-none flex-col gap-3.5 p-0">
+        {plan.features.map((item, i) => {
+          const strong = featured && i === 0;
+          return (
+            <li key={item} className="flex items-start gap-3">
+              <span
+                className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full ${
+                  featured
+                    ? "bg-nn-blue text-nn-white"
+                    : "bg-nn-blue-50 text-nn-blue"
+                }`}
+              >
+                <CheckIcon className="h-3 w-3" />
+              </span>
+              <span
+                className={`text-[0.95rem] ${strong ? "font-semibold text-nn-ink" : "text-nn-ink"}`}
+              >
+                {item}
+              </span>
+            </li>
+          );
+        })}
+      </ul>
+
+      <CtaButton href="/auth" variant={ctaVariant} className="mt-8 w-full">
+        {cta}
+      </CtaButton>
+    </Reveal>
   );
 }

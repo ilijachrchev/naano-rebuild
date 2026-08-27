@@ -49,11 +49,11 @@ Tailwind as `--color-nn-*`.
 
 | Token | Value | Role |
 | --- | --- | --- |
-| `--nn-blue` | `#2f5bff` | Primary. CTAs, thread, the stats field, accents. |
-| `--nn-blue-strong` | `#1c3fd6` | Primary hover / press; deepens without shifting hue. |
-| `--nn-blue-bright` | `#6b8cff` | Gradient partner; thread glow. |
-| `--nn-blue-100` | `#e4ebff` | Soft tint fills, chips, selection. |
-| `--nn-blue-50` | `#f1f5ff` | Faint section / row wash. |
+| `--nn-blue` | `#1f44ff` | Primary — a bold electric royal blue. CTAs, thread, the stats field, accents. |
+| `--nn-blue-strong` | `#1631cc` | Primary hover / press; deepens without shifting hue. |
+| `--nn-blue-bright` | `#5c78ff` | Gradient partner; thread highlight / flow. |
+| `--nn-blue-100` | `#dfe6ff` | Soft tint fills, chips, selection. |
+| `--nn-blue-50` | `#eef2ff` | Faint section / row wash. |
 | `--nn-ink` | `#0b1020` | Headlines and primary text (near-black, faint navy warmth). |
 | `--nn-muted` | `#4a5169` | Secondary text. Tinted from the ink hue — **never a cold grey**. AA on white and on `--nn-blue-50`. |
 | `--nn-white` | `#ffffff` | Pure white surfaces, primary-button text. |
@@ -164,10 +164,14 @@ JS and under `prefers-reduced-motion`.
 - **Enablement:** `MotionRoot` stamps `data-nn-anim="on"` on `<html>` only when
   JS mounts and motion is allowed. Every animated rule is nested under that
   attribute, so no-JS / crawlers / reduced-motion see the final state.
-- **Signature — the thread draws itself.** `.nn-thread-path` animates
-  `stroke-dashoffset` from its measured length to 0 over `1.6s`
-  `var(--nn-ease)` the first time it scrolls into view (IntersectionObserver).
-  Default (no anim) is fully drawn.
+- **Signature — the live thread.** The recurring blue thread is a bold,
+  continuous gradient rail (`.nn-trace-line`, plus `--h` for the horizontal
+  variant used in how-it-works). A white highlight travels along it
+  (`nn-flow` / `nn-flow-h`) so it reads as data in motion; reduced-motion
+  leaves a solid gradient rail. `.nn-ping` is the soft pulsing ring behind a
+  "live" node (hero payoff, feed headers). The SVG draw-in
+  (`.nn-thread-path`, `stroke-dashoffset` over `1.6s` on first in-view) remains
+  available for stroked paths; default (no anim) is fully drawn.
 - **Count-up stats.** Numbers ease from 0 to target over `1.7s` on first
   in-view; SSR and reduced-motion render the final value (no flash of zero).
 - **Reveal.** `.nn-reveal` fades up `16px` on first in-view; one restrained

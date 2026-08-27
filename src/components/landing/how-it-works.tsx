@@ -1,4 +1,3 @@
-import { DrawPath } from "./draw-path";
 import { Reveal } from "./motion";
 import { AttributeIcon, BookIcon, BriefIcon, DiscoverIcon } from "./ui";
 
@@ -34,47 +33,47 @@ export function HowItWorks() {
             From brief to booked to attributed.
           </h2>
           <p className="mt-4 text-lg text-nn-muted">
-            Four steps, one thread — every dollar of spend stays connected to the
-            pipeline it produces.
+            Four steps on one thread — every dollar of spend stays connected to
+            the pipeline it produces.
           </p>
         </Reveal>
 
-        <div className="relative mt-14">
-          {/* Desktop horizontal thread through all four dots */}
-          <div className="pointer-events-none absolute top-5 right-[12.5%] left-[12.5%] hidden h-1 lg:block">
-            <DrawPath
-              viewBox="0 0 100 4"
-              d="M0 2 H100"
-              className="h-full w-full"
-              label="A thread connecting the four steps"
-            />
-          </div>
+        <div className="relative mt-16">
+          {/* Desktop: one bold thread through every node */}
+          <span
+            aria-hidden="true"
+            className="nn-trace-line nn-trace-line--h absolute right-[12.5%] left-[12.5%] hidden h-[3px] lg:block"
+            style={{ top: 26.5 }}
+          />
 
-          <ol className="grid list-none grid-cols-1 gap-x-8 gap-y-10 p-0 sm:grid-cols-2 lg:grid-cols-4">
+          <ol className="grid list-none grid-cols-1 gap-y-8 p-0 lg:grid-cols-4 lg:gap-x-8">
             {STEPS.map(({ Icon, title, body }, i) => (
               <li key={title} className="relative">
-                {/* Mobile vertical connector into the next step */}
+                {/* Mobile: bold vertical thread into the next step */}
                 {i < STEPS.length - 1 ? (
                   <span
                     aria-hidden="true"
-                    className="absolute top-10 left-5 h-[calc(100%+2.5rem)] w-px bg-nn-line sm:hidden"
+                    className="nn-trace-line absolute z-0 w-[3px] lg:hidden"
+                    style={{ left: 26.5, top: 28, height: "calc(100% + 2rem)" }}
                   />
                 ) : null}
+
                 <Reveal
                   delay={i * 90}
-                  className="flex items-start gap-4 sm:flex-col sm:items-center sm:gap-0 sm:text-center"
+                  className="flex items-start gap-5 lg:flex-col lg:items-center lg:text-center"
                 >
-                  <span className="z-10 flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-nn-blue/25 bg-nn-white text-nn-blue shadow-[0_2px_10px_-3px_rgb(47_91_255_/_0.45)]">
-                    <Icon className="h-5 w-5" />
+                  <span
+                    className="relative z-10 flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-nn-blue text-nn-white shadow-[0_12px_30px_-10px_rgb(31_68_255_/_0.65)] ring-4 ring-nn-white"
+                  >
+                    <Icon className="h-6 w-6" />
+                    <span className="nn-num absolute -top-1.5 -right-1.5 flex h-6 w-6 items-center justify-center rounded-full bg-nn-white text-xs font-bold text-nn-blue ring-1 ring-nn-blue/20">
+                      {i + 1}
+                    </span>
                   </span>
-                  <div className="sm:mt-6">
-                    <div className="flex items-baseline gap-2 sm:justify-center">
-                      <span className="nn-num text-sm font-bold text-nn-blue">
-                        {String(i + 1).padStart(2, "0")}
-                      </span>
-                      <h3 className="nn-display text-2xl text-nn-ink">{title}</h3>
-                    </div>
-                    <p className="mt-2 max-w-xs text-[0.95rem] leading-relaxed text-nn-muted sm:mx-auto">
+
+                  <div className="lg:mt-7">
+                    <h3 className="nn-display text-2xl text-nn-ink">{title}</h3>
+                    <p className="mt-2 max-w-xs text-[0.95rem] leading-relaxed text-nn-muted lg:mx-auto">
                       {body}
                     </p>
                   </div>

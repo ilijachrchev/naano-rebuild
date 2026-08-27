@@ -1,26 +1,39 @@
 import { Reveal } from "./motion";
-import { CheckIcon, ClickIcon } from "./ui";
+import {
+  AttributeIcon,
+  BuildingIcon,
+  CheckIcon,
+  FilterIcon,
+  XIcon,
+} from "./ui";
 
 const POINTS = [
   {
+    Icon: FilterIcon,
     title: "Noise filtered out",
-    body: "Bots, accidental taps, and off-ICP traffic never count toward what you pay.",
+    body: "Bots, misclicks, and off-ICP traffic never count toward what you pay.",
   },
   {
+    Icon: BuildingIcon,
     title: "Resolved to the company",
     body: "Each qualifying click is matched to the organization behind it — not just a device.",
   },
   {
+    Icon: AttributeIcon,
     title: "Mapped to pipeline",
-    body: "Qualified clicks attach to the opportunities they influenced, so spend has a destination.",
+    body: "Qualified clicks attach to the opportunities they influenced.",
   },
 ];
 
-const ROWS = [
-  { company: "Northwind Capital", detail: "500–1k · Fintech", qualified: true },
-  { company: "Meridian Labs", detail: "1k–5k · SaaS", qualified: true },
-  { company: null, detail: "No company match — filtered", qualified: false },
-  { company: "Outpost Systems", detail: "200–500 · DevTools", qualified: true },
+type Row =
+  | { qualified: true; company: string; initials: string; detail: string; opp?: boolean }
+  | { qualified: false; detail: string };
+
+const ROWS: Row[] = [
+  { qualified: true, company: "Northwind Capital", initials: "NC", detail: "500–1k · Fintech", opp: true },
+  { qualified: true, company: "Meridian Labs", initials: "ML", detail: "1k–5k · SaaS" },
+  { qualified: false, detail: "No company match · bot signature" },
+  { qualified: true, company: "Outpost Systems", initials: "OS", detail: "200–500 · DevTools" },
 ];
 
 export function Attribution() {
@@ -37,16 +50,16 @@ export function Attribution() {
             the pipeline they move.
           </p>
 
-          <ul className="mt-8 flex list-none flex-col gap-5 p-0">
-            {POINTS.map((point) => (
-              <li key={point.title} className="flex gap-4">
-                <span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-nn-blue text-nn-white">
-                  <CheckIcon className="h-4 w-4" />
+          <ul className="mt-8 flex list-none flex-col divide-y divide-nn-line border-y border-nn-line p-0">
+            {POINTS.map(({ Icon, title, body }) => (
+              <li key={title} className="flex items-start gap-4 py-5">
+                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-nn-blue-50 text-nn-blue">
+                  <Icon className="h-5 w-5" />
                 </span>
                 <div>
-                  <p className="font-semibold text-nn-ink">{point.title}</p>
+                  <p className="font-semibold text-nn-ink">{title}</p>
                   <p className="mt-1 text-[0.95rem] leading-relaxed text-nn-muted">
-                    {point.body}
+                    {body}
                   </p>
                 </div>
               </li>
@@ -55,61 +68,76 @@ export function Attribution() {
         </Reveal>
 
         <Reveal delay={120}>
-          <figure className="nn-card m-0 p-6 sm:p-7">
-            <figcaption className="mb-5 flex items-center justify-between">
-              <span className="nn-chip">Incoming clicks</span>
-              <span className="text-xs font-semibold tracking-[0.14em] text-nn-muted uppercase">
+          <figure className="nn-card m-0 overflow-hidden p-0">
+            <figcaption className="flex items-center justify-between border-b border-nn-line px-5 py-4 sm:px-6">
+              <span className="flex items-center gap-2.5">
+                <span className="relative flex h-2.5 w-2.5">
+                  <span className="nn-ping" />
+                  <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-nn-blue" />
+                </span>
+                <span className="text-sm font-bold text-nn-ink">Incoming clicks</span>
+              </span>
+              <span className="text-[0.7rem] font-bold tracking-[0.14em] text-nn-muted uppercase">
                 Illustrative
               </span>
             </figcaption>
 
-            <ul className="flex list-none flex-col gap-2.5 p-0">
-              {ROWS.map((row, i) => (
-                <li
-                  key={i}
-                  className={`flex items-center gap-3 rounded-xl border px-3.5 py-3 ${
-                    row.qualified
-                      ? "border-nn-blue/15 bg-nn-blue-50"
-                      : "border-nn-line bg-nn-white"
-                  }`}
-                >
-                  <span
-                    className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${
-                      row.qualified
-                        ? "bg-nn-blue/10 text-nn-blue"
-                        : "bg-nn-ink/5 text-nn-muted"
-                    }`}
+            <ul className="flex list-none flex-col gap-2.5 p-4 sm:p-5">
+              {ROWS.map((row, i) =>
+                row.qualified ? (
+                  <li
+                    key={i}
+                    className="flex items-center gap-3 rounded-xl border border-nn-blue/25 bg-nn-blue-50 px-3.5 py-3"
                   >
-                    <ClickIcon className="h-[18px] w-[18px]" />
-                  </span>
-                  <div className="min-w-0 flex-1">
-                    <p
-                      className={`truncate text-[0.95rem] font-semibold ${
-                        row.qualified ? "text-nn-ink" : "text-nn-muted line-through decoration-nn-muted/40"
-                      }`}
-                    >
-                      {row.company ?? "Anonymous click"}
-                    </p>
-                    <p className="truncate text-xs text-nn-muted">{row.detail}</p>
-                  </div>
-                  {row.qualified ? (
-                    <span className="flex items-center gap-1.5 text-xs font-bold text-nn-blue">
-                      <CheckIcon className="h-4 w-4" />
+                    <span className="nn-num flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-nn-blue text-[0.8rem] font-bold text-nn-white">
+                      {row.initials}
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-[0.95rem] font-semibold text-nn-ink">
+                        {row.company}
+                      </p>
+                      <p className="truncate text-xs text-nn-muted">
+                        {row.detail}
+                        {row.opp ? " · opportunity opened" : ""}
+                      </p>
+                    </div>
+                    <span className="flex shrink-0 items-center gap-1.5 rounded-full bg-nn-blue px-2.5 py-1 text-[0.7rem] font-bold text-nn-white">
+                      <CheckIcon className="h-3.5 w-3.5" />
                       Qualified
                     </span>
-                  ) : (
-                    <span className="text-xs font-semibold text-nn-muted">
+                  </li>
+                ) : (
+                  <li
+                    key={i}
+                    className="flex items-center gap-3 rounded-xl border border-dashed border-nn-line bg-nn-white px-3.5 py-3"
+                  >
+                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-nn-ink/5 text-nn-muted">
+                      <XIcon className="h-4 w-4" />
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-[0.95rem] font-semibold text-nn-muted line-through decoration-nn-muted/40">
+                        Anonymous click
+                      </p>
+                      <p className="truncate text-xs text-nn-muted/80">{row.detail}</p>
+                    </div>
+                    <span className="shrink-0 rounded-full border border-nn-line px-2.5 py-1 text-[0.7rem] font-semibold text-nn-muted">
                       Filtered
                     </span>
-                  )}
-                </li>
-              ))}
+                  </li>
+                ),
+              )}
             </ul>
 
-            <p className="mt-5 border-t border-nn-line pt-4 text-sm text-nn-muted">
-              <span className="font-semibold text-nn-ink">3 of 4 qualified</span>{" "}
-              — resolved to 3 companies, one opportunity opened.
-            </p>
+            <div className="flex items-center justify-between border-t border-nn-line px-5 py-4 sm:px-6">
+              <span className="text-sm text-nn-muted">
+                <span className="font-bold text-nn-ink">3 of 4 qualified</span> ·
+                3 companies
+              </span>
+              <span className="flex items-center gap-1.5 text-sm font-semibold text-nn-blue">
+                1 opportunity
+                <AttributeIcon className="h-4 w-4" />
+              </span>
+            </div>
           </figure>
         </Reveal>
       </div>
