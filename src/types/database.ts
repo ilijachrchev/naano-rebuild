@@ -1103,6 +1103,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      accept_or_decline_offer: {
+        Args: {
+          p_action: string
+          p_collaboration_id: string
+          p_creator_id: string
+        }
+        Returns: string
+      }
       is_member: { Args: { ws: string }; Returns: boolean }
       wallet_available_cents: {
         Args: { iso_currency: string; ws: string }
