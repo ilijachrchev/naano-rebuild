@@ -130,6 +130,34 @@ export function ClickIcon(props: SVGProps<SVGSVGElement>) {
   );
 }
 
+export function XIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg {...icon(props)} aria-hidden="true">
+      <path d="M6 6l12 12M18 6 6 18" />
+    </svg>
+  );
+}
+
+/** Noise filtered — a funnel. */
+export function FilterIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg {...icon(props)} aria-hidden="true">
+      <path d="M4 5.5h16l-6.2 7.2V19l-3.6 1.8v-8.1L4 5.5Z" />
+    </svg>
+  );
+}
+
+/** Resolved to the company — an office building. */
+export function BuildingIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg {...icon(props)} aria-hidden="true">
+      <path d="M5 20V5.2A1.2 1.2 0 0 1 6.2 4h7.6A1.2 1.2 0 0 1 15 5.2V20" />
+      <path d="M15 9h2.8A1.2 1.2 0 0 1 19 10.2V20" />
+      <path d="M8 8h4M8 11.5h4M8 15h4M3.5 20h17" />
+    </svg>
+  );
+}
+
 export function GlobeIcon(props: SVGProps<SVGSVGElement>) {
   return (
     <svg {...icon(props)} aria-hidden="true">
