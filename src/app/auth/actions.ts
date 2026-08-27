@@ -47,11 +47,6 @@ export type BrandAuthState = {
   message: string | null;
 };
 
-export const initialBrandAuthState: BrandAuthState = {
-  error: null,
-  message: null,
-};
-
 const brandAuthSchema = z.object({
   intent: z.enum(["sign-in", "sign-up"]),
   fullName: z.string().trim().max(120).optional(),

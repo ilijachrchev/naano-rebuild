@@ -12,8 +12,6 @@ export type FormActionState = {
   error: string | null;
 };
 
-export const initialFormActionState: FormActionState = { error: null };
-
 const workspaceSchema = z.object({
   name: z.string().trim().min(2, "Enter your company name.").max(120),
   website: z
