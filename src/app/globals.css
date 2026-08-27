@@ -192,12 +192,12 @@ a {
    ========================================================================== */
 
 :root {
-  /* Blue — one confident, friendly azure carried at page scale */
-  --nn-blue: #2f5bff;
-  --nn-blue-strong: #1c3fd6; /* hover / press */
-  --nn-blue-bright: #6b8cff; /* gradient partner, thread glow */
-  --nn-blue-100: #e4ebff; /* soft tint fills, chips */
-  --nn-blue-50: #f1f5ff; /* faint section wash */
+  /* Blue — one bold electric royal blue carried at page scale */
+  --nn-blue: #1f44ff;
+  --nn-blue-strong: #1631cc; /* hover / press */
+  --nn-blue-bright: #5c78ff; /* gradient partner, thread glow */
+  --nn-blue-100: #dfe6ff; /* soft tint fills, chips */
+  --nn-blue-50: #eef2ff; /* faint section wash */
 
   /* Ink & surfaces — near-black text, warm near-whites (never cold grey) */
   --nn-ink: #0b1020; /* headlines + primary text */
@@ -280,15 +280,15 @@ a {
 /* Soft cloud / gradient grounds — used selectively for warmth */
 .nn-cloud {
   background:
-    radial-gradient(62% 60% at 12% -8%, rgb(47 91 255 / 0.12), transparent 60%),
-    radial-gradient(48% 52% at 104% 8%, rgb(107 140 255 / 0.14), transparent 58%),
+    radial-gradient(62% 60% at 12% -8%, rgb(31 68 255 / 0.12), transparent 60%),
+    radial-gradient(48% 52% at 104% 8%, rgb(92 120 255 / 0.14), transparent 58%),
     var(--nn-paper);
 }
 
 .nn-cloud-deep {
   background:
-    radial-gradient(70% 80% at 50% -20%, rgb(47 91 255 / 0.16), transparent 62%),
-    radial-gradient(40% 60% at 8% 120%, rgb(107 140 255 / 0.12), transparent 60%),
+    radial-gradient(70% 80% at 50% -20%, rgb(31 68 255 / 0.16), transparent 62%),
+    radial-gradient(40% 60% at 8% 120%, rgb(92 120 255 / 0.12), transparent 60%),
     var(--nn-white);
 }
 
@@ -317,13 +317,13 @@ a {
 .nn-btn-primary {
   background: var(--nn-blue);
   color: #fff;
-  box-shadow: 0 8px 20px -8px rgb(47 91 255 / 0.55);
+  box-shadow: 0 8px 20px -8px rgb(31 68 255 / 0.55);
 }
 
 .nn-btn-primary:hover {
   background: var(--nn-blue-strong);
   transform: translateY(-2px);
-  box-shadow: 0 16px 34px -12px rgb(28 63 214 / 0.6);
+  box-shadow: 0 16px 34px -12px rgb(22 49 204 / 0.6);
 }
 
 .nn-btn-secondary {
@@ -361,7 +361,7 @@ a {
   border-radius: 999px;
   background: var(--nn-blue-50);
   color: var(--nn-blue-strong);
-  border: 1px solid rgb(47 91 255 / 0.16);
+  border: 1px solid rgb(31 68 255 / 0.16);
   font-size: 0.78rem;
   font-weight: 700;
   letter-spacing: 0.01em;
@@ -427,6 +427,76 @@ a {
 [data-nn-anim="on"] .nn-thread-path.is-in {
   transition: stroke-dashoffset 1.6s var(--nn-ease);
   stroke-dashoffset: 0;
+}
+
+/* Live attribution trace — the bold, continuous thread in the hero artifact
+   and the how-it-works flow. A white highlight travels along it to read as
+   data in motion; reduced-motion leaves a solid gradient thread. */
+.nn-trace-line {
+  position: absolute;
+  border-radius: 999px;
+  background: linear-gradient(180deg, var(--nn-blue-bright), var(--nn-blue));
+  overflow: hidden;
+}
+
+.nn-trace-line--h {
+  background: linear-gradient(90deg, var(--nn-blue-bright), var(--nn-blue));
+}
+
+.nn-trace-line::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent, rgb(255 255 255 / 0.85), transparent);
+  background-size: 100% 42%;
+  background-repeat: no-repeat;
+  animation: nn-flow 2.8s var(--nn-ease) infinite;
+}
+
+.nn-trace-line--h::after {
+  background: linear-gradient(90deg, transparent, rgb(255 255 255 / 0.85), transparent);
+  background-size: 42% 100%;
+  animation-name: nn-flow-h;
+}
+
+@keyframes nn-flow {
+  0% {
+    background-position: 0 -45%;
+  }
+  100% {
+    background-position: 0 145%;
+  }
+}
+
+@keyframes nn-flow-h {
+  0% {
+    background-position: -45% 0;
+  }
+  100% {
+    background-position: 145% 0;
+  }
+}
+
+/* Soft pulsing ring behind a "live" node. */
+.nn-ping {
+  position: absolute;
+  inset: 0;
+  border-radius: 999px;
+  background: var(--nn-blue);
+  opacity: 0.4;
+  animation: nn-ping 1.9s var(--nn-ease) infinite;
+}
+
+@keyframes nn-ping {
+  0% {
+    transform: scale(1);
+    opacity: 0.4;
+  }
+  70%,
+  100% {
+    transform: scale(1.9);
+    opacity: 0;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
