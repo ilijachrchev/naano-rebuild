@@ -12,6 +12,8 @@ const audienceSnapshotSchema = z
     job_title: percentageBreakdownSchema.optional(),
     jobTitle: percentageBreakdownSchema.optional(),
     seniority: percentageBreakdownSchema.optional(),
+    positioning_summary: z.string().trim().max(600).optional(),
+    positioningSummary: z.string().trim().max(600).optional(),
     sample_n: z.number().int().nonnegative().optional(),
     sampleN: z.number().int().nonnegative().optional(),
   })
@@ -38,6 +40,7 @@ export type MarketplaceCreator = {
     jobTitles: AudienceSegment[];
     seniority: AudienceSegment[];
     sampleSize: number | null;
+    positioningSummary: string | null;
   };
   samplePost: {
     url: string | null;
@@ -59,13 +62,15 @@ function parseAudienceSnapshot(value: Json | null): MarketplaceCreator["audience
   const parsed = audienceSnapshotSchema.safeParse(value);
 
   if (!parsed.success) {
-    return { jobTitles: [], seniority: [], sampleSize: null };
+    return { jobTitles: [], seniority: [], sampleSize: null, positioningSummary: null };
   }
 
   return {
     jobTitles: toSegments(parsed.data.job_title ?? parsed.data.jobTitle),
     seniority: toSegments(parsed.data.seniority),
     sampleSize: parsed.data.sample_n ?? parsed.data.sampleN ?? null,
+    positioningSummary:
+      parsed.data.positioning_summary?.trim() ?? parsed.data.positioningSummary?.trim() ?? null,
   };
 }
 

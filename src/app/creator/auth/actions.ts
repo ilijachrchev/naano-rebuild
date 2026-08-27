@@ -86,8 +86,11 @@ export async function creatorAuthAction(
     return { error: error.message, message: null };
   }
 
-  if (!data.user) {
-    return { error: "We couldn't create your creator account.", message: null };
+  if (!data.user?.identities?.length) {
+    return {
+      error: null,
+      message: "Check your email to confirm your account, then return here to sign in.",
+    };
   }
 
   const admin = createAdminSupabaseClient();

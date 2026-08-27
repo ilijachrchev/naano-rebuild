@@ -247,6 +247,8 @@ function ReviewSteps({
                   value={country}
                   onChange={(event) => setCountry(event.target.value)}
                   maxLength={80}
+                  pattern="^(?!\[Placeholder\]).+$"
+                  title="Replace the placeholder with your country."
                   required
                 />
               </label>
@@ -324,8 +326,8 @@ function ReviewSteps({
               <p className="text-xs font-bold tracking-[0.12em] uppercase">Audience positioning</p>
               <p className="mt-3 text-sm leading-6 text-carbon/66">{draft.audienceSummary}</p>
               <div className="mt-5 flex flex-wrap gap-2">
-                {selectedIndustries.map((industry) => (
-                  <span key={industry} className="border border-carbon/18 px-2.5 py-1 text-xs font-semibold">
+                {selectedIndustries.map((industry, index) => (
+                  <span key={`${industry}-${index}`} className="border border-carbon/18 px-2.5 py-1 text-xs font-semibold">
                     {industry}
                   </span>
                 ))}
@@ -347,8 +349,8 @@ function ReviewSteps({
           <input type="hidden" name="audienceSummary" value={draft.audienceSummary} />
           <input type="hidden" name="country" value={country} />
           <input type="hidden" name="pricePerPost" value={pricePerPost} />
-          {selectedIndustries.map((industry) => (
-            <input key={industry} type="hidden" name="industries" value={industry} />
+          {selectedIndustries.map((industry, index) => (
+            <input key={`${industry}-${index}`} type="hidden" name="industries" value={industry} />
           ))}
 
           {createState.error ? (
