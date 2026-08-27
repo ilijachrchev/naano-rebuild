@@ -16,6 +16,7 @@ export type BookingActionState = {
 
 const bookingSchema = z.object({
   workspaceId: z.uuid(),
+  idempotencyKey: z.uuid(),
   creatorId: z.uuid(),
   briefId: z.uuid(),
   pricingMode: z.enum(["listed-rate", "negotiate"]),
@@ -57,6 +58,7 @@ export async function createBrandInviteAction(
 ): Promise<BookingActionState> {
   const parsed = bookingSchema.safeParse({
     workspaceId: formData.get("workspaceId"),
+    idempotencyKey: formData.get("idempotencyKey"),
     creatorId: formData.get("creatorId"),
     briefId: formData.get("briefId"),
     pricingMode: formData.get("pricingMode"),
@@ -145,6 +147,7 @@ export async function createBrandInviteAction(
     p_proposer_id: userId,
     p_creator_id: creator.id,
     p_fee_cents: parsed.data.feeCents,
+    p_idempotency_key: parsed.data.idempotencyKey,
     p_list_price_cents: listPriceCents,
     p_currency: "EUR",
     p_offer_type: "single_post",

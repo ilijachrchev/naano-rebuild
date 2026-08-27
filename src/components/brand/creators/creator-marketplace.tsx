@@ -97,6 +97,7 @@ function CreatorProfileModal({
   const dialogRef = useRef<HTMLDialogElement>(null);
   const [activeTab, setActiveTab] = useState<ProfileTab>("overview");
   const [showOffer, setShowOffer] = useState(false);
+  const [idempotencyKey, setIdempotencyKey] = useState<string | null>(null);
 
   useEffect(() => {
     const dialog = dialogRef.current;
@@ -105,6 +106,7 @@ function CreatorProfileModal({
     if (creator && !dialog.open) {
       setActiveTab("overview");
       setShowOffer(false);
+      setIdempotencyKey(null);
       dialog.showModal();
     } else if (!creator && dialog.open) {
       dialog.close();
@@ -121,6 +123,16 @@ function CreatorProfileModal({
   const post = creator.samplePost;
   const totalEngagement = post ? post.reactions + post.comments + post.reposts : 0;
   const engagementRate = post?.impressions ? (totalEngagement / post.impressions) * 100 : null;
+
+  function openOffer() {
+    setIdempotencyKey(crypto.randomUUID());
+    setShowOffer(true);
+  }
+
+  function closeOffer() {
+    setShowOffer(false);
+    setIdempotencyKey(null);
+  }
 
   function handleTabKeyDown(event: KeyboardEvent<HTMLButtonElement>, currentIndex: number) {
     let nextIndex: number | null = null;
@@ -176,7 +188,7 @@ function CreatorProfileModal({
             </p>
             <button
               type="button"
-              onClick={() => setShowOffer(false)}
+              onClick={closeOffer}
               className="cursor-pointer border-0 bg-transparent text-xs font-bold text-aubergine hover:text-aubergine-deep"
             >
               Back to dossier
@@ -209,15 +221,16 @@ function CreatorProfileModal({
         )}
 
         <div className="dossier-paper overflow-y-auto px-5 py-7 sm:px-8 sm:py-9">
-          {showOffer ? (
+          {showOffer && idempotencyKey ? (
             <BookingOfferForm
-              key={creator.id}
+              key={`${creator.id}-${idempotencyKey}`}
               workspaceId={workspaceId}
+              idempotencyKey={idempotencyKey}
               creator={creator}
               briefs={briefs}
               defaultPostBy={defaultPostBy}
               minPostBy={minPostBy}
-              onBack={() => setShowOffer(false)}
+              onBack={closeOffer}
             />
           ) : null}
 
@@ -247,7 +260,7 @@ function CreatorProfileModal({
                 </p>
                 <button
                   type="button"
-                  onClick={() => setShowOffer(true)}
+                  onClick={openOffer}
                   disabled={creator.pricePerPostCents === null}
                   className="primary-button"
                 >

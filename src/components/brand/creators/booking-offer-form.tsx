@@ -53,6 +53,7 @@ function SubmitOfferButton({ disabled }: { disabled: boolean }) {
 
 export function BookingOfferForm({
   workspaceId,
+  idempotencyKey,
   creator,
   briefs,
   defaultPostBy,
@@ -60,6 +61,7 @@ export function BookingOfferForm({
   onBack,
 }: {
   workspaceId: string;
+  idempotencyKey: string;
   creator: MarketplaceCreator;
   briefs: BookingBriefOption[];
   defaultPostBy: string;
@@ -140,6 +142,7 @@ export function BookingOfferForm({
   return (
     <form action={formAction} className="space-y-8">
       <input type="hidden" name="workspaceId" value={workspaceId} />
+      <input type="hidden" name="idempotencyKey" value={idempotencyKey} />
       <input type="hidden" name="creatorId" value={creator.id} />
       <input type="hidden" name="pricingMode" value={pricingMode} />
       <input type="hidden" name="feeCents" value={feeCents ?? ""} />
