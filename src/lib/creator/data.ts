@@ -37,6 +37,22 @@ export type CreatorPayout = {
   paidAt: string | null;
 };
 
+export type CreatorCollaborationStatus = "accepted" | "content_submitted" | "completed";
+
+export type CreatorCollaboration = {
+  id: string;
+  campaignName: string;
+  deliverables: string;
+  postBy: string | null;
+  approvalRequired: boolean;
+  status: CreatorCollaborationStatus;
+  contentUrl: string | null;
+  offer: {
+    feeCents: number;
+    currency: string;
+  } | null;
+};
+
 const activeStatuses = [
   "accepted",
   "brief_pending",
@@ -157,6 +173,84 @@ export async function getIncomingInvites(creatorId: string): Promise<IncomingInv
           currency: offer.currency,
           expiresAt: offer.expires_at,
         },
+      },
+    ];
+  });
+}
+
+const creatorCollaborationStatuses = ["accepted", "content_submitted", "completed"] as const;
+
+function isCreatorCollaborationStatus(value: string): value is CreatorCollaborationStatus {
+  return creatorCollaborationStatuses.includes(value as CreatorCollaborationStatus);
+}
+
+export async function getCreatorCollaborations(
+  creatorId: string,
+): Promise<CreatorCollaboration[]> {
+  const supabase = await createServerSupabaseClient();
+  const { data: collaborations, error: collaborationsError } = await supabase
+    .from("collaborations")
+    .select(
+      "id, campaign_id, accepted_offer_id, deliverables, post_by, approval_required, status, content_url",
+    )
+    .eq("creator_id", creatorId)
+    .in("status", [...creatorCollaborationStatuses])
+    .is("deleted_at", null)
+    .order("updated_at", { ascending: false, nullsFirst: false });
+
+  if (collaborationsError) throw new Error("Unable to load creator collaborations");
+
+  const campaignIds = collaborations
+    .map((collaboration) => collaboration.campaign_id)
+    .filter((id): id is string => id !== null);
+  const offerIds = collaborations
+    .map((collaboration) => collaboration.accepted_offer_id)
+    .filter((id): id is string => id !== null);
+
+  const [{ data: campaigns, error: campaignsError }, { data: offers, error: offersError }] =
+    await Promise.all([
+      campaignIds.length
+        ? supabase.from("campaigns").select("id, name").in("id", campaignIds)
+        : Promise.resolve({ data: [], error: null }),
+      offerIds.length
+        ? supabase
+            .from("collaboration_offers")
+            .select("id, fee_cents, currency")
+            .in("id", offerIds)
+        : Promise.resolve({ data: [], error: null }),
+    ]);
+
+  if (campaignsError) throw new Error("Unable to load RLS-visible collaboration campaigns");
+  if (offersError) throw new Error("Unable to load collaboration terms");
+
+  const campaignsById = new Map(campaigns.map((campaign) => [campaign.id, campaign]));
+  const offersById = new Map(offers.map((offer) => [offer.id, offer]));
+
+  return collaborations.flatMap((collaboration) => {
+    if (!isCreatorCollaborationStatus(collaboration.status)) return [];
+
+    const campaign = collaboration.campaign_id
+      ? campaignsById.get(collaboration.campaign_id)
+      : null;
+    const offer = collaboration.accepted_offer_id
+      ? offersById.get(collaboration.accepted_offer_id)
+      : null;
+
+    return [
+      {
+        id: collaboration.id,
+        campaignName: campaign?.name ?? "Direct collaboration",
+        deliverables: collaboration.deliverables?.trim() || "Sponsored LinkedIn post",
+        postBy: collaboration.post_by,
+        approvalRequired: collaboration.approval_required ?? false,
+        status: collaboration.status,
+        contentUrl: collaboration.content_url,
+        offer: offer
+          ? {
+              feeCents: offer.fee_cents,
+              currency: offer.currency,
+            }
+          : null,
       },
     ];
   });

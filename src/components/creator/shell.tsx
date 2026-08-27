@@ -7,6 +7,7 @@ import { BrandMark } from "@/components/brand/dossier";
 const navigation = [
   { label: "Overview", href: "/creator" },
   { label: "Opportunities", href: "/creator/opportunities" },
+  { label: "Collaborations", href: "/creator/collaborations" },
   { label: "Earnings", href: "/creator/earnings" },
 ] as const;
 
@@ -88,7 +89,7 @@ export function CreatorShell({
         </header>
 
         <nav aria-label="Creator navigation" className="border-carbon/16 border-b bg-mist/45 lg:hidden">
-          <ul className="grid grid-cols-3">
+          <ul className="grid grid-cols-2 sm:grid-cols-4">
             {navigation.map((item) => {
               const active = item.href === activeHref;
               return (

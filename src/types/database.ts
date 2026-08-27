@@ -373,6 +373,7 @@ export type Database = {
           approval_required: boolean | null
           brief_id: string | null
           campaign_id: string | null
+          content_url: string | null
           created_at: string | null
           creator_id: string
           current_offer_id: string | null
@@ -396,6 +397,7 @@ export type Database = {
           approval_required?: boolean | null
           brief_id?: string | null
           campaign_id?: string | null
+          content_url?: string | null
           created_at?: string | null
           creator_id: string
           current_offer_id?: string | null
@@ -419,6 +421,7 @@ export type Database = {
           approval_required?: boolean | null
           brief_id?: string | null
           campaign_id?: string | null
+          content_url?: string | null
           created_at?: string | null
           creator_id?: string
           current_offer_id?: string | null
@@ -1127,6 +1130,14 @@ export type Database = {
           p_post_by: string
           p_proposer_id: string
           p_workspace_id: string
+        }
+        Returns: string
+      }
+      submit_collaboration_content: {
+        Args: {
+          p_collaboration_id: string
+          p_content_url: string
+          p_creator_id: string
         }
         Returns: string
       }
