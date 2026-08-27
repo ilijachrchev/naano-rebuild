@@ -1,8 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
-import { signOutBrand } from "@/app/auth/actions";
-import { BrandMark } from "@/components/brand/dossier";
+import { BrandSidebar } from "@/components/brand/sidebar";
 import {
   BriefEditor,
   CreateCampaignForm,
@@ -10,8 +9,6 @@ import {
 } from "@/components/campaigns/forms";
 import { getBrandContext, getBrandDestination } from "@/lib/brand/context";
 import { loadCampaignsData } from "@/lib/campaigns/data";
-
-const navigation = ["Overview", "Creators", "Campaigns", "Collaborations", "Wallet"];
 
 function CampaignStatus({ status }: { status: string }) {
   return (
@@ -40,55 +37,7 @@ export default async function CampaignsPage({
 
   return (
     <main className="min-h-screen bg-mineral lg:grid lg:grid-cols-[280px_1fr]">
-      <aside className="flex bg-carbon px-6 py-6 text-mineral lg:min-h-screen lg:flex-col lg:px-8 lg:py-8">
-        <div className="flex w-full items-center justify-between lg:block">
-          <BrandMark inverse />
-          <div className="ml-auto text-right lg:mt-14 lg:ml-0 lg:text-left">
-            <p className="text-[0.7rem] font-bold tracking-[0.12em] text-mineral/45 uppercase">
-              Workspace
-            </p>
-            <p className="mt-1 font-bold">{workspace.name}</p>
-          </div>
-        </div>
-
-        <nav aria-label="Brand navigation" className="mt-10 hidden lg:block">
-          <ul className="space-y-1">
-            {navigation.map((item, index) => {
-              const active = item === "Campaigns";
-              const overview = item === "Overview";
-              const className = `flex w-full items-center justify-between border-0 px-3 py-3 text-left text-sm font-semibold ${
-                active ? "bg-signal text-carbon" : "bg-transparent text-mineral/46"
-              }`;
-
-              return (
-                <li key={item}>
-                  {overview ? (
-                    <Link href="/brand" className={`${className} hover:text-signal`}>
-                      {item}
-                      <span className="display-type text-base">
-                        {String(index + 1).padStart(2, "0")}
-                      </span>
-                    </Link>
-                  ) : (
-                    <span aria-current={active ? "page" : undefined} className={className}>
-                      {item}
-                      <span className="display-type text-base">
-                        {String(index + 1).padStart(2, "0")}
-                      </span>
-                    </span>
-                  )}
-                </li>
-              );
-            })}
-          </ul>
-        </nav>
-
-        <form action={signOutBrand} className="mt-auto hidden border-white/18 border-t pt-6 lg:block">
-          <button className="cursor-pointer border-0 bg-transparent p-0 text-sm font-semibold text-mineral/65 hover:text-signal">
-            Sign out
-          </button>
-        </form>
-      </aside>
+      <BrandSidebar workspaceName={workspace.name} activeHref="/brand/campaigns" />
 
       <section className="dossier-paper min-h-screen">
         <header className="flex min-h-20 flex-wrap items-center justify-between gap-4 border-carbon/16 border-b px-6 py-4 sm:px-10 lg:px-14">
