@@ -79,13 +79,32 @@ export async function brandAuthAction(
   const supabase = await createServerSupabaseClient();
 
   if (parsed.data.intent === "sign-in") {
-    const { error } = await supabase.auth.signInWithPassword({
+    const { data, error } = await supabase.auth.signInWithPassword({
       email: parsed.data.email,
       password: parsed.data.password,
     });
 
     if (error) {
       return { error: "That email and password don't match.", message: null };
+    }
+
+    const { data: creator, error: creatorError } = await supabase
+      .from("creators")
+      .select("id")
+      .eq("id", data.user.id)
+      .maybeSingle();
+
+    if (creatorError) {
+      await supabase.auth.signOut();
+      return { error: "We couldn't verify this account's access.", message: null };
+    }
+
+    if (creator || data.user.app_metadata?.role === "creator") {
+      await supabase.auth.signOut();
+      return {
+        error: "This is a creator account. Use the creator sign-in instead.",
+        message: null,
+      };
     }
 
     redirect("/");

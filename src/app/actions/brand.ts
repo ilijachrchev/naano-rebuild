@@ -35,7 +35,26 @@ const onboardingSchema = z.object({
 async function getAuthenticatedUserId() {
   const supabase = await createServerSupabaseClient();
   const { data } = await supabase.auth.getClaims();
-  return { supabase, userId: data?.claims?.sub ?? null };
+  const userId = data?.claims?.sub ?? null;
+
+  if (!userId) return { supabase, userId: null, accountRole: null };
+
+  const [{ data: userData, error }, { data: creator, error: creatorError }] =
+    await Promise.all([
+      supabase.auth.getUser(),
+      supabase.from("creators").select("id").eq("id", userId).maybeSingle(),
+    ]);
+
+  return {
+    supabase,
+    userId,
+    accountRole:
+      error || creatorError
+        ? "unknown"
+        : creator || userData.user.app_metadata?.role === "creator"
+        ? "creator"
+        : "brand",
+  };
 }
 
 export async function createWorkspaceAction(
@@ -51,10 +70,16 @@ export async function createWorkspaceAction(
     return { error: parsed.error.issues[0]?.message ?? "Check your workspace details." };
   }
 
-  const { supabase, userId } = await getAuthenticatedUserId();
+  const { supabase, userId, accountRole } = await getAuthenticatedUserId();
 
   if (!userId) {
     redirect("/auth");
+  }
+  if (accountRole === "creator") {
+    redirect("/creator/onboarding");
+  }
+  if (accountRole === "unknown") {
+    return { error: "We couldn't verify this account's access." };
   }
 
   const { data: existingMembership } = await supabase
@@ -108,10 +133,16 @@ export async function generateBrandProfileAction(
     return { error: "This workspace link is invalid. Return to setup and try again." };
   }
 
-  const { supabase, userId } = await getAuthenticatedUserId();
+  const { supabase, userId, accountRole } = await getAuthenticatedUserId();
 
   if (!userId) {
     redirect("/auth");
+  }
+  if (accountRole === "creator") {
+    redirect("/creator");
+  }
+  if (accountRole === "unknown") {
+    return { error: "We couldn't verify this account's access." };
   }
 
   const { data: workspace, error: workspaceError } = await supabase

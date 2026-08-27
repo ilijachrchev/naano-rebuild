@@ -1,6 +1,5 @@
 import { redirect } from "next/navigation";
 
-import { CreatorProfileMissing } from "@/components/creator/no-profile";
 import { InviteDecisionForm } from "@/components/creator/invite-decision-form";
 import { CreatorShell } from "@/components/creator/shell";
 import { getCreatorContext } from "@/lib/creator/context";
@@ -40,8 +39,9 @@ function formatDeadline(value: string | null) {
 
 export default async function CreatorOpportunitiesPage() {
   const context = await getCreatorContext();
-  if (!context.userId) redirect("/auth");
-  if (!context.creator) return <CreatorProfileMissing />;
+  if (!context.userId) redirect("/creator/auth");
+  if (!context.registeredAsCreator) redirect("/auth");
+  if (!context.creator) redirect("/creator/onboarding");
 
   const invites = await getIncomingInvites(context.creator.id);
 

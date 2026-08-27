@@ -284,6 +284,16 @@ function CreatorProfileModal({
                   </span>
                 ) : null}
               </div>
+              {creator.audience.positioningSummary ? (
+                <div className="mt-7 border-carbon/18 border-l-2 border-l-aubergine bg-mist/38 px-5 py-4">
+                  <p className="text-[0.68rem] font-bold tracking-[0.1em] text-carbon/48 uppercase">
+                    Creator positioning
+                  </p>
+                  <p className="mt-2 text-sm leading-6 text-carbon/66">
+                    {creator.audience.positioningSummary}
+                  </p>
+                </div>
+              ) : null}
               <div className="mt-8 grid gap-10 lg:grid-cols-2">
                 <AudienceBreakdown title="Job title" segments={creator.audience.jobTitles} />
                 <AudienceBreakdown title="Seniority" segments={creator.audience.seniority} />

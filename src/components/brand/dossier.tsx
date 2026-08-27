@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-const steps = ["Access", "Workspace", "Profile", "Dashboard"];
+const defaultSteps = ["Access", "Workspace", "Profile", "Dashboard"];
 
 export function ArrowIcon({ className = "" }: { className?: string }) {
   return (
@@ -27,7 +27,13 @@ export function BrandMark({ inverse = false }: { inverse?: boolean }) {
   );
 }
 
-export function ProgressIndex({ activeStep }: { activeStep: number }) {
+export function ProgressIndex({
+  activeStep,
+  steps = defaultSteps,
+}: {
+  activeStep: number;
+  steps?: readonly string[];
+}) {
   return (
     <nav aria-label="Onboarding progress" className="border-white/18 border-y text-mineral lg:border-y-0 lg:border-r">
       <ol className="grid grid-cols-4 lg:h-full lg:grid-cols-1 lg:grid-rows-4">
@@ -57,16 +63,18 @@ export function ProgressIndex({ activeStep }: { activeStep: number }) {
 
 export function DossierShell({
   activeStep,
+  steps = defaultSteps,
   aside,
   children,
 }: {
   activeStep: number;
+  steps?: readonly string[];
   aside: ReactNode;
   children: ReactNode;
 }) {
   return (
     <main className="min-h-screen bg-carbon lg:grid lg:grid-cols-[106px_520px_minmax(0,1fr)] xl:grid-cols-[106px_580px_minmax(0,1fr)]">
-      <ProgressIndex activeStep={activeStep} />
+      <ProgressIndex activeStep={activeStep} steps={steps} />
       <aside className="flex min-h-[36vh] flex-col justify-between border-white/18 border-b px-6 py-7 text-mineral sm:px-10 lg:min-h-screen lg:border-r lg:border-b-0 lg:px-10 lg:py-8">
         {aside}
       </aside>
@@ -75,7 +83,13 @@ export function DossierShell({
   );
 }
 
-export function DossierTabs({ activeStep }: { activeStep: number }) {
+export function DossierTabs({
+  activeStep,
+  steps = defaultSteps,
+}: {
+  activeStep: number;
+  steps?: readonly string[];
+}) {
   return (
     <div className="flex h-14 overflow-hidden border-carbon/16 border-b bg-mist/55 sm:h-16">
       {steps.map((step, index) => (
