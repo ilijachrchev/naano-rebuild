@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useState, type FormEvent } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
 import { useFormStatus } from "react-dom";
 
 import {
@@ -19,16 +19,35 @@ import type { EditableBrief } from "@/lib/campaigns/data";
 
 const initialState: CampaignActionState = { error: null, message: null };
 
-function readBriefFields(form: HTMLFormElement): CampaignBriefFields | null {
-  const formData = new FormData(form);
+type BriefDraft = {
+  title: string;
+  objectives: string;
+  keyMessages: string;
+  guidelines: string;
+  status: "draft" | "ready";
+};
+
+function getInitialBriefDraft(
+  brief: Pick<EditableBrief, "title" | "objectives" | "keyMessages" | "guidelines" | "status">,
+): BriefDraft {
+  return {
+    title: brief.title,
+    objectives: brief.objectives,
+    keyMessages: brief.keyMessages.join("\n"),
+    guidelines: brief.guidelines,
+    status: brief.status,
+  };
+}
+
+function parseBriefDraft(draft: BriefDraft): CampaignBriefFields | null {
   const parsed = campaignBriefSchema.safeParse({
-    title: formData.get("title"),
-    objectives: formData.get("objectives"),
-    keyMessages: String(formData.get("keyMessages") ?? "")
+    title: draft.title,
+    objectives: draft.objectives,
+    keyMessages: draft.keyMessages
       .split("\n")
       .map((message) => message.trim())
       .filter(Boolean),
-    guidelines: formData.get("guidelines"),
+    guidelines: draft.guidelines,
   });
 
   return parsed.success ? parsed.data : null;
@@ -144,22 +163,75 @@ export function GenerateBriefForm({ campaignId }: { campaignId: string }) {
 
 export function BriefEditor({ brief }: { brief: EditableBrief }) {
   const [state, formAction] = useActionState(saveBriefAction, initialState);
-  const [placeholderRewritten, setPlaceholderRewritten] = useState(
-    brief.generationMode !== "placeholder",
-  );
-  const canMarkReady = brief.generationMode !== "placeholder" || placeholderRewritten;
+  const formRef = useRef<HTMLFormElement>(null);
+  const initialDraft = getInitialBriefDraft(brief);
+  const [draft, setDraft] = useState(initialDraft);
+  const savedDraft = state.savedBrief ? getInitialBriefDraft(state.savedBrief) : initialDraft;
 
-  function handleBriefInput(event: FormEvent<HTMLFormElement>) {
-    if (brief.generationMode !== "placeholder" || !brief.placeholderBaseline) return;
-
-    const fields = readBriefFields(event.currentTarget);
-    setPlaceholderRewritten(
-      fields ? haveAllBriefFieldsChanged(brief.placeholderBaseline, fields) : false,
+  const parsedFields = parseBriefDraft(draft);
+  const placeholderRewritten =
+    brief.generationMode !== "placeholder" ||
+    Boolean(
+      brief.placeholderBaseline &&
+        parsedFields &&
+        haveAllBriefFieldsChanged(brief.placeholderBaseline, parsedFields),
     );
+  const canMarkReady = brief.generationMode !== "placeholder" || placeholderRewritten;
+  const dirty = JSON.stringify(draft) !== JSON.stringify(savedDraft);
+
+  useEffect(() => {
+    if (!dirty) return;
+
+    const warning = "You have unsaved changes to this brief. Leave without saving them?";
+    const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+      event.preventDefault();
+      event.returnValue = "";
+    };
+    const handleDocumentClick = (event: MouseEvent) => {
+      if (
+        event.defaultPrevented ||
+        event.button !== 0 ||
+        event.ctrlKey ||
+        event.metaKey ||
+        event.shiftKey ||
+        event.altKey
+      ) {
+        return;
+      }
+
+      const target = event.target instanceof Element ? event.target.closest("a[href]") : null;
+      if (!target || target.getAttribute("target") === "_blank") return;
+
+      const destination = new URL(target.getAttribute("href") ?? "", window.location.href);
+      if (destination.href === window.location.href || window.confirm(warning)) return;
+
+      event.preventDefault();
+      event.stopPropagation();
+    };
+    const handleDocumentSubmit = (event: SubmitEvent) => {
+      if (event.target === formRef.current || window.confirm(warning)) return;
+
+      event.preventDefault();
+      event.stopPropagation();
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    document.addEventListener("click", handleDocumentClick, true);
+    document.addEventListener("submit", handleDocumentSubmit, true);
+
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+      document.removeEventListener("click", handleDocumentClick, true);
+      document.removeEventListener("submit", handleDocumentSubmit, true);
+    };
+  }, [dirty]);
+
+  function updateDraft(values: Partial<BriefDraft>) {
+    setDraft((current) => ({ ...current, ...values }));
   }
 
   return (
-    <form action={formAction} className="mt-8" onInput={handleBriefInput}>
+    <form ref={formRef} action={formAction} className="mt-8">
       <input type="hidden" name="briefId" value={brief.id} />
       <input type="hidden" name="campaignId" value={brief.campaignId} />
 
@@ -184,7 +256,8 @@ export function BriefEditor({ brief }: { brief: EditableBrief }) {
             className="field-input field-input-light"
             id={`brief-title-${brief.id}`}
             name="title"
-            defaultValue={brief.title}
+            value={draft.title}
+            onChange={(event) => updateDraft({ title: event.target.value })}
             minLength={2}
             maxLength={120}
             required
@@ -199,7 +272,8 @@ export function BriefEditor({ brief }: { brief: EditableBrief }) {
             className="field-input field-input-light min-h-40 resize-y font-sans leading-6"
             id={`brief-objectives-${brief.id}`}
             name="objectives"
-            defaultValue={brief.objectives}
+            value={draft.objectives}
+            onChange={(event) => updateDraft({ objectives: event.target.value })}
             minLength={10}
             maxLength={2000}
             required
@@ -214,7 +288,8 @@ export function BriefEditor({ brief }: { brief: EditableBrief }) {
             className="field-input field-input-light min-h-44 resize-y font-sans leading-6"
             id={`brief-messages-${brief.id}`}
             name="keyMessages"
-            defaultValue={brief.keyMessages.join("\n")}
+            value={draft.keyMessages}
+            onChange={(event) => updateDraft({ keyMessages: event.target.value })}
             required
           />
           <p className="mt-2 text-xs leading-5 text-carbon/52">Use one message per line.</p>
@@ -228,7 +303,8 @@ export function BriefEditor({ brief }: { brief: EditableBrief }) {
             className="field-input field-input-light min-h-44 resize-y font-sans leading-6"
             id={`brief-guidelines-${brief.id}`}
             name="guidelines"
-            defaultValue={brief.guidelines}
+            value={draft.guidelines}
+            onChange={(event) => updateDraft({ guidelines: event.target.value })}
             minLength={10}
             maxLength={2000}
             required
@@ -245,7 +321,10 @@ export function BriefEditor({ brief }: { brief: EditableBrief }) {
             className="field-input field-input-light cursor-pointer"
             id={`brief-status-${brief.id}`}
             name="status"
-            defaultValue={brief.status}
+            value={draft.status}
+            onChange={(event) =>
+              updateDraft({ status: event.target.value === "ready" ? "ready" : "draft" })
+            }
           >
             <option value="draft">Draft</option>
             <option value="ready" disabled={!canMarkReady}>
@@ -253,7 +332,15 @@ export function BriefEditor({ brief }: { brief: EditableBrief }) {
             </option>
           </select>
         </div>
-        <div className="sm:justify-self-end">
+        <div className="flex flex-col items-start gap-2 sm:items-end sm:justify-self-end">
+          {dirty ? (
+            <span
+              aria-live="polite"
+              className="flex items-center gap-2 text-xs font-bold tracking-[0.09em] text-carbon/58 uppercase"
+            >
+              <span className="h-2 w-2 rounded-full bg-signal" /> Unsaved changes
+            </span>
+          ) : null}
           <SubmitButton idle="Save brief" pending="Saving brief…" />
         </div>
       </div>

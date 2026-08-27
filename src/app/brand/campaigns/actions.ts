@@ -8,6 +8,7 @@ import {
   buildBriefContent,
   campaignBriefSchema,
   updateBriefContent,
+  type CampaignBriefFields,
 } from "@/lib/campaigns/brief";
 import { generateCampaignBrief } from "@/lib/campaigns/generate-brief";
 import { createAdminSupabaseClient } from "@/lib/supabase/admin";
@@ -16,6 +17,7 @@ import { createServerSupabaseClient } from "@/lib/supabase/server";
 export type CampaignActionState = {
   error: string | null;
   message?: string | null;
+  savedBrief?: (CampaignBriefFields & { status: "draft" | "ready" }) | null;
 };
 
 const createCampaignSchema = z.object({
@@ -258,5 +260,9 @@ export async function saveBriefAction(
   if (saveError) return { error: "We couldn't save the brief. Please try again." };
 
   revalidatePath("/brand/campaigns");
-  return { error: null, message: "Brief saved." };
+  return {
+    error: null,
+    message: "Brief saved.",
+    savedBrief: { ...fields, status: parsed.data.status },
+  };
 }
