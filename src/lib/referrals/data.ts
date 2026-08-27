@@ -20,6 +20,7 @@ export type ReferralBrand = {
 
 export type CreatorReferralProgram = {
   code: string;
+  codeSource: "live" | "demo";
   referrals: ReferralBrand[];
 };
 
@@ -69,22 +70,26 @@ export async function getCreatorReferralProgram({
         .filter((id): id is string => Boolean(id)),
     ),
   ];
-  const qualifiedClicksByWorkspace = await getQualifiedClicksByWorkspace({
-    creatorId,
+  const qualifiedClickDatesByWorkspace = await getQualifiedClickDatesByWorkspace({
     workspaceIds,
   });
 
   const liveReferrals = referrals.map((referral, index): ReferralBrand => {
     const metadata = metadataByReferralId.get(referral.id) ?? {};
+    const rewardMonths = referral.reward_months ?? 3;
     const qualifiedClicks = metadata.workspaceId
-      ? (qualifiedClicksByWorkspace.get(metadata.workspaceId) ?? 0)
+      ? countClicksInRewardWindow({
+          occurredAt: qualifiedClickDatesByWorkspace.get(metadata.workspaceId) ?? [],
+          referralCreatedAt: referral.created_at,
+          rewardMonths,
+        })
       : 0;
 
     return {
       id: referral.id,
       brandName: metadata.brandName?.trim() || `Brand referral ${String(index + 1).padStart(2, "0")}`,
       status: formatStatus(metadata.state ?? referral.status),
-      rewardMonths: referral.reward_months ?? 3,
+      rewardMonths,
       reward: calculatePerformanceReward({
         baseRatePct: referral.reward_pct ?? 25,
         qualifiedClicks,
@@ -93,8 +98,11 @@ export async function getCreatorReferralProgram({
     };
   });
 
+  const liveCode = referrals.find((referral) => referral.code?.trim())?.code?.trim();
+
   return {
-    code: referrals.find((referral) => referral.code?.trim())?.code?.trim() ?? createDemoCode(creatorName, creatorId),
+    code: liveCode ?? createDemoCode(creatorName, creatorId),
+    codeSource: liveCode ? "live" : "demo",
     referrals: [
       ...liveReferrals,
       ...demoReferrals.map(
@@ -114,26 +122,23 @@ export async function getCreatorReferralProgram({
   };
 }
 
-async function getQualifiedClicksByWorkspace({
-  creatorId,
+async function getQualifiedClickDatesByWorkspace({
   workspaceIds,
 }: {
-  creatorId: string;
   workspaceIds: string[];
 }) {
-  const clicksByWorkspace = new Map<string, number>();
-  if (workspaceIds.length === 0) return clicksByWorkspace;
+  const clickDatesByWorkspace = new Map<string, string[]>();
+  if (workspaceIds.length === 0) return clickDatesByWorkspace;
 
   const supabase = await createServerSupabaseClient();
   const { data: collaborations, error: collaborationsError } = await supabase
     .from("collaborations")
     .select("id, workspace_id")
-    .eq("creator_id", creatorId)
     .in("workspace_id", workspaceIds)
     .is("deleted_at", null);
 
   if (collaborationsError) throw new Error("Unable to load referral attribution links");
-  if (collaborations.length === 0) return clicksByWorkspace;
+  if (collaborations.length === 0) return clickDatesByWorkspace;
 
   const workspaceByCollaboration = new Map(
     collaborations.map((collaboration) => [collaboration.id, collaboration.workspace_id]),
@@ -144,14 +149,14 @@ async function getQualifiedClicksByWorkspace({
     .in("collaboration_id", [...workspaceByCollaboration.keys()]);
 
   if (trackingLinksError) throw new Error("Unable to load referral attribution links");
-  if (trackingLinks.length === 0) return clicksByWorkspace;
+  if (trackingLinks.length === 0) return clickDatesByWorkspace;
 
   const workspaceByTrackingLink = new Map(
     trackingLinks.map((link) => [link.id, workspaceByCollaboration.get(link.collaboration_id)]),
   );
   const { data: clicks, error: clicksError } = await supabase
     .from("click_events")
-    .select("tracking_link_id")
+    .select("tracking_link_id, occurred_at")
     .in("tracking_link_id", [...workspaceByTrackingLink.keys()])
     .eq("is_qualified", true);
 
@@ -160,10 +165,35 @@ async function getQualifiedClicksByWorkspace({
   for (const click of clicks) {
     const workspaceId = workspaceByTrackingLink.get(click.tracking_link_id);
     if (!workspaceId) continue;
-    clicksByWorkspace.set(workspaceId, (clicksByWorkspace.get(workspaceId) ?? 0) + 1);
+    const dates = clickDatesByWorkspace.get(workspaceId);
+    if (dates) dates.push(click.occurred_at);
+    else clickDatesByWorkspace.set(workspaceId, [click.occurred_at]);
   }
 
-  return clicksByWorkspace;
+  return clickDatesByWorkspace;
+}
+
+function countClicksInRewardWindow({
+  occurredAt,
+  referralCreatedAt,
+  rewardMonths,
+}: {
+  occurredAt: string[];
+  referralCreatedAt: string | null;
+  rewardMonths: number;
+}) {
+  if (!referralCreatedAt) return occurredAt.length;
+
+  const periodStart = new Date(referralCreatedAt);
+  if (Number.isNaN(periodStart.getTime())) return occurredAt.length;
+
+  const periodEnd = new Date(periodStart);
+  periodEnd.setUTCMonth(periodEnd.getUTCMonth() + Math.max(0, rewardMonths));
+
+  return occurredAt.filter((value) => {
+    const clickDate = new Date(value);
+    return clickDate >= periodStart && clickDate < periodEnd;
+  }).length;
 }
 
 function parseReferralStatus(value: string | null): ReferralStatusMetadata {

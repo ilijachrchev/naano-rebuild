@@ -1,7 +1,6 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
 
-import { BrandMark } from "@/components/brand/dossier";
+import { CreatorShell } from "@/components/creator/shell";
 import { getCreatorContext } from "@/lib/creator/context";
 import { getCreatorReferralProgram } from "@/lib/referrals/data";
 import { rewardTiers } from "@/lib/referrals/reward";
@@ -18,7 +17,7 @@ export default async function CreatorReferralsPage() {
     creatorId: context.creator.id,
     creatorName: context.creator.displayName,
   });
-  const referralLink = `https://naano.com/join?ref=${encodeURIComponent(program.code)}`;
+  const referralLink = `https://naano.com/auth?ref=${encodeURIComponent(program.code)}`;
   const totalQualifiedClicks = program.referrals.reduce(
     (total, referral) => total + referral.reward.qualifiedClicks,
     0,
@@ -26,59 +25,17 @@ export default async function CreatorReferralsPage() {
   const liveReferralCount = program.referrals.filter((referral) => referral.source === "live").length;
 
   return (
-    <main className="min-h-screen bg-mineral lg:grid lg:grid-cols-[280px_minmax(0,1fr)]">
-      <aside className="flex bg-carbon px-6 py-6 text-mineral lg:min-h-screen lg:flex-col lg:px-8 lg:py-8">
-        <div className="flex w-full items-center justify-between lg:block">
-          <BrandMark inverse />
-          <div className="ml-auto text-right lg:mt-14 lg:ml-0 lg:text-left">
-            <p className="text-[0.7rem] font-bold tracking-[0.12em] text-mineral/45 uppercase">
-              Creator referrals
-            </p>
-            <p className="mt-1 font-bold">{context.creator.displayName}</p>
-          </div>
-        </div>
-
-        <div className="mt-10 hidden border-white/18 border-y py-7 lg:block">
-          <p className="text-xs font-bold tracking-[0.12em] text-signal uppercase">
-            Performance weighted
-          </p>
-          <p className="display-type mt-3 text-3xl leading-none">
-            Quality over invite volume.
-          </p>
-          <p className="mt-4 text-sm leading-6 text-mineral/58">
-            Bonus tiers respond to qualified clicks attributed to each referred brand&apos;s campaigns.
-          </p>
-        </div>
-
-        <Link
-          href="/creator"
-          className="mt-auto hidden border border-white/22 px-4 py-3 text-sm font-semibold text-mineral hover:border-signal hover:text-signal lg:block"
-        >
-          ← Back to creator desk
-        </Link>
-      </aside>
-
-      <section className="dossier-paper min-h-screen">
-        <header className="flex min-h-20 flex-wrap items-center justify-between gap-4 border-carbon/16 border-b px-6 py-4 sm:px-10 lg:px-14">
-          <div>
-            <p className="text-xs font-bold tracking-[0.12em] text-aubergine uppercase">
-              Referral program
-            </p>
-            <p className="text-sm text-carbon/55">Creator-scoped referral and attribution record</p>
-          </div>
-          <span className="flex items-center gap-2 text-xs font-bold tracking-[0.09em] uppercase">
-            <span className="h-2.5 w-2.5 rounded-full bg-signal" aria-hidden="true" />
-            Tracked simulation only
-          </span>
-        </header>
-
-        <div className="px-6 py-10 sm:px-10 lg:px-14 lg:py-14">
+    <CreatorShell
+      creatorName={context.creator.displayName}
+      activeHref="/creator"
+      eyebrow="Referral program"
+      detail="Creator-scoped referral and attribution record"
+      marker="Tracked simulation only"
+    >
+      <div className="px-6 py-10 sm:px-10 lg:px-14 lg:py-14">
           <div className="grid gap-10 border-carbon/18 border-b pb-12 xl:grid-cols-[0.85fr_1.15fr] xl:items-end">
             <div>
-              <Link href="/creator" className="text-xs font-bold tracking-[0.12em] text-aubergine uppercase hover:text-aubergine-deep lg:hidden">
-                ← Creator desk
-              </Link>
-              <p className="mt-5 text-xs font-bold tracking-[0.12em] text-aubergine uppercase lg:mt-0">
+              <p className="text-xs font-bold tracking-[0.12em] text-aubergine uppercase">
                 Supply dossier · 04
               </p>
               <h1 className="display-type mt-3 max-w-3xl text-5xl leading-[0.92] sm:text-6xl xl:text-7xl">
@@ -100,7 +57,7 @@ export default async function CreatorReferralsPage() {
                   </h2>
                 </div>
                 <span className="border border-signal px-2.5 py-1 text-[0.65rem] font-bold tracking-[0.1em] text-signal uppercase">
-                  Tracking only
+                  {program.codeSource === "demo" ? "Demo code" : "Tracked code"}
                 </span>
               </div>
               <dl className="divide-white/16 divide-y">
@@ -114,7 +71,7 @@ export default async function CreatorReferralsPage() {
                 </div>
               </dl>
               <p className="border-white/16 border-t pt-5 text-xs leading-5 text-mineral/48">
-                This link records referral attribution only. It does not collect payment or create a payout.
+                Referral capture happens outside this read-only page. This link never collects payment or creates a payout.
               </p>
             </section>
           </div>
@@ -176,7 +133,10 @@ export default async function CreatorReferralsPage() {
                       </td>
                       <td className="px-4 py-5 text-sm">
                         <span className="inline-flex items-center gap-2">
-                          <span className="h-2 w-2 rounded-full bg-signal" aria-hidden="true" />
+                          <span
+                            className={`h-2 w-2 rounded-full ${isActiveStatus(referral.status) ? "bg-signal" : "bg-carbon/25"}`}
+                            aria-hidden="true"
+                          />
                           {referral.status}
                         </span>
                       </td>
@@ -233,9 +193,15 @@ export default async function CreatorReferralsPage() {
             <p className="text-sm leading-6 text-carbon/64">
               <strong className="text-carbon">Simulation boundary:</strong> this page reads referral and attribution records and calculates a display rate in memory. It never captures funds, creates payouts, or changes wallet or settlement records.
             </p>
+            <p className="mt-2 text-xs leading-5 text-carbon/52">
+              Live click bonuses appear only when attribution is visible to the creator under RLS. The current raw-click policy is brand-member scoped, so the demo rows show the full tier progression without bypassing access controls.
+            </p>
           </div>
-        </div>
-      </section>
-    </main>
+      </div>
+    </CreatorShell>
   );
+}
+
+function isActiveStatus(status: string) {
+  return /active|live|completed/i.test(status);
 }
