@@ -1,19 +1,24 @@
 import { redirect } from "next/navigation";
 
-import { BrandComingSoon } from "@/components/brand/coming-soon";
+import { BrandCollaborationsPipelineView } from "@/components/brand/collaborations/pipeline";
 import { getBrandContext, getBrandDestination } from "@/lib/brand/context";
+import { loadBrandCollaborationPipeline } from "@/lib/collaborations/data";
 
-export default async function BrandCollaborationsPage() {
+export default async function BrandCollaborationsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ status?: string }>;
+}) {
   const context = await getBrandContext();
   const destination = getBrandDestination(context);
 
   if (destination !== "/brand") redirect(destination);
 
+  const workspace = context.workspace!;
+  const { status } = await searchParams;
+  const pipeline = await loadBrandCollaborationPipeline({ workspaceId: workspace.id, status });
+
   return (
-    <BrandComingSoon
-      workspaceName={context.workspace!.name}
-      activeHref="/brand/collaborations"
-      section="Collaborations"
-    />
+    <BrandCollaborationsPipelineView workspaceName={workspace.name} pipeline={pipeline} />
   );
 }
