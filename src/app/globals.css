@@ -183,3 +183,258 @@ a {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* ==========================================================================
+   naano LANDING DESIGN SYSTEM  ("Attribution Thread")
+   Blue / white / black. Warm & welcoming. Documented in DESIGN-SYSTEM.md.
+   Additive and self-scoped under .nn-root — it must not alter the existing
+   Signal Dossier tokens above, which the auth/brand/creator screens depend on.
+   ========================================================================== */
+
+:root {
+  /* Blue — one confident, friendly azure carried at page scale */
+  --nn-blue: #2f5bff;
+  --nn-blue-strong: #1c3fd6; /* hover / press */
+  --nn-blue-bright: #6b8cff; /* gradient partner, thread glow */
+  --nn-blue-100: #e4ebff; /* soft tint fills, chips */
+  --nn-blue-50: #f1f5ff; /* faint section wash */
+
+  /* Ink & surfaces — near-black text, warm near-whites (never cold grey) */
+  --nn-ink: #0b1020; /* headlines + primary text */
+  --nn-muted: #4a5169; /* secondary text: ink hue, blue-tinted, AA on white */
+  --nn-white: #ffffff;
+  --nn-paper: #fafaf7; /* warm near-white surface */
+
+  --nn-line: rgb(11 16 32 / 0.1); /* hairline */
+  --nn-line-strong: rgb(11 16 32 / 0.16);
+
+  /* Rhythm */
+  --nn-section-y: clamp(5rem, 9vw, 8.5rem);
+  --nn-gutter: clamp(1.25rem, 5vw, 4rem);
+  --nn-maxw: 78rem;
+  --nn-radius: 1.25rem;
+  --nn-radius-sm: 0.85rem;
+  --nn-ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@theme inline {
+  --color-nn-blue: var(--nn-blue);
+  --color-nn-blue-strong: var(--nn-blue-strong);
+  --color-nn-blue-bright: var(--nn-blue-bright);
+  --color-nn-blue-100: var(--nn-blue-100);
+  --color-nn-blue-50: var(--nn-blue-50);
+  --color-nn-ink: var(--nn-ink);
+  --color-nn-muted: var(--nn-muted);
+  --color-nn-paper: var(--nn-paper);
+  --color-nn-white: var(--nn-white);
+}
+
+/* Scope: everything below applies inside the landing root only. */
+.nn-root {
+  background: var(--nn-paper);
+  color: var(--nn-ink);
+  font-family: var(--font-body), sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+.nn-root ::selection {
+  background: var(--nn-blue-100);
+  color: var(--nn-ink);
+}
+
+.nn-root :focus-visible {
+  outline: 3px solid var(--nn-blue);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+.nn-root {
+  scrollbar-color: var(--nn-blue) var(--nn-blue-50);
+}
+
+.nn-container {
+  width: 100%;
+  max-width: var(--nn-maxw);
+  margin-inline: auto;
+  padding-inline: var(--nn-gutter);
+}
+
+.nn-display {
+  font-family: var(--font-display), sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 0.96;
+  text-wrap: balance;
+}
+
+.nn-eyebrowless-rule {
+  /* headings carry their own weight — no kicker labels (craft-floor ban) */
+}
+
+.nn-num {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+}
+
+/* Soft cloud / gradient grounds — used selectively for warmth */
+.nn-cloud {
+  background:
+    radial-gradient(62% 60% at 12% -8%, rgb(47 91 255 / 0.12), transparent 60%),
+    radial-gradient(48% 52% at 104% 8%, rgb(107 140 255 / 0.14), transparent 58%),
+    var(--nn-paper);
+}
+
+.nn-cloud-deep {
+  background:
+    radial-gradient(70% 80% at 50% -20%, rgb(47 91 255 / 0.16), transparent 62%),
+    radial-gradient(40% 60% at 8% 120%, rgb(107 140 255 / 0.12), transparent 60%),
+    var(--nn-white);
+}
+
+/* Buttons */
+.nn-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  min-height: 3.25rem;
+  padding: 0.9rem 1.5rem;
+  border-radius: var(--nn-radius-sm);
+  border: 1px solid transparent;
+  font-weight: 700;
+  line-height: 1;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    transform 180ms var(--nn-ease),
+    box-shadow 220ms ease,
+    background-color 180ms ease,
+    border-color 180ms ease,
+    color 180ms ease;
+}
+
+.nn-btn-primary {
+  background: var(--nn-blue);
+  color: #fff;
+  box-shadow: 0 8px 20px -8px rgb(47 91 255 / 0.55);
+}
+
+.nn-btn-primary:hover {
+  background: var(--nn-blue-strong);
+  transform: translateY(-2px);
+  box-shadow: 0 16px 34px -12px rgb(28 63 214 / 0.6);
+}
+
+.nn-btn-secondary {
+  background: var(--nn-white);
+  color: var(--nn-ink);
+  border-color: var(--nn-line-strong);
+}
+
+.nn-btn-secondary:hover {
+  border-color: var(--nn-blue);
+  color: var(--nn-blue);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 26px -14px rgb(11 16 32 / 0.25);
+}
+
+.nn-btn:active {
+  transform: translateY(0);
+}
+
+/* Cards */
+.nn-card {
+  background: var(--nn-white);
+  border: 1px solid var(--nn-line);
+  border-radius: var(--nn-radius);
+  box-shadow:
+    0 1px 2px rgb(11 16 32 / 0.04),
+    0 20px 44px -30px rgb(11 16 32 / 0.2);
+}
+
+.nn-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.7rem;
+  border-radius: 999px;
+  background: var(--nn-blue-50);
+  color: var(--nn-blue-strong);
+  border: 1px solid rgb(47 91 255 / 0.16);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+/* Trusted-by marquee */
+.nn-marquee {
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+}
+
+.nn-marquee-track {
+  display: flex;
+  width: max-content;
+  animation: nn-marquee 40s linear infinite;
+}
+
+.nn-marquee:hover .nn-marquee-track,
+.nn-marquee:focus-within .nn-marquee-track {
+  animation-play-state: paused;
+}
+
+@keyframes nn-marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+/* Scroll reveal — opt-in via [data-nn-anim="on"] set by JS once mounted, so
+   no-JS and crawlers always see content. Reduced-motion forces it visible. */
+.nn-reveal {
+  transition:
+    opacity 0.7s ease,
+    transform 0.7s var(--nn-ease);
+}
+
+[data-nn-anim="on"] .nn-reveal {
+  opacity: 0;
+  transform: translateY(16px);
+}
+
+[data-nn-anim="on"] .nn-reveal.is-in {
+  opacity: 1;
+  transform: none;
+}
+
+/* The signature moment: the attribution thread draws itself on scroll.
+   Default (no JS / reduced motion) is fully drawn; only the JS-enabled
+   [data-nn-anim="on"] state hides the stroke and then draws it in view. */
+.nn-thread-path {
+  stroke-dasharray: var(--nn-thread-len, 1200);
+  stroke-dashoffset: 0;
+}
+
+[data-nn-anim="on"] .nn-thread-path {
+  stroke-dashoffset: var(--nn-thread-len, 1200);
+}
+
+[data-nn-anim="on"] .nn-thread-path.is-in {
+  transition: stroke-dashoffset 1.6s var(--nn-ease);
+  stroke-dashoffset: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-nn-anim="on"] .nn-reveal {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  .nn-thread-path {
+    stroke-dashoffset: 0 !important;
+  }
+}
