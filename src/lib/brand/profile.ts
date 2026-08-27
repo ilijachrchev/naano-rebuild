@@ -3,15 +3,15 @@ import { z } from "zod";
 import type { Json } from "@/types/database";
 
 export const brandIcpSchema = z.object({
-  role: z.string().min(1),
-  companyType: z.string().min(1),
-  pain: z.string().min(1),
-  productFit: z.string().min(1),
-  tags: z.array(z.string().min(1)).min(2).max(5),
+  role: z.string().min(1).max(80),
+  companyType: z.string().min(1).max(140),
+  pain: z.string().min(1).max(200),
+  productFit: z.string().min(1).max(220),
+  tags: z.array(z.string().min(1).max(32)).min(2).max(5),
 });
 
 export const generatedBrandProfileSchema = z.object({
-  valueProp: z.string().min(1),
+  valueProp: z.string().min(1).max(220),
   icps: z.array(brandIcpSchema).length(3),
 });
 
