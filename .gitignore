@@ -2,3 +2,4 @@ node_modules/
 .next/
 .env*
 .claude/settings.local.json
+.claude/hooks/.state/
