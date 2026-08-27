@@ -49,3 +49,9 @@ Common commands:
 
 WSL note: if `runpane doctor --json` cannot find `/tmp/pane-daemon.../daemon.sock` or `runpane` resolves to a broken Windows shim, Pane may be running on Windows. Try `powershell.exe -NoProfile -Command 'Set-Location $env:TEMP; runpane doctor --json'`, then create Panes through the same PowerShell form using the saved WSL repo name or id. Use `runpane agents doctor --agent <agent> --repo <selector> --json` to diagnose the repo environment Pane will actually use.
 <!-- pane-agent-context:end -->
+
+
+
+Code Review Rules
+
+Review only issues introduced by this PR. Flag correctness, security, auth/RLS, secret exposure, and money-path bugs. For this repo specifically: verify privileged writes go through server actions with the service role (never client inserts), verify the service-role key never reaches a client component, verify RLS is respected on reads, and verify no secret is committed. Omit style/naming/formatting nits. If nothing serious, say so briefly.
