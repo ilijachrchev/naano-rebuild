@@ -1,6 +1,12 @@
 import "server-only";
 
-import { getBriefGenerationMode, parseKeyMessages } from "@/lib/campaigns/brief";
+import {
+  getBriefGenerationMode,
+  getPlaceholderBaseline,
+  parseKeyMessages,
+  type BriefGenerationMode,
+  type CampaignBriefFields,
+} from "@/lib/campaigns/brief";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 export type CampaignListItem = {
@@ -20,7 +26,8 @@ export type EditableBrief = {
   keyMessages: string[];
   guidelines: string;
   status: "draft" | "ready";
-  generationMode: "ai" | "placeholder";
+  generationMode: BriefGenerationMode;
+  placeholderBaseline: CampaignBriefFields | null;
 };
 
 export type CampaignsData = {
@@ -55,6 +62,8 @@ export async function loadCampaignsData(workspaceId: string): Promise<CampaignsD
   for (const brief of briefs ?? []) {
     if (!brief.campaign_id || briefsByCampaignId[brief.campaign_id]) continue;
 
+    const generationMode = getBriefGenerationMode(brief.content);
+
     briefsByCampaignId[brief.campaign_id] = {
       id: brief.id,
       campaignId: brief.campaign_id,
@@ -62,8 +71,9 @@ export async function loadCampaignsData(workspaceId: string): Promise<CampaignsD
       objectives: brief.objectives ?? "",
       keyMessages: parseKeyMessages(brief.key_messages),
       guidelines: brief.guidelines ?? "",
-      status: brief.status === "ready" ? "ready" : "draft",
-      generationMode: getBriefGenerationMode(brief.content),
+      status: brief.status === "ready" && generationMode !== "placeholder" ? "ready" : "draft",
+      generationMode,
+      placeholderBaseline: getPlaceholderBaseline(brief.content),
     };
   }
 

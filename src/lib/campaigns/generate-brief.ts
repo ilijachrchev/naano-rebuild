@@ -46,7 +46,7 @@ function createPlaceholderBrief(campaign: CampaignInput): CampaignBriefFields {
       "Placeholder — end with one specific, measurable next step for the reader.",
     ],
     guidelines:
-      "Placeholder — replace these notes after OPENAI_API_KEY is configured. Keep claims evidence-based, write for LinkedIn, and preserve the brand positioning saved in the workspace profile.",
+      "Placeholder — AI drafting is temporarily unavailable. Replace these starter notes, keep claims evidence-based, write for LinkedIn, and preserve the brand positioning saved in the workspace profile.",
   });
 }
 

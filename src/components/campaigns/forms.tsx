@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useState, type FormEvent } from "react";
 import { useFormStatus } from "react-dom";
 
 import {
@@ -10,9 +10,29 @@ import {
   type CampaignActionState,
 } from "@/app/brand/campaigns/actions";
 import { ArrowIcon } from "@/components/brand/dossier";
+import {
+  campaignBriefSchema,
+  haveAllBriefFieldsChanged,
+  type CampaignBriefFields,
+} from "@/lib/campaigns/brief";
 import type { EditableBrief } from "@/lib/campaigns/data";
 
 const initialState: CampaignActionState = { error: null, message: null };
+
+function readBriefFields(form: HTMLFormElement): CampaignBriefFields | null {
+  const formData = new FormData(form);
+  const parsed = campaignBriefSchema.safeParse({
+    title: formData.get("title"),
+    objectives: formData.get("objectives"),
+    keyMessages: String(formData.get("keyMessages") ?? "")
+      .split("\n")
+      .map((message) => message.trim())
+      .filter(Boolean),
+    guidelines: formData.get("guidelines"),
+  });
+
+  return parsed.success ? parsed.data : null;
+}
 
 function SubmitButton({ idle, pending }: { idle: string; pending: string }) {
   const status = useFormStatus();
@@ -105,7 +125,7 @@ export function GenerateBriefForm({ campaignId }: { campaignId: string }) {
       <input type="hidden" name="campaignId" value={campaignId} />
       <div className="border border-carbon/18 bg-paper px-5 py-5 sm:px-6">
         <p className="text-xs font-bold tracking-[0.12em] text-aubergine uppercase">
-          One server-side generation
+          Built from your saved brand profile
         </p>
         <p className="mt-3 max-w-2xl text-sm leading-6 text-carbon/64">
           Create with AI combines this campaign objective with the workspace’s saved brand profile.
@@ -124,20 +144,33 @@ export function GenerateBriefForm({ campaignId }: { campaignId: string }) {
 
 export function BriefEditor({ brief }: { brief: EditableBrief }) {
   const [state, formAction] = useActionState(saveBriefAction, initialState);
+  const [placeholderRewritten, setPlaceholderRewritten] = useState(
+    brief.generationMode !== "placeholder",
+  );
+  const canMarkReady = brief.generationMode !== "placeholder" || placeholderRewritten;
+
+  function handleBriefInput(event: FormEvent<HTMLFormElement>) {
+    if (brief.generationMode !== "placeholder" || !brief.placeholderBaseline) return;
+
+    const fields = readBriefFields(event.currentTarget);
+    setPlaceholderRewritten(
+      fields ? haveAllBriefFieldsChanged(brief.placeholderBaseline, fields) : false,
+    );
+  }
 
   return (
-    <form action={formAction} className="mt-8">
+    <form action={formAction} className="mt-8" onInput={handleBriefInput}>
       <input type="hidden" name="briefId" value={brief.id} />
       <input type="hidden" name="campaignId" value={brief.campaignId} />
 
-      {brief.generationMode === "placeholder" ? (
+      {brief.generationMode === "placeholder" && !placeholderRewritten ? (
         <div className="mb-7 border border-danger/35 border-l-2 border-l-danger bg-danger/6 px-5 py-4">
           <p className="text-xs font-bold tracking-[0.12em] text-danger uppercase">
             Placeholder brief
           </p>
           <p className="mt-2 text-sm leading-6 text-carbon/68">
-            OPENAI_API_KEY is not configured on the server. The flow completed with clearly marked
-            placeholder copy; review and replace it here before marking the brief ready.
+            AI drafting is temporarily unavailable, so we created a clearly marked starter brief.
+            Replace every field before marking it ready.
           </p>
         </div>
       ) : null}
@@ -215,7 +248,9 @@ export function BriefEditor({ brief }: { brief: EditableBrief }) {
             defaultValue={brief.status}
           >
             <option value="draft">Draft</option>
-            <option value="ready">Ready</option>
+            <option value="ready" disabled={!canMarkReady}>
+              Ready
+            </option>
           </select>
         </div>
         <div className="sm:justify-self-end">

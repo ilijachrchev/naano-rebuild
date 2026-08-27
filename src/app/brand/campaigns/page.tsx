@@ -127,7 +127,7 @@ export default async function CampaignsPage({
               <div className="mt-7 flex flex-wrap gap-3 text-xs font-bold tracking-[0.09em] uppercase">
                 <span className="border border-carbon/18 px-3 py-2">LinkedIn</span>
                 <span className="border border-carbon/18 px-3 py-2">Draft first</span>
-                <span className="bg-signal px-3 py-2">Server-side AI</span>
+                <span className="bg-signal px-3 py-2">Uses saved brand signals</span>
               </div>
             </div>
           </div>

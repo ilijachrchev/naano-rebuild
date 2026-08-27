@@ -231,6 +231,15 @@ export async function saveBriefAction(
     keyMessages: parsed.data.keyMessages,
     guidelines: parsed.data.guidelines,
   };
+  const updatedBrief = updateBriefContent(brief.content, fields);
+
+  if (parsed.data.status === "ready" && updatedBrief.mode === "placeholder") {
+    return {
+      error:
+        "Replace the brief title, objectives, key messages, and guidelines before marking it ready.",
+    };
+  }
+
   const admin = createAdminSupabaseClient();
   const { error: saveError } = await admin
     .from("briefs")
@@ -239,7 +248,7 @@ export async function saveBriefAction(
       objectives: fields.objectives,
       key_messages: fields.keyMessages,
       guidelines: fields.guidelines,
-      content: updateBriefContent(brief.content, fields),
+      content: updatedBrief.content,
       status: parsed.data.status,
     })
     .eq("id", brief.id)

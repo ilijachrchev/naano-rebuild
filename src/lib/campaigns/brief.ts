@@ -10,7 +10,7 @@ export const campaignBriefSchema = z.object({
 });
 
 export type CampaignBriefFields = z.infer<typeof campaignBriefSchema>;
-export type BriefGenerationMode = "ai" | "placeholder";
+export type BriefGenerationMode = "ai" | "placeholder" | "edited";
 
 export function parseKeyMessages(value: Json | null): string[] {
   const parsed = z.array(z.string()).safeParse(value);
@@ -23,29 +23,77 @@ export function getBriefGenerationMode(value: Json | null): BriefGenerationMode 
   const generation = value.generation;
   if (!generation || Array.isArray(generation) || typeof generation !== "object") return "ai";
 
-  return generation.mode === "placeholder" ? "placeholder" : "ai";
+  if (generation.mode === "placeholder") return "placeholder";
+  if (generation.mode === "edited") return "edited";
+  return "ai";
+}
+
+export function getPlaceholderBaseline(value: Json | null): CampaignBriefFields | null {
+  if (getBriefGenerationMode(value) !== "placeholder") return null;
+  if (!value || Array.isArray(value) || typeof value !== "object") return null;
+
+  const generation = value.generation;
+  if (generation && !Array.isArray(generation) && typeof generation === "object") {
+    const storedBaseline = campaignBriefSchema.safeParse(generation.placeholderBaseline);
+    if (storedBaseline.success) return storedBaseline.data;
+  }
+
+  const legacyBaseline = campaignBriefSchema.safeParse(value);
+  return legacyBaseline.success ? legacyBaseline.data : null;
+}
+
+export function haveAllBriefFieldsChanged(
+  baseline: CampaignBriefFields,
+  brief: CampaignBriefFields,
+) {
+  return (
+    brief.title !== baseline.title &&
+    brief.objectives !== baseline.objectives &&
+    brief.guidelines !== baseline.guidelines &&
+    JSON.stringify(brief.keyMessages) !== JSON.stringify(baseline.keyMessages)
+  );
 }
 
 export function buildBriefContent(
   brief: CampaignBriefFields,
   mode: BriefGenerationMode,
+  placeholderBaseline: CampaignBriefFields | null = null,
 ): Json {
+  const generation: Record<string, Json | undefined> = {
+    mode,
+    note:
+      mode === "placeholder"
+        ? "Starter brief created while AI drafting was unavailable."
+        : mode === "edited"
+          ? "Starter brief reviewed and rewritten."
+          : "Created from the saved campaign objective and brand profile.",
+  };
+
+  if (mode === "placeholder") {
+    generation.placeholderBaseline = placeholderBaseline ?? brief;
+  }
+
   return {
     ...brief,
-    generation: {
-      mode,
-      note:
-        mode === "placeholder"
-          ? "Placeholder generated because OPENAI_API_KEY is not configured."
-          : "Generated from the saved campaign objective and brand profile.",
-    },
+    generation,
   };
 }
 
 export function updateBriefContent(
   current: Json | null,
   brief: CampaignBriefFields,
-): Json {
-  const generationMode = getBriefGenerationMode(current);
-  return buildBriefContent(brief, generationMode);
+): { content: Json; mode: BriefGenerationMode } {
+  const currentMode = getBriefGenerationMode(current);
+  const placeholderBaseline = getPlaceholderBaseline(current);
+  const mode =
+    currentMode === "placeholder" &&
+    placeholderBaseline &&
+    haveAllBriefFieldsChanged(placeholderBaseline, brief)
+      ? "edited"
+      : currentMode;
+
+  return {
+    content: buildBriefContent(brief, mode, placeholderBaseline),
+    mode,
+  };
 }
