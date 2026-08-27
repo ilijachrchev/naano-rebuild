@@ -60,18 +60,21 @@ export function HowItWorks() {
                     className="absolute top-10 left-5 h-[calc(100%+2.5rem)] w-px bg-nn-line sm:hidden"
                   />
                 ) : null}
-                <Reveal delay={i * 90} className="flex items-start gap-4 sm:block">
+                <Reveal
+                  delay={i * 90}
+                  className="flex items-start gap-4 sm:flex-col sm:items-center sm:gap-0 sm:text-center"
+                >
                   <span className="z-10 flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-nn-blue/25 bg-nn-white text-nn-blue shadow-[0_2px_10px_-3px_rgb(47_91_255_/_0.45)]">
                     <Icon className="h-5 w-5" />
                   </span>
                   <div className="sm:mt-6">
-                    <div className="flex items-baseline gap-2">
+                    <div className="flex items-baseline gap-2 sm:justify-center">
                       <span className="nn-num text-sm font-bold text-nn-blue">
                         {String(i + 1).padStart(2, "0")}
                       </span>
                       <h3 className="nn-display text-2xl text-nn-ink">{title}</h3>
                     </div>
-                    <p className="mt-2 max-w-xs text-[0.95rem] leading-relaxed text-nn-muted">
+                    <p className="mt-2 max-w-xs text-[0.95rem] leading-relaxed text-nn-muted sm:mx-auto">
                       {body}
                     </p>
                   </div>

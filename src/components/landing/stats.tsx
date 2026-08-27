@@ -16,7 +16,7 @@ export function StatsBand() {
           <h2 className="nn-display text-[clamp(1.9rem,3.6vw,2.75rem)] text-nn-white">
             Built to be measured.
           </h2>
-          <p className="mt-3 text-sm font-medium text-nn-white/80">
+          <p className="mt-3 text-sm font-medium text-nn-white/90">
             Illustrative figures — placeholder data to show the model, not
             customer results.
           </p>
@@ -34,7 +34,7 @@ export function StatsBand() {
                     suffix={stat.suffix}
                   />
                 </span>
-                <span className="mt-3 block text-sm font-medium text-nn-white/85">
+                <span className="mt-3 block text-sm font-medium text-nn-white">
                   {stat.label}
                 </span>
               </dd>
