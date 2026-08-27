@@ -2,8 +2,15 @@ import { redirect } from "next/navigation";
 
 import { CreatorMarketplace } from "@/components/brand/creators/creator-marketplace";
 import { BrandSidebar } from "@/components/brand/sidebar";
+import { getBookingBriefOptions } from "@/lib/booking/data";
 import { getBrandContext, getBrandDestination } from "@/lib/brand/context";
 import { getMarketplaceCreators } from "@/lib/marketplace/creators";
+
+function getDefaultPostBy() {
+  const date = new Date();
+  date.setUTCDate(date.getUTCDate() + 14);
+  return date.toISOString().slice(0, 10);
+}
 
 export default async function BrandCreatorsPage() {
   const context = await getBrandContext();
@@ -12,7 +19,10 @@ export default async function BrandCreatorsPage() {
   if (destination !== "/brand") redirect(destination);
 
   const workspace = context.workspace!;
-  const creators = await getMarketplaceCreators(workspace.id);
+  const [creators, briefs] = await Promise.all([
+    getMarketplaceCreators(workspace.id),
+    getBookingBriefOptions(workspace.id),
+  ]);
 
   return (
     <main className="min-h-screen bg-mineral lg:grid lg:grid-cols-[280px_minmax(0,1fr)]">
@@ -45,7 +55,12 @@ export default async function BrandCreatorsPage() {
           </div>
 
           <div className="mt-9">
-            <CreatorMarketplace creators={creators} />
+            <CreatorMarketplace
+              creators={creators}
+              briefs={briefs}
+              workspaceId={workspace.id}
+              defaultPostBy={getDefaultPostBy()}
+            />
           </div>
         </div>
       </section>

@@ -1103,6 +1103,21 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      create_brand_invite: {
+        Args: {
+          p_approval_required: boolean
+          p_brief_id?: string
+          p_creator_id: string
+          p_currency: string
+          p_fee_cents: number
+          p_list_price_cents: number
+          p_offer_type: Database["public"]["Enums"]["offer_type"]
+          p_post_by: string
+          p_proposer_id: string
+          p_workspace_id: string
+        }
+        Returns: string
+      }
       is_member: { Args: { ws: string }; Returns: boolean }
       wallet_available_cents: {
         Args: { iso_currency: string; ws: string }
