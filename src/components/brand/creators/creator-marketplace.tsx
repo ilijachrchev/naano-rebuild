@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, type KeyboardEvent } from "react";
 
 import { BookingOfferForm } from "@/components/brand/creators/booking-offer-form";
 import type { BookingBriefOption } from "@/lib/booking/data";
@@ -84,12 +84,14 @@ function CreatorProfileModal({
   briefs,
   workspaceId,
   defaultPostBy,
+  minPostBy,
   onDismiss,
 }: {
   creator: MarketplaceCreator | null;
   briefs: BookingBriefOption[];
   workspaceId: string;
   defaultPostBy: string;
+  minPostBy: string;
   onDismiss: () => void;
 }) {
   const dialogRef = useRef<HTMLDialogElement>(null);
@@ -119,6 +121,20 @@ function CreatorProfileModal({
   const post = creator.samplePost;
   const totalEngagement = post ? post.reactions + post.comments + post.reposts : 0;
   const engagementRate = post?.impressions ? (totalEngagement / post.impressions) * 100 : null;
+
+  function handleTabKeyDown(event: KeyboardEvent<HTMLButtonElement>, currentIndex: number) {
+    let nextIndex: number | null = null;
+    if (event.key === "ArrowRight") nextIndex = (currentIndex + 1) % tabs.length;
+    if (event.key === "ArrowLeft") nextIndex = (currentIndex - 1 + tabs.length) % tabs.length;
+    if (event.key === "Home") nextIndex = 0;
+    if (event.key === "End") nextIndex = tabs.length - 1;
+    if (nextIndex === null) return;
+
+    event.preventDefault();
+    const nextTab = tabs[nextIndex];
+    setActiveTab(nextTab.id);
+    document.getElementById(`tab-${nextTab.id}`)?.focus();
+  }
 
   return (
     <dialog
@@ -176,7 +192,9 @@ function CreatorProfileModal({
                 role="tab"
                 aria-selected={activeTab === tab.id}
                 aria-controls={`panel-${tab.id}`}
+                tabIndex={activeTab === tab.id ? 0 : -1}
                 onClick={() => setActiveTab(tab.id)}
+                onKeyDown={(event) => handleTabKeyDown(event, index)}
                 className={`min-h-14 cursor-pointer border-0 border-carbon/18 border-r px-5 text-[0.7rem] font-bold tracking-[0.11em] uppercase sm:min-w-40 ${
                   activeTab === tab.id ? "bg-paper text-carbon" : "bg-transparent text-carbon/52 hover:text-carbon"
                 }`}
@@ -198,6 +216,7 @@ function CreatorProfileModal({
               creator={creator}
               briefs={briefs}
               defaultPostBy={defaultPostBy}
+              minPostBy={minPostBy}
               onBack={() => setShowOffer(false)}
             />
           ) : null}
@@ -376,11 +395,13 @@ export function CreatorMarketplace({
   briefs,
   workspaceId,
   defaultPostBy,
+  minPostBy,
 }: {
   creators: MarketplaceCreator[];
   briefs: BookingBriefOption[];
   workspaceId: string;
   defaultPostBy: string;
+  minPostBy: string;
 }) {
   const [industry, setIndustry] = useState("all");
   const [country, setCountry] = useState("all");
@@ -456,7 +477,7 @@ export function CreatorMarketplace({
             <select
               value={industry}
               onChange={(event) => setIndustry(event.target.value)}
-              className="mt-2 min-h-11 w-full cursor-pointer border border-carbon/24 bg-white/40 px-3 text-sm text-carbon hover:border-aubergine focus:border-aubergine focus:outline-none"
+              className="mt-2 min-h-11 w-full cursor-pointer border border-carbon/24 bg-white/40 px-3 text-sm text-carbon hover:border-aubergine focus:border-aubergine"
             >
               <option value="all">All industries</option>
               {industries.map((value) => (
@@ -471,7 +492,7 @@ export function CreatorMarketplace({
             <select
               value={country}
               onChange={(event) => setCountry(event.target.value)}
-              className="mt-2 min-h-11 w-full cursor-pointer border border-carbon/24 bg-white/40 px-3 text-sm text-carbon hover:border-aubergine focus:border-aubergine focus:outline-none"
+              className="mt-2 min-h-11 w-full cursor-pointer border border-carbon/24 bg-white/40 px-3 text-sm text-carbon hover:border-aubergine focus:border-aubergine"
             >
               <option value="all">All countries</option>
               {countries.map((value) => (
@@ -486,7 +507,7 @@ export function CreatorMarketplace({
             <select
               value={price}
               onChange={(event) => setPrice(event.target.value as PriceOption)}
-              className="mt-2 min-h-11 w-full cursor-pointer border border-carbon/24 bg-white/40 px-3 text-sm text-carbon hover:border-aubergine focus:border-aubergine focus:outline-none"
+              className="mt-2 min-h-11 w-full cursor-pointer border border-carbon/24 bg-white/40 px-3 text-sm text-carbon hover:border-aubergine focus:border-aubergine"
             >
               <option value="all">Any price</option>
               <option value="under-500">Under €500</option>
@@ -499,7 +520,7 @@ export function CreatorMarketplace({
             <select
               value={sort}
               onChange={(event) => setSort(event.target.value as SortOption)}
-              className="mt-2 min-h-11 w-full cursor-pointer border border-carbon/24 bg-white/40 px-3 text-sm text-carbon hover:border-aubergine focus:border-aubergine focus:outline-none"
+              className="mt-2 min-h-11 w-full cursor-pointer border border-carbon/24 bg-white/40 px-3 text-sm text-carbon hover:border-aubergine focus:border-aubergine"
             >
               <option value="match">Best match</option>
               <option value="followers">Most followers</option>
@@ -514,7 +535,9 @@ export function CreatorMarketplace({
       <div className="mt-7 flex items-end justify-between gap-4 border-carbon/18 border-b pb-4">
         <div>
           <p className="text-xs font-bold tracking-[0.12em] text-aubergine uppercase">Matched creators</p>
-          <p className="display-type mt-1 text-3xl">{visibleCreators.length} profiles in view</p>
+          <p className="display-type mt-1 text-3xl" role="status" aria-live="polite">
+            {visibleCreators.length} profiles in view
+          </p>
         </div>
         <p className="hidden max-w-xs text-right text-xs leading-5 text-carbon/50 sm:block">
           Match is the seeded baseline until campaign-specific scoring is connected.
@@ -552,6 +575,7 @@ export function CreatorMarketplace({
         briefs={briefs}
         workspaceId={workspaceId}
         defaultPostBy={defaultPostBy}
+        minPostBy={minPostBy}
         onDismiss={() => setSelectedCreator(null)}
       />
     </>

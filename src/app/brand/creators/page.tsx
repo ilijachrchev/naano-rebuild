@@ -6,10 +6,11 @@ import { getBookingBriefOptions } from "@/lib/booking/data";
 import { getBrandContext, getBrandDestination } from "@/lib/brand/context";
 import { getMarketplaceCreators } from "@/lib/marketplace/creators";
 
-function getDefaultPostBy() {
+function getBookingDates() {
   const date = new Date();
+  const minPostBy = date.toISOString().slice(0, 10);
   date.setUTCDate(date.getUTCDate() + 14);
-  return date.toISOString().slice(0, 10);
+  return { minPostBy, defaultPostBy: date.toISOString().slice(0, 10) };
 }
 
 export default async function BrandCreatorsPage() {
@@ -23,6 +24,7 @@ export default async function BrandCreatorsPage() {
     getMarketplaceCreators(workspace.id),
     getBookingBriefOptions(workspace.id),
   ]);
+  const bookingDates = getBookingDates();
 
   return (
     <main className="min-h-screen bg-mineral lg:grid lg:grid-cols-[280px_minmax(0,1fr)]">
@@ -49,7 +51,7 @@ export default async function BrandCreatorsPage() {
             </div>
             <div className="border-carbon/18 border-l-2 border-l-aubergine bg-mist/38 px-5 py-4">
               <p className="text-sm leading-6 text-carbon/64">
-                Compare reach, expected efficiency, and audience evidence before opening a creator dossier. Booking and invitations are intentionally out of scope.
+                Compare audience evidence, then open a creator dossier to attach a brief, set the terms, and reserve the offer from your wallet.
               </p>
             </div>
           </div>
@@ -59,7 +61,8 @@ export default async function BrandCreatorsPage() {
               creators={creators}
               briefs={briefs}
               workspaceId={workspace.id}
-              defaultPostBy={getDefaultPostBy()}
+              defaultPostBy={bookingDates.defaultPostBy}
+              minPostBy={bookingDates.minPostBy}
             />
           </div>
         </div>

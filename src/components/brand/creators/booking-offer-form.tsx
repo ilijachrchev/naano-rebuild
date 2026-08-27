@@ -20,9 +20,15 @@ const currencyFormatter = new Intl.NumberFormat("en", {
   minimumFractionDigits: 0,
   maximumFractionDigits: 2,
 });
+const dateFormatter = new Intl.DateTimeFormat("en", { dateStyle: "medium", timeZone: "UTC" });
 
 function formatCurrency(cents: number) {
   return currencyFormatter.format(cents / 100);
+}
+
+function formatPostBy(value: string) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return "Choose a date";
+  return dateFormatter.format(new Date(`${value}T00:00:00Z`));
 }
 
 function parseEuroCents(value: string) {
@@ -50,18 +56,23 @@ export function BookingOfferForm({
   creator,
   briefs,
   defaultPostBy,
+  minPostBy,
   onBack,
 }: {
   workspaceId: string;
   creator: MarketplaceCreator;
   briefs: BookingBriefOption[];
   defaultPostBy: string;
+  minPostBy: string;
   onBack: () => void;
 }) {
   const [state, formAction] = useActionState(createBrandInviteAction, initialState);
   const [pricingMode, setPricingMode] = useState<"listed-rate" | "negotiate">("listed-rate");
   const [discount, setDiscount] = useState<(typeof discountTiers)[number] | "custom">(10);
   const [customEuros, setCustomEuros] = useState("");
+  const [briefId, setBriefId] = useState(briefs[0]?.id ?? "");
+  const [postBy, setPostBy] = useState(defaultPostBy);
+  const [approvalRequired, setApprovalRequired] = useState(false);
   const listPriceCents = creator.pricePerPostCents;
 
   const feeCents = useMemo(() => {
@@ -75,6 +86,20 @@ export function BookingOfferForm({
     listPriceCents && feeCents && feeCents < listPriceCents
       ? Math.round((1 - feeCents / listPriceCents) * 100)
       : 0;
+  const customFeeError =
+    pricingMode === "negotiate" && discount === "custom"
+      ? !customEuros.trim()
+        ? "Enter a custom offer amount."
+        : feeCents === null
+          ? "Use a valid EUR amount with no more than two decimal places."
+          : listPriceCents !== null && feeCents >= listPriceCents
+            ? `Enter an amount below ${formatCurrency(listPriceCents)}.`
+            : feeCents <= 0
+              ? "The offer must be greater than zero."
+              : null
+      : null;
+  const selectedBrief = briefs.find((brief) => brief.id === briefId) ?? null;
+  const formattedPostBy = formatPostBy(postBy);
   const canSubmit =
     briefs.length > 0 &&
     listPriceCents !== null &&
@@ -205,9 +230,13 @@ export function BookingOfferForm({
                   onChange={(event) => setCustomEuros(event.target.value)}
                   placeholder="650.00"
                   aria-describedby={`custom-fee-help-${creator.id}`}
+                  aria-invalid={customFeeError ? true : undefined}
                 />
-                <p id={`custom-fee-help-${creator.id}`} className="mt-2 text-xs leading-5 text-carbon/54">
-                  Enter an amount below {formatCurrency(listPriceCents)}.
+                <p
+                  id={`custom-fee-help-${creator.id}`}
+                  className={`mt-2 text-xs leading-5 ${customFeeError ? "text-danger" : "text-carbon/54"}`}
+                >
+                  {customFeeError ?? `Enter an amount below ${formatCurrency(listPriceCents)}.`}
                 </p>
               </div>
             ) : null}
@@ -234,7 +263,8 @@ export function BookingOfferForm({
               id={`brief-${creator.id}`}
               name="briefId"
               className="field-input field-input-light cursor-pointer"
-              defaultValue={briefs[0]?.id ?? ""}
+              value={briefId}
+              onChange={(event) => setBriefId(event.target.value)}
               required
               disabled={!briefs.length}
             >
@@ -255,8 +285,9 @@ export function BookingOfferForm({
               name="postBy"
               className="field-input field-input-light"
               type="date"
-              defaultValue={defaultPostBy}
-              min={new Date().toISOString().slice(0, 10)}
+              value={postBy}
+              min={minPostBy}
+              onChange={(event) => setPostBy(event.target.value)}
               required
             />
             <p className="mt-2 text-xs leading-5 text-carbon/52">Defaults to 14 days from today.</p>
@@ -268,6 +299,8 @@ export function BookingOfferForm({
             type="checkbox"
             name="approvalRequired"
             className="mt-1 h-4 w-4 accent-aubergine"
+            checked={approvalRequired}
+            onChange={(event) => setApprovalRequired(event.target.checked)}
           />
           <span>
             <span className="block text-sm font-bold">Require content approval before publishing</span>
@@ -276,6 +309,31 @@ export function BookingOfferForm({
             </span>
           </span>
         </label>
+      </section>
+
+      <section aria-labelledby={`reservation-summary-${creator.id}`}>
+        <p className="text-xs font-bold tracking-[0.12em] text-aubergine uppercase">Reservation · 03</p>
+        <h3 id={`reservation-summary-${creator.id}`} className="display-type mt-3 text-4xl">
+          Review what will be reserved.
+        </h3>
+        <dl className="mt-5 grid gap-px border border-carbon/18 bg-carbon/18 sm:grid-cols-2">
+          <div className="bg-paper px-4 py-4">
+            <dt className="text-[0.72rem] font-bold tracking-[0.11em] text-carbon/48 uppercase">Fee</dt>
+            <dd className="display-type mt-2 text-2xl">{feeCents === null ? "Check amount" : formatCurrency(feeCents)}</dd>
+          </div>
+          <div className="bg-paper px-4 py-4">
+            <dt className="text-[0.72rem] font-bold tracking-[0.11em] text-carbon/48 uppercase">Campaign brief</dt>
+            <dd className="mt-2 text-sm font-bold">{selectedBrief?.title ?? "No ready brief"}</dd>
+          </div>
+          <div className="bg-paper px-4 py-4">
+            <dt className="text-[0.72rem] font-bold tracking-[0.11em] text-carbon/48 uppercase">Post by</dt>
+            <dd className="mt-2 text-sm font-bold">{formattedPostBy}</dd>
+          </div>
+          <div className="bg-paper px-4 py-4">
+            <dt className="text-[0.72rem] font-bold tracking-[0.11em] text-carbon/48 uppercase">Content approval</dt>
+            <dd className="mt-2 text-sm font-bold">{approvalRequired ? "Required" : "Not required"}</dd>
+          </div>
+        </dl>
       </section>
 
       {!briefs.length ? (
