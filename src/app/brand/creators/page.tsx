@@ -21,8 +21,8 @@ export default async function BrandCreatorsPage() {
 
   if (destination !== "/brand") redirect(destination);
 
-  const creators = await getMarketplaceCreators();
   const workspace = context.workspace!;
+  const creators = await getMarketplaceCreators(workspace.id);
 
   return (
     <main className="min-h-screen bg-mineral lg:grid lg:grid-cols-[280px_minmax(0,1fr)]">

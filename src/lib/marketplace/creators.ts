@@ -80,7 +80,7 @@ function getInitials(displayName: string) {
   return initials || "CR";
 }
 
-export async function getMarketplaceCreators(): Promise<MarketplaceCreator[]> {
+export async function getMarketplaceCreators(workspaceId: string): Promise<MarketplaceCreator[]> {
   const supabase = await createServerSupabaseClient();
   const [{ data: creatorRows, error: creatorError }, { data: postRows, error: postError }] =
     await Promise.all([
@@ -96,7 +96,9 @@ export async function getMarketplaceCreators(): Promise<MarketplaceCreator[]> {
         .select(
           "id, linkedin_url, impressions, reactions, comments, reposts, published_at, collaborations!inner(creator_id)",
         )
-        .order("published_at", { ascending: false }),
+        .eq("collaborations.workspace_id", workspaceId)
+        .not("published_at", "is", null)
+        .order("published_at", { ascending: false, nullsFirst: false }),
     ]);
 
   if (creatorError) {
