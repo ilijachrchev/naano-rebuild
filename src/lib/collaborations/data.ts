@@ -200,7 +200,7 @@ function getNextAction(
     case "published":
       return "Review attributed results";
     case "completed":
-      return "View results";
+      return "No action required";
     case "declined":
     case "withdrawn":
     case "expired":

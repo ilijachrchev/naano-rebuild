@@ -93,17 +93,23 @@ export function BrandCollaborationsPipelineView({
             </p>
           </div>
 
-          <nav aria-label="Filter collaborations by status" className="mt-8 overflow-x-auto border-carbon/18 border-y">
-            <ul className="flex min-w-max">
+          <nav
+            aria-label="Filter collaborations by status"
+            className="mt-8 overflow-hidden border-carbon/18 border-y sm:overflow-x-auto"
+          >
+            <ul className="grid grid-cols-2 sm:flex sm:min-w-max">
               {filters.map((filter) => {
                 const active = filter.id === pipeline.activeFilter;
 
                 return (
-                  <li key={filter.id} className="border-carbon/16 border-r last:border-r-0">
+                  <li
+                    key={filter.id}
+                    className="border-carbon/16 border-r border-b last:col-span-2 last:border-b-0 sm:border-b-0 sm:last:col-span-1 sm:last:border-r-0"
+                  >
                     <Link
                       href={getFilterHref(filter.id)}
                       aria-current={active ? "page" : undefined}
-                      className={`flex min-h-16 items-center gap-3 px-4 text-[0.7rem] font-bold tracking-[0.1em] uppercase transition-colors sm:px-5 ${
+                      className={`flex min-h-14 items-center justify-between gap-3 px-4 text-[0.7rem] font-bold tracking-[0.1em] uppercase transition-colors sm:min-h-16 sm:justify-start sm:px-5 ${
                         active ? "bg-signal text-carbon" : "text-carbon/56 hover:bg-mist/45 hover:text-carbon"
                       }`}
                     >
