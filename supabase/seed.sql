@@ -230,6 +230,7 @@ select
   ('44000000-0000-4000-8000-' || lpad(c.ordinal::text, 12, '0'))::uuid as post_id,
   ('45000000-0000-4000-8000-' || lpad(c.ordinal::text, 12, '0'))::uuid as tracking_link_id,
   ('46000000-0000-4000-8000-' || lpad(c.ordinal::text, 12, '0'))::uuid as charge_id,
+  ('47000000-0000-4000-8000-' || lpad(c.ordinal::text, 12, '0'))::uuid as payout_id,
   ('30000000-0000-4000-8000-' || lpad((case when c.ordinal <= 3 then c.ordinal else 4 end)::text, 12, '0'))::uuid as campaign_id,
   ('31000000-0000-4000-8000-' || lpad((case when c.ordinal <= 3 then c.ordinal else 4 end)::text, 12, '0'))::uuid as brief_id,
   case c.ordinal
@@ -495,5 +496,23 @@ where event.event_order <= case s.final_status
   when 'published'::public.collab_status then 3
   else 4
 end;
+
+-- Creator earnings equal the accepted net fee. No platform commission is
+-- inferred because the product contract does not define one.
+insert into public.payouts (
+  id, creator_id, collaboration_id, amount_cents,
+  status, method, created_at, paid_at
+)
+select
+  s.payout_id,
+  s.creator_id,
+  s.collaboration_id,
+  s.fee_cents,
+  'available'::public.payout_status,
+  null,
+  s.collaboration_created_at + interval '15 days',
+  null
+from seed_collaborations s
+where s.final_status = 'completed'::public.collab_status;
 
 commit;
