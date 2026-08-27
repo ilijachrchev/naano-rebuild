@@ -7,6 +7,8 @@ import type { Database } from "@/types/database";
 /**
  * Bypasses RLS. Use only from Server Actions or Route Handlers for privileged
  * collaboration, wallet, payout, tracking, and click-ingestion operations.
+ * TODO(booking): Centralize caller authorization and collaboration transitions
+ * behind a dedicated server-only data-access layer when booking is implemented.
  */
 export function createAdminSupabaseClient() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
