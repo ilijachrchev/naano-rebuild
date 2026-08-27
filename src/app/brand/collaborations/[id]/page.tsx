@@ -36,6 +36,7 @@ export default async function BrandCollaborationDetailPage({
 
   return (
     <BrandCollaborationDetailView
+      workspaceId={workspace.id}
       workspaceName={workspace.name}
       collaboration={collaboration}
       backFilter={normalizeBackFilter(status)}

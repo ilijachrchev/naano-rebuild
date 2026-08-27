@@ -1117,6 +1117,14 @@ export type Database = {
         }
         Returns: string
       }
+      approve_and_settle_collaboration: {
+        Args: {
+          p_actor_id: string
+          p_collaboration_id: string
+          p_workspace_id: string
+        }
+        Returns: string
+      }
       create_brand_invite: {
         Args: {
           p_approval_required: boolean

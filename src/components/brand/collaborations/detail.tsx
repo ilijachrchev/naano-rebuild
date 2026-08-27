@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { ApproveSettlementForm } from "@/components/brand/collaborations/approve-settlement-form";
 import { BrandSidebar } from "@/components/brand/sidebar";
 import type {
   BrandCollaborationDetail,
@@ -18,10 +19,12 @@ function actorLabel(role: "brand" | "creator" | "system") {
 }
 
 export function BrandCollaborationDetailView({
+  workspaceId,
   workspaceName,
   collaboration,
   backFilter,
 }: {
+  workspaceId: string;
   workspaceName: string;
   collaboration: BrandCollaborationDetail;
   backFilter: PipelineFilter;
@@ -111,7 +114,38 @@ export function BrandCollaborationDetailView({
                 Response due · {formatCollaborationDateTime(collaboration.respondBy)}
               </p>
             ) : null}
+            {collaboration.contentUrl ? (
+              <p className="mt-5 text-sm">
+                <a
+                  href={collaboration.contentUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="font-bold text-aubergine hover:text-aubergine-deep"
+                >
+                  Review submitted post <span aria-hidden="true">↗</span>
+                </a>
+              </p>
+            ) : null}
           </section>
+
+          {collaboration.settlementEligible ? (
+            <section className="grid gap-7 border-carbon/18 border-b py-8 xl:grid-cols-[1fr_auto] xl:items-center">
+              <div>
+                <p className="text-xs font-bold tracking-[0.12em] text-aubergine uppercase">
+                  Settlement ready
+                </p>
+                <h2 className="display-type mt-2 text-4xl">Approve the work and release the fee.</h2>
+                <p className="mt-3 max-w-3xl text-sm leading-6 text-carbon/62">
+                  This atomically captures the reserved funds, charges the wallet, records the creator payout,
+                  and completes the collaboration.
+                </p>
+              </div>
+              <ApproveSettlementForm
+                workspaceId={workspaceId}
+                collaborationId={collaboration.id}
+              />
+            </section>
+          ) : null}
 
           <div className="grid gap-12 pt-10 xl:grid-cols-2">
             <section>
