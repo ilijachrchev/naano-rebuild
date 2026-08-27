@@ -196,7 +196,7 @@ values
   ('30000000-0000-4000-8000-000000000001'::uuid, '20000000-0000-4000-8000-000000000001'::uuid, 'Signal-Led Growth',       'Show how product signals help marketers prioritize pipeline.',        'Europe',        'linkedin', true,  10, 'live',   '2026-08-03 08:00:00+00'::timestamptz),
   ('30000000-0000-4000-8000-000000000002'::uuid, '20000000-0000-4000-8000-000000000001'::uuid, 'Revenue Clarity',         'Build trust in explainable account scoring for revenue teams.',       'North America', 'linkedin', true,  14, 'live',   '2026-08-04 08:00:00+00'::timestamptz),
   ('30000000-0000-4000-8000-000000000003'::uuid, '20000000-0000-4000-8000-000000000001'::uuid, 'From Usage to Expansion', 'Teach product-led teams to act on expansion signals.',                 'Global',        'linkedin', true,  12, 'live',   '2026-08-05 08:00:00+00'::timestamptz),
-  ('30000000-0000-4000-8000-000000000004'::uuid, '20000000-0000-4000-8000-000000000001'::uuid, 'Attribution Field Notes', 'Share practical lessons for connecting creator engagement to revenue.', 'Global',        'linkedin', false, 7, 'closed', '2026-06-10 08:00:00+00'::timestamptz);
+  ('30000000-0000-4000-8000-000000000004'::uuid, '20000000-0000-4000-8000-000000000001'::uuid, 'Attribution Field Notes', 'Share practical lessons for connecting creator engagement to revenue.', 'Global',        'linkedin', false, 7, 'closed', '2026-01-15 08:00:00+00'::timestamptz);
 
 insert into public.briefs (
   id, campaign_id, workspace_id, title, source, objectives,
@@ -206,12 +206,20 @@ values
   ('31000000-0000-4000-8000-000000000001'::uuid, '30000000-0000-4000-8000-000000000001'::uuid, '20000000-0000-4000-8000-000000000001'::uuid, 'The signal gap in modern demand generation',  'ai',     'Explain why intent without context creates noisy prioritization.',                       '["Product signals need business context", "Every score should be explainable", "Shared evidence improves campaign decisions"]'::jsonb, 'Use a concrete operating example. Avoid invented customer claims or guaranteed outcomes.',                 '{"callToAction":"Explore the signal framework","tone":"Practical and evidence-led"}'::jsonb, 'ready', '2026-08-03 08:20:00+00'::timestamptz),
   ('31000000-0000-4000-8000-000000000002'::uuid, '30000000-0000-4000-8000-000000000002'::uuid, '20000000-0000-4000-8000-000000000001'::uuid, 'Account scoring people can challenge',        'manual', 'Show how transparent inputs create more useful sales and marketing alignment.',          '["Opaque scores slow adoption", "Evidence should be inspectable", "Alignment starts with shared definitions"]'::jsonb, 'Write for revenue operations leaders. Keep examples fictional and clearly framed.',                       '{"callToAction":"Compare your current scoring workflow","tone":"Analytical"}'::jsonb, 'ready', '2026-08-04 08:20:00+00'::timestamptz),
   ('31000000-0000-4000-8000-000000000003'::uuid, '30000000-0000-4000-8000-000000000003'::uuid, '20000000-0000-4000-8000-000000000001'::uuid, 'Expansion signals deserve an operating rhythm','ai',     'Give product growth leaders a practical cross-functional expansion playbook.',           '["Usage signals decay quickly", "Routing needs ownership", "A shared workflow closes the loop"]'::jsonb, 'Include three practical steps and one honest limitation. Do not present demo metrics as benchmarks.',       '{"callToAction":"Map one expansion signal this week","tone":"Direct and useful"}'::jsonb, 'ready', '2026-08-05 08:20:00+00'::timestamptz),
-  ('31000000-0000-4000-8000-000000000004'::uuid, '30000000-0000-4000-8000-000000000004'::uuid, '20000000-0000-4000-8000-000000000001'::uuid, 'A practical attribution field guide',          'manual', 'Summarize a fictional pilot workflow from creator post to qualified account.',           '["Start with a stable tracking link", "Define qualification before launch", "Connect evidence to pipeline carefully"]'::jsonb, 'Label all examples and performance figures as demo data.',                                                '{"callToAction":"Audit one campaign path","tone":"Retrospective"}'::jsonb, 'ready', '2026-06-10 08:20:00+00'::timestamptz);
+  ('31000000-0000-4000-8000-000000000004'::uuid, '30000000-0000-4000-8000-000000000004'::uuid, '20000000-0000-4000-8000-000000000001'::uuid, 'A practical attribution field guide',          'manual', 'Summarize a fictional pilot workflow from creator post to qualified account.',           '["Start with a stable tracking link", "Define qualification before launch", "Connect evidence to pipeline carefully"]'::jsonb, 'Label all examples and performance figures as demo data.',                                                '{"callToAction":"Audit one campaign path","tone":"Retrospective"}'::jsonb, 'ready', '2026-01-15 08:20:00+00'::timestamptz);
 
 -- The posts table derives creator ownership through collaborations. Each creator
--- therefore has one collaboration: four recent demo pipeline rows and 36 completed
--- historical rows that provide realistic portfolio and attribution data.
+-- has one published/completed collaboration for its portfolio post. Creators 1
+-- and 2 also have separate requested/accepted demo pipeline rows.
 create temporary table seed_collaborations on commit drop as
+with collaboration_rows as (
+  select c.ordinal, c.id, c.price_per_post_cents
+  from seed_creators c
+  union all
+  select c.ordinal + 40, c.id, c.price_per_post_cents
+  from seed_creators c
+  where c.ordinal <= 2
+)
 select
   c.ordinal,
   c.id as creator_id,
@@ -222,7 +230,6 @@ select
   ('44000000-0000-4000-8000-' || lpad(c.ordinal::text, 12, '0'))::uuid as post_id,
   ('45000000-0000-4000-8000-' || lpad(c.ordinal::text, 12, '0'))::uuid as tracking_link_id,
   ('46000000-0000-4000-8000-' || lpad(c.ordinal::text, 12, '0'))::uuid as charge_id,
-  ('47000000-0000-4000-8000-' || lpad(c.ordinal::text, 12, '0'))::uuid as payout_id,
   ('30000000-0000-4000-8000-' || lpad((case when c.ordinal <= 3 then c.ordinal else 4 end)::text, 12, '0'))::uuid as campaign_id,
   ('31000000-0000-4000-8000-' || lpad((case when c.ordinal <= 3 then c.ordinal else 4 end)::text, 12, '0'))::uuid as brief_id,
   case c.ordinal
@@ -236,11 +243,15 @@ select
   end as origin,
   c.price_per_post_cents as list_price_cents,
   c.price_per_post_cents - (c.ordinal % 5) * 1000 as fee_cents,
-  case when c.ordinal <= 4
-    then '2026-08-10 10:00:00+00'::timestamptz + c.ordinal * interval '1 day'
+  c.ordinal not in (1, 2) as has_published_delivery,
+  case c.ordinal
+    when 1 then '2026-08-26 10:00:00+00'::timestamptz
+    when 2 then '2026-08-23 10:00:00+00'::timestamptz
+    when 3 then '2026-08-10 10:00:00+00'::timestamptz
+    when 4 then '2026-07-20 10:00:00+00'::timestamptz
     else '2026-02-01 10:00:00+00'::timestamptz + c.ordinal * interval '2 days'
   end as collaboration_created_at
-from seed_creators c;
+from collaboration_rows c;
 
 insert into public.collaborations (
   id, workspace_id, creator_id, campaign_id, brief_id, origin, offer_type,
@@ -262,26 +273,25 @@ select
   (s.collaboration_created_at + interval '14 days')::date,
   s.ordinal % 3 = 0,
   s.final_status,
-  case when s.final_status in ('published'::public.collab_status, 'completed'::public.collab_status)
+  case when s.has_published_delivery
     then '/api/track/' || s.collaboration_id::text
     else null
   end,
-  case when s.final_status = 'requested'::public.collab_status
-    then '2026-08-29 10:00:00+00'::timestamptz
-    else s.collaboration_created_at + interval '48 hours'
-  end,
+  s.collaboration_created_at + interval '48 hours',
   case when s.final_status = 'requested'::public.collab_status
     then null
     else s.collaboration_created_at + interval '20 hours'
   end,
-  case when s.final_status in ('published'::public.collab_status, 'completed'::public.collab_status)
+  case when s.has_published_delivery
     then s.collaboration_created_at + interval '12 days'
     else null
   end,
   s.collaboration_created_at,
-  case when s.final_status = 'requested'::public.collab_status
-    then s.collaboration_created_at
-    else s.collaboration_created_at + interval '12 days'
+  case s.final_status
+    when 'requested'::public.collab_status then s.collaboration_created_at
+    when 'accepted'::public.collab_status then s.collaboration_created_at + interval '20 hours'
+    when 'published'::public.collab_status then s.collaboration_created_at + interval '12 days'
+    else s.collaboration_created_at + interval '15 days'
   end
 from seed_collaborations s;
 
@@ -390,9 +400,9 @@ select
   s.collaboration_created_at + interval '1 hour'
 from seed_collaborations s;
 
--- These deterministic post metrics are portfolio/demo observations. For the
--- requested and accepted rows, deliverable_id stays null so the sample is not
--- represented as delivery of the still-active campaign.
+-- These deterministic post metrics are portfolio/demo observations. Requested
+-- and accepted collaborations have no post; those creators' samples use their
+-- separate completed historical collaborations.
 insert into public.posts (
   id, collaboration_id, deliverable_id, linkedin_url, impressions,
   reactions, comments, reposts, published_at
@@ -400,20 +410,15 @@ insert into public.posts (
 select
   s.post_id,
   s.collaboration_id,
-  case when s.final_status in ('published'::public.collab_status, 'completed'::public.collab_status)
-    then s.deliverable_id
-    else null
-  end,
+  s.deliverable_id,
   'https://www.linkedin.com/posts/demo-creator-' || lpad(s.ordinal::text, 2, '0') || '-portfolio-sample',
   6200 + s.ordinal * 487,
   95 + s.ordinal * 17,
   8 + (s.ordinal * 5) % 71,
   2 + (s.ordinal * 3) % 29,
-  case when s.final_status in ('published'::public.collab_status, 'completed'::public.collab_status)
-    then s.collaboration_created_at + interval '12 days'
-    else '2026-05-15 12:00:00+00'::timestamptz + s.ordinal * interval '1 day'
-  end
-from seed_collaborations s;
+  s.collaboration_created_at + interval '12 days'
+from seed_collaborations s
+where s.has_published_delivery;
 
 insert into public.tracking_links (
   id, token, destination_url, collaboration_id, deliverable_id, active, created_at
@@ -427,7 +432,7 @@ select
   true,
   s.collaboration_created_at + interval '10 days'
 from seed_collaborations s
-where s.final_status in ('published'::public.collab_status, 'completed'::public.collab_status);
+where s.has_published_delivery;
 
 insert into public.click_events (
   id, tracking_link_id, ip_hash, company, is_qualified, context, occurred_at
@@ -454,7 +459,7 @@ select
   s.collaboration_created_at + interval '12 days 2 hours' + click.click_number * interval '47 minutes'
 from seed_collaborations s
 cross join (values (1), (2), (3)) as click(click_number)
-where s.final_status in ('published'::public.collab_status, 'completed'::public.collab_status);
+where s.has_published_delivery;
 
 insert into public.collaboration_events (
   id, collaboration_id, actor_id, type, payload, created_at
@@ -490,21 +495,5 @@ where event.event_order <= case s.final_status
   when 'published'::public.collab_status then 3
   else 4
 end;
-
-insert into public.payouts (
-  id, creator_id, collaboration_id, amount_cents,
-  status, method, created_at, paid_at
-)
-select
-  s.payout_id,
-  s.creator_id,
-  s.collaboration_id,
-  (s.fee_cents * 85) / 100,
-  'available'::public.payout_status,
-  'bank'::public.payout_method,
-  s.collaboration_created_at + interval '15 days',
-  null
-from seed_collaborations s
-where s.final_status = 'completed'::public.collab_status;
 
 commit;
