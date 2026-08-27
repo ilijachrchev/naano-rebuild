@@ -1,0 +1,28 @@
+{
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node .codex/capture.mjs",
+            "timeout": 10,
+            "commandWindows": "node .codex\\capture.mjs"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node .codex/capture.mjs",
+            "timeout": 30,
+            "commandWindows": "node .codex\\capture.mjs"
+          }
+        ]
+      }
+    ]
+  }
+}
