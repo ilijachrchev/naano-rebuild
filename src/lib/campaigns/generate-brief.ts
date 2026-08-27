@@ -35,9 +35,11 @@ export type GeneratedCampaignBrief = {
 };
 
 function createPlaceholderBrief(campaign: CampaignInput): CampaignBriefFields {
-  return {
-    title: `[Placeholder] ${campaign.name}`,
-    objectives: `Placeholder — shape this campaign around the saved objective: ${campaign.objective}`,
+  return campaignBriefSchema.parse({
+    title: `[Placeholder] ${campaign.name}`.slice(0, 120).trim(),
+    objectives: `Placeholder — shape this campaign around the saved objective: ${campaign.objective}`
+      .slice(0, 2_000)
+      .trim(),
     keyMessages: [
       "Placeholder — state the clearest customer outcome the brand can support.",
       "Placeholder — connect that outcome to the audience described in the saved brand profile.",
@@ -45,7 +47,7 @@ function createPlaceholderBrief(campaign: CampaignInput): CampaignBriefFields {
     ],
     guidelines:
       "Placeholder — replace these notes after OPENAI_API_KEY is configured. Keep claims evidence-based, write for LinkedIn, and preserve the brand positioning saved in the workspace profile.",
-  };
+  });
 }
 
 export async function generateCampaignBrief(

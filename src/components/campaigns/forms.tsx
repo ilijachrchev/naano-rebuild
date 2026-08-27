@@ -137,7 +137,7 @@ export function BriefEditor({ brief }: { brief: EditableBrief }) {
           </p>
           <p className="mt-2 text-sm leading-6 text-carbon/68">
             OPENAI_API_KEY is not configured on the server. The flow completed with clearly marked
-            placeholder copy; edit it here or regenerate after the environment is configured.
+            placeholder copy; review and replace it here before marking the brief ready.
           </p>
         </div>
       ) : null}

@@ -91,14 +91,22 @@ export default async function CampaignsPage({
       </aside>
 
       <section className="dossier-paper min-h-screen">
-        <header className="flex min-h-20 items-center justify-between border-carbon/16 border-b px-6 sm:px-10 lg:px-14">
+        <header className="flex min-h-20 flex-wrap items-center justify-between gap-4 border-carbon/16 border-b px-6 py-4 sm:px-10 lg:px-14">
           <div>
             <p className="text-xs font-bold tracking-[0.12em] text-aubergine uppercase">
               Campaign dossier
             </p>
             <p className="text-sm text-carbon/55">Objective in, editable creator brief out</p>
           </div>
-          <CampaignStatus status={selectedCampaign ? "In progress" : "New"} />
+          <div className="flex items-center gap-5">
+            <Link
+              href="/brand"
+              className="text-xs font-bold tracking-[0.09em] text-carbon/56 uppercase hover:text-aubergine"
+            >
+              Overview
+            </Link>
+            <CampaignStatus status={selectedCampaign ? "In progress" : "New"} />
+          </div>
         </header>
 
         <div className="px-6 py-10 sm:px-10 lg:px-14 lg:py-14">
