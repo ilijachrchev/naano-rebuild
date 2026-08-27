@@ -1141,6 +1141,14 @@ export type Database = {
         }
         Returns: string
       }
+      submit_collaboration_content: {
+        Args: {
+          p_collaboration_id: string
+          p_content_url: string
+          p_creator_id: string
+        }
+        Returns: string
+      }
       is_member: { Args: { ws: string }; Returns: boolean }
       submit_collaboration_content: {
         Args: {

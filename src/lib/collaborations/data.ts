@@ -1,5 +1,6 @@
 import "server-only";
 
+import { isCollaborationReadyForSettlement } from "@/lib/collaborations/settlement";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import type { Enums, Tables } from "@/types/database";
 
@@ -74,6 +75,8 @@ export type BrandCollaborationDetail = BrandCollaborationListItem & {
   offerType: Enums<"offer_type"> | null;
   deliverables: string | null;
   approvalRequired: boolean;
+  settlementEligible: boolean;
+  contentUrl: string | null;
   respondBy: string | null;
   publishedAt: string | null;
   offers: CollaborationOfferHistoryItem[];
@@ -87,6 +90,7 @@ type CollaborationRow = Pick<
   | "creator_id"
   | "campaign_id"
   | "brief_id"
+  | "content_url"
   | "origin"
   | "offer_type"
   | "current_offer_id"
@@ -189,6 +193,7 @@ function getNextAction(
         ? "Review counter-offer"
         : "Await creator response";
     case "accepted":
+      if (collaboration.approval_required === false) return "Approve and settle";
       return collaboration.brief_id ? "Await creator content" : "Attach campaign brief";
     case "brief_pending":
       return "Finalize campaign brief";
@@ -344,7 +349,7 @@ export async function loadBrandCollaborationPipeline({
   const { data, error } = await supabase
     .from("collaborations")
     .select(
-      "id, workspace_id, creator_id, campaign_id, brief_id, origin, offer_type, current_offer_id, accepted_offer_id, deliverables, post_by, approval_required, status, respond_by, published_at, created_at, updated_at",
+      "id, workspace_id, creator_id, campaign_id, brief_id, content_url, origin, offer_type, current_offer_id, accepted_offer_id, deliverables, post_by, approval_required, status, respond_by, published_at, created_at, updated_at",
     )
     .eq("workspace_id", workspaceId)
     .is("deleted_at", null)
@@ -434,7 +439,7 @@ export async function loadBrandCollaborationDetail({
   const { data: collaboration, error: collaborationError } = await supabase
     .from("collaborations")
     .select(
-      "id, workspace_id, creator_id, campaign_id, brief_id, origin, offer_type, current_offer_id, accepted_offer_id, deliverables, post_by, approval_required, status, respond_by, published_at, created_at, updated_at",
+      "id, workspace_id, creator_id, campaign_id, brief_id, content_url, origin, offer_type, current_offer_id, accepted_offer_id, deliverables, post_by, approval_required, status, respond_by, published_at, created_at, updated_at",
     )
     .eq("workspace_id", workspaceId)
     .eq("id", collaborationId)
@@ -488,6 +493,11 @@ export async function loadBrandCollaborationDetail({
     offerType: collaboration.offer_type,
     deliverables: collaboration.deliverables,
     approvalRequired: collaboration.approval_required ?? false,
+    settlementEligible: isCollaborationReadyForSettlement(
+      collaboration.status,
+      collaboration.approval_required,
+    ),
+    contentUrl: collaboration.content_url,
     respondBy: collaboration.respond_by,
     publishedAt: collaboration.published_at,
     offers: toOfferHistory(
