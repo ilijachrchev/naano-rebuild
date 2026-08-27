@@ -171,17 +171,20 @@ export async function generateBriefAction(
   }
 
   const admin = createAdminSupabaseClient();
-  const { error: saveError } = await admin.from("briefs").insert({
-    campaign_id: campaign.id,
-    workspace_id: campaign.workspace_id,
-    title: generated.brief.title,
-    source: "ai",
-    objectives: generated.brief.objectives,
-    key_messages: generated.brief.keyMessages,
-    guidelines: generated.brief.guidelines,
-    content: buildBriefContent(generated.brief, generated.mode),
-    status: "draft",
-  });
+  const { error: saveError } = await admin.from("briefs").upsert(
+    {
+      campaign_id: campaign.id,
+      workspace_id: campaign.workspace_id,
+      title: generated.brief.title,
+      source: "ai",
+      objectives: generated.brief.objectives,
+      key_messages: generated.brief.keyMessages,
+      guidelines: generated.brief.guidelines,
+      content: buildBriefContent(generated.brief, generated.mode),
+      status: "draft",
+    },
+    { onConflict: "campaign_id" },
+  );
 
   if (saveError) {
     return { error: "The brief was generated, but we couldn't save it. Please try again." };
