@@ -208,4 +208,303 @@ values
   ('31000000-0000-4000-8000-000000000003'::uuid, '30000000-0000-4000-8000-000000000003'::uuid, '20000000-0000-4000-8000-000000000001'::uuid, 'Expansion signals deserve an operating rhythm','ai',     'Give product growth leaders a practical cross-functional expansion playbook.',           '["Usage signals decay quickly", "Routing needs ownership", "A shared workflow closes the loop"]'::jsonb, 'Include three practical steps and one honest limitation. Do not present demo metrics as benchmarks.',       '{"callToAction":"Map one expansion signal this week","tone":"Direct and useful"}'::jsonb, 'ready', '2026-08-05 08:20:00+00'::timestamptz),
   ('31000000-0000-4000-8000-000000000004'::uuid, '30000000-0000-4000-8000-000000000004'::uuid, '20000000-0000-4000-8000-000000000001'::uuid, 'A practical attribution field guide',          'manual', 'Summarize a fictional pilot workflow from creator post to qualified account.',           '["Start with a stable tracking link", "Define qualification before launch", "Connect evidence to pipeline carefully"]'::jsonb, 'Label all examples and performance figures as demo data.',                                                '{"callToAction":"Audit one campaign path","tone":"Retrospective"}'::jsonb, 'ready', '2026-06-10 08:20:00+00'::timestamptz);
 
+-- The posts table derives creator ownership through collaborations. Each creator
+-- therefore has one collaboration: four recent demo pipeline rows and 36 completed
+-- historical rows that provide realistic portfolio and attribution data.
+create temporary table seed_collaborations on commit drop as
+select
+  c.ordinal,
+  c.id as creator_id,
+  ('40000000-0000-4000-8000-' || lpad(c.ordinal::text, 12, '0'))::uuid as collaboration_id,
+  ('41000000-0000-4000-8000-' || lpad(c.ordinal::text, 12, '0'))::uuid as offer_id,
+  ('42000000-0000-4000-8000-' || lpad(c.ordinal::text, 12, '0'))::uuid as deliverable_id,
+  ('43000000-0000-4000-8000-' || lpad(c.ordinal::text, 12, '0'))::uuid as hold_id,
+  ('44000000-0000-4000-8000-' || lpad(c.ordinal::text, 12, '0'))::uuid as post_id,
+  ('45000000-0000-4000-8000-' || lpad(c.ordinal::text, 12, '0'))::uuid as tracking_link_id,
+  ('46000000-0000-4000-8000-' || lpad(c.ordinal::text, 12, '0'))::uuid as charge_id,
+  ('47000000-0000-4000-8000-' || lpad(c.ordinal::text, 12, '0'))::uuid as payout_id,
+  ('30000000-0000-4000-8000-' || lpad((case when c.ordinal <= 3 then c.ordinal else 4 end)::text, 12, '0'))::uuid as campaign_id,
+  ('31000000-0000-4000-8000-' || lpad((case when c.ordinal <= 3 then c.ordinal else 4 end)::text, 12, '0'))::uuid as brief_id,
+  case c.ordinal
+    when 1 then 'requested'::public.collab_status
+    when 2 then 'accepted'::public.collab_status
+    when 3 then 'published'::public.collab_status
+    else 'completed'::public.collab_status
+  end as final_status,
+  case when c.ordinal in (1, 3) then 'brand_invite'::public.collab_origin
+       else 'creator_application'::public.collab_origin
+  end as origin,
+  c.price_per_post_cents as list_price_cents,
+  c.price_per_post_cents - (c.ordinal % 5) * 1000 as fee_cents,
+  case when c.ordinal <= 4
+    then '2026-08-10 10:00:00+00'::timestamptz + c.ordinal * interval '1 day'
+    else '2026-02-01 10:00:00+00'::timestamptz + c.ordinal * interval '2 days'
+  end as collaboration_created_at
+from seed_creators c;
+
+insert into public.collaborations (
+  id, workspace_id, creator_id, campaign_id, brief_id, origin, offer_type,
+  current_offer_id, accepted_offer_id, deliverables, post_by,
+  approval_required, status, tracking_url, respond_by, responded_at,
+  published_at, created_at, updated_at
+)
+select
+  s.collaboration_id,
+  '20000000-0000-4000-8000-000000000001'::uuid,
+  s.creator_id,
+  s.campaign_id,
+  s.brief_id,
+  s.origin,
+  'single_post'::public.offer_type,
+  s.offer_id,
+  case when s.final_status = 'requested'::public.collab_status then null else s.offer_id end,
+  'One original LinkedIn post with tracked campaign link',
+  (s.collaboration_created_at + interval '14 days')::date,
+  s.ordinal % 3 = 0,
+  s.final_status,
+  case when s.final_status in ('published'::public.collab_status, 'completed'::public.collab_status)
+    then '/api/track/' || s.collaboration_id::text
+    else null
+  end,
+  case when s.final_status = 'requested'::public.collab_status
+    then '2026-08-29 10:00:00+00'::timestamptz
+    else s.collaboration_created_at + interval '48 hours'
+  end,
+  case when s.final_status = 'requested'::public.collab_status
+    then null
+    else s.collaboration_created_at + interval '20 hours'
+  end,
+  case when s.final_status in ('published'::public.collab_status, 'completed'::public.collab_status)
+    then s.collaboration_created_at + interval '12 days'
+    else null
+  end,
+  s.collaboration_created_at,
+  case when s.final_status = 'requested'::public.collab_status
+    then s.collaboration_created_at
+    else s.collaboration_created_at + interval '12 days'
+  end
+from seed_collaborations s;
+
+insert into public.collaboration_offers (
+  id, collaboration_id, proposer_id, proposer_role, terms_snapshot,
+  list_price_cents, fee_cents, currency, expires_at, accepted_at, created_at
+)
+select
+  s.offer_id,
+  s.collaboration_id,
+  case when s.origin = 'brand_invite'::public.collab_origin
+    then '00000000-0000-4000-8000-000000000100'::uuid
+    else s.creator_id
+  end,
+  case when s.origin = 'brand_invite'::public.collab_origin
+    then 'brand'::public.user_role
+    else 'creator'::public.user_role
+  end,
+  jsonb_build_object(
+    'deliverables', jsonb_build_array('One original LinkedIn post', 'Campaign tracking link'),
+    'approvalRequired', s.ordinal % 3 = 0,
+    'postBy', (s.collaboration_created_at + interval '14 days')::date,
+    'demo', true
+  ),
+  s.list_price_cents,
+  s.fee_cents,
+  'EUR',
+  s.collaboration_created_at + interval '48 hours',
+  case when s.final_status = 'requested'::public.collab_status
+    then null
+    else s.collaboration_created_at + interval '20 hours'
+  end,
+  s.collaboration_created_at + interval '15 minutes'
+from seed_collaborations s;
+
+-- Credit the ledger before reserving any money. The extra EUR 5,000 remains
+-- available after every charge and active reservation is accounted for.
+insert into public.wallet_transactions (
+  id, workspace_id, type, amount_cents, currency,
+  collaboration_id, idempotency_key, created_at
+)
+select
+  '46000000-0000-4000-8000-000000999999'::uuid,
+  '20000000-0000-4000-8000-000000000001'::uuid,
+  'topup'::public.wallet_txn_type,
+  sum(s.fee_cents) + 500000,
+  'EUR',
+  null,
+  'seed-wallet-topup-eur-001',
+  '2026-01-15 09:00:00+00'::timestamptz
+from seed_collaborations s;
+
+-- Every hold is inserted in the only valid initial state. The balance trigger
+-- verifies the workspace, collaboration, offer, amount, currency, and funds.
+insert into public.fund_holds (
+  id, workspace_id, collaboration_id, offer_id, amount_cents,
+  currency, status, created_at, updated_at
+)
+select
+  s.hold_id,
+  '20000000-0000-4000-8000-000000000001'::uuid,
+  s.collaboration_id,
+  s.offer_id,
+  s.fee_cents,
+  'EUR',
+  'reserved'::public.fund_hold_status,
+  s.collaboration_created_at + interval '30 minutes',
+  s.collaboration_created_at + interval '30 minutes'
+from seed_collaborations s
+order by s.ordinal;
+
+-- Completed collaborations settle through immutable charge entries. Charges
+-- exist before their holds transition from reserved to captured.
+insert into public.wallet_transactions (
+  id, workspace_id, type, amount_cents, currency,
+  collaboration_id, idempotency_key, created_at
+)
+select
+  s.charge_id,
+  '20000000-0000-4000-8000-000000000001'::uuid,
+  'charge'::public.wallet_txn_type,
+  s.fee_cents,
+  'EUR',
+  s.collaboration_id,
+  'seed-collaboration-charge-' || lpad(s.ordinal::text, 2, '0'),
+  s.collaboration_created_at + interval '15 days'
+from seed_collaborations s
+where s.final_status = 'completed'::public.collab_status;
+
+update public.fund_holds h
+set
+  status = 'captured'::public.fund_hold_status,
+  captured_transaction_id = s.charge_id
+from seed_collaborations s
+where h.id = s.hold_id
+  and s.final_status = 'completed'::public.collab_status;
+
+insert into public.collaboration_deliverables (
+  id, collaboration_id, description, ordinal, created_at
+)
+select
+  s.deliverable_id,
+  s.collaboration_id,
+  'Original LinkedIn post with one tracked call to action',
+  1,
+  s.collaboration_created_at + interval '1 hour'
+from seed_collaborations s;
+
+-- These deterministic post metrics are portfolio/demo observations. For the
+-- requested and accepted rows, deliverable_id stays null so the sample is not
+-- represented as delivery of the still-active campaign.
+insert into public.posts (
+  id, collaboration_id, deliverable_id, linkedin_url, impressions,
+  reactions, comments, reposts, published_at
+)
+select
+  s.post_id,
+  s.collaboration_id,
+  case when s.final_status in ('published'::public.collab_status, 'completed'::public.collab_status)
+    then s.deliverable_id
+    else null
+  end,
+  'https://www.linkedin.com/posts/demo-creator-' || lpad(s.ordinal::text, 2, '0') || '-portfolio-sample',
+  6200 + s.ordinal * 487,
+  95 + s.ordinal * 17,
+  8 + (s.ordinal * 5) % 71,
+  2 + (s.ordinal * 3) % 29,
+  case when s.final_status in ('published'::public.collab_status, 'completed'::public.collab_status)
+    then s.collaboration_created_at + interval '12 days'
+    else '2026-05-15 12:00:00+00'::timestamptz + s.ordinal * interval '1 day'
+  end
+from seed_collaborations s;
+
+insert into public.tracking_links (
+  id, token, destination_url, collaboration_id, deliverable_id, active, created_at
+)
+select
+  s.tracking_link_id,
+  ('45100000-0000-4000-8000-' || lpad(s.ordinal::text, 12, '0'))::uuid,
+  'https://northstar.example/demo/signal-guide?creator=' || lpad(s.ordinal::text, 2, '0'),
+  s.collaboration_id,
+  s.deliverable_id,
+  true,
+  s.collaboration_created_at + interval '10 days'
+from seed_collaborations s
+where s.final_status in ('published'::public.collab_status, 'completed'::public.collab_status);
+
+insert into public.click_events (
+  id, tracking_link_id, ip_hash, company, is_qualified, context, occurred_at
+)
+select
+  ('48000000-0000-4000-8000-' || lpad((s.ordinal * 10 + click.click_number)::text, 12, '0'))::uuid,
+  s.tracking_link_id,
+  encode(digest('demo-click-' || s.ordinal || '-' || click.click_number, 'sha256'), 'hex'),
+  case click.click_number
+    when 1 then 'Acme Systems (Demo)'
+    when 2 then 'Beacon Cloud (Demo)'
+    else 'Circuit Works (Demo)'
+  end,
+  click.click_number < 3,
+  jsonb_build_object(
+    'demo', true,
+    'utmSource', 'linkedin',
+    'visitorRole', case click.click_number
+      when 1 then 'VP Marketing'
+      when 2 then 'Revenue Operations Director'
+      else 'Consultant'
+    end
+  ),
+  s.collaboration_created_at + interval '12 days 2 hours' + click.click_number * interval '47 minutes'
+from seed_collaborations s
+cross join (values (1), (2), (3)) as click(click_number)
+where s.final_status in ('published'::public.collab_status, 'completed'::public.collab_status);
+
+insert into public.collaboration_events (
+  id, collaboration_id, actor_id, type, payload, created_at
+)
+select
+  ('49000000-0000-4000-8000-' || lpad((s.ordinal * 10 + event.event_order)::text, 12, '0'))::uuid,
+  s.collaboration_id,
+  case event.event_order when 1 then
+    case when s.origin = 'brand_invite'::public.collab_origin
+      then '00000000-0000-4000-8000-000000000100'::uuid
+      else s.creator_id
+    end
+    when 2 then case when s.origin = 'brand_invite'::public.collab_origin
+      then s.creator_id
+      else '00000000-0000-4000-8000-000000000100'::uuid
+    end
+    when 3 then s.creator_id
+    else '00000000-0000-4000-8000-000000000100'::uuid
+  end,
+  event.event_type,
+  jsonb_build_object('demo', true, 'status', event.event_type),
+  s.collaboration_created_at + event.event_offset
+from seed_collaborations s
+cross join (values
+  (1, 'offer_made', interval '15 minutes'),
+  (2, 'accepted',   interval '20 hours'),
+  (3, 'published',  interval '12 days'),
+  (4, 'completed',  interval '15 days')
+) as event(event_order, event_type, event_offset)
+where event.event_order <= case s.final_status
+  when 'requested'::public.collab_status then 1
+  when 'accepted'::public.collab_status then 2
+  when 'published'::public.collab_status then 3
+  else 4
+end;
+
+insert into public.payouts (
+  id, creator_id, collaboration_id, amount_cents,
+  status, method, created_at, paid_at
+)
+select
+  s.payout_id,
+  s.creator_id,
+  s.collaboration_id,
+  (s.fee_cents * 85) / 100,
+  'available'::public.payout_status,
+  'bank'::public.payout_method,
+  s.collaboration_created_at + interval '15 days',
+  null
+from seed_collaborations s
+where s.final_status = 'completed'::public.collab_status;
+
 commit;
