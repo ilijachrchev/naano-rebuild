@@ -4,9 +4,12 @@ import { BrandSidebar } from "@/components/brand/sidebar";
 import {
   PIPELINE_STAGES,
   type BrandCollaborationPipeline,
-  type CollaborationMoney,
   type PipelineFilter,
 } from "@/lib/collaborations/data";
+import {
+  formatCollaborationDate,
+  formatCollaborationMoney,
+} from "@/lib/collaborations/format";
 
 const stageLabels = {
   requested: "Requested",
@@ -16,28 +19,6 @@ const stageLabels = {
   completed: "Completed",
   declined: "Declined",
 } as const;
-
-const dateFormatter = new Intl.DateTimeFormat("en", {
-  day: "2-digit",
-  month: "short",
-  year: "numeric",
-  timeZone: "UTC",
-});
-
-function formatMoney(money: CollaborationMoney | null) {
-  if (!money) return "Not set";
-
-  return new Intl.NumberFormat("en", {
-    style: "currency",
-    currency: money.currency,
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 2,
-  }).format(money.cents / 100);
-}
-
-function formatDate(value: string | null) {
-  return value ? dateFormatter.format(new Date(value)) : "Not scheduled";
-}
 
 function getFilterHref(filter: PipelineFilter) {
   return filter === "all" ? "/brand/collaborations" : `/brand/collaborations?status=${filter}`;
@@ -180,7 +161,7 @@ export function BrandCollaborationsPipelineView({
                           Offered amount
                         </span>
                         <span className="display-type mt-1 block text-xl xl:mt-0">
-                          {formatMoney(collaboration.offeredAmount)}
+                          {formatCollaborationMoney(collaboration.offeredAmount)}
                         </span>
                       </div>
 
@@ -188,7 +169,9 @@ export function BrandCollaborationsPipelineView({
                         <span className="text-[0.68rem] font-bold tracking-[0.1em] text-carbon/42 uppercase xl:hidden">
                           Post by
                         </span>
-                        <span className="mt-1 block text-sm xl:mt-0">{formatDate(collaboration.postBy)}</span>
+                        <span className="mt-1 block text-sm xl:mt-0">
+                          {formatCollaborationDate(collaboration.postBy)}
+                        </span>
                       </div>
 
                       <div>

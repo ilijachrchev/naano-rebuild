@@ -86,6 +86,7 @@ type CollaborationRow = Pick<
   | "workspace_id"
   | "creator_id"
   | "campaign_id"
+  | "brief_id"
   | "origin"
   | "offer_type"
   | "current_offer_id"
@@ -188,6 +189,7 @@ function getNextAction(
         ? "Review counter-offer"
         : "Await creator response";
     case "accepted":
+      return collaboration.brief_id ? "Await creator content" : "Attach campaign brief";
     case "brief_pending":
       return "Finalize campaign brief";
     case "content_submitted":
@@ -342,7 +344,7 @@ export async function loadBrandCollaborationPipeline({
   const { data, error } = await supabase
     .from("collaborations")
     .select(
-      "id, workspace_id, creator_id, campaign_id, origin, offer_type, current_offer_id, accepted_offer_id, deliverables, post_by, approval_required, status, respond_by, published_at, created_at, updated_at",
+      "id, workspace_id, creator_id, campaign_id, brief_id, origin, offer_type, current_offer_id, accepted_offer_id, deliverables, post_by, approval_required, status, respond_by, published_at, created_at, updated_at",
     )
     .eq("workspace_id", workspaceId)
     .is("deleted_at", null)
@@ -432,7 +434,7 @@ export async function loadBrandCollaborationDetail({
   const { data: collaboration, error: collaborationError } = await supabase
     .from("collaborations")
     .select(
-      "id, workspace_id, creator_id, campaign_id, origin, offer_type, current_offer_id, accepted_offer_id, deliverables, post_by, approval_required, status, respond_by, published_at, created_at, updated_at",
+      "id, workspace_id, creator_id, campaign_id, brief_id, origin, offer_type, current_offer_id, accepted_offer_id, deliverables, post_by, approval_required, status, respond_by, published_at, created_at, updated_at",
     )
     .eq("workspace_id", workspaceId)
     .eq("id", collaborationId)
