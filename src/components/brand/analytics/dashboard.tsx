@@ -9,6 +9,10 @@ const dateFormat = new Intl.DateTimeFormat("en", {
   timeZone: "UTC",
 });
 
+// Analytics is intentionally absent from the shared navigation in this PR.
+// A nonmatching href leaves the existing sidebar items unselected on this route.
+const analyticsHref = "/brand/analytics" as BrandNavigationHref;
+
 function formatRate(value: number, previous: number) {
   if (previous === 0) return "—";
   const rate = (value / previous) * 100;
@@ -107,7 +111,7 @@ export function BrandAnalyticsDashboard({
     <main className="min-h-screen bg-mineral lg:grid lg:grid-cols-[280px_minmax(0,1fr)]">
       <BrandSidebar
         workspaceName={workspaceName}
-        activeHref={"/brand/analytics" as BrandNavigationHref}
+        activeHref={analyticsHref}
       />
 
       <section className="dossier-paper min-h-screen">
@@ -141,7 +145,7 @@ export function BrandAnalyticsDashboard({
               </p>
               {snapshot.isIllustrative ? (
                 <p className="mt-3 text-[0.68rem] font-bold tracking-[0.1em] text-aubergine uppercase">
-                  Demo dataset · illustrative observations
+                  Includes demo data · illustrative observations
                 </p>
               ) : null}
             </div>
@@ -292,7 +296,7 @@ export function BrandAnalyticsDashboard({
                 {snapshot.companies.map((company, index) => (
                   <li
                     key={company.name}
-                    className="grid gap-5 border-carbon/14 border-b py-6 last:border-b-0 sm:grid-cols-[64px_minmax(0,1fr)_repeat(3,minmax(110px,auto))] sm:items-center"
+                    className="grid gap-5 border-carbon/14 border-b py-6 last:border-b-0 lg:grid-cols-[64px_minmax(0,1fr)_repeat(3,minmax(110px,auto))] lg:items-center"
                   >
                     <span className="display-type text-3xl text-aubergine">
                       {String(index + 1).padStart(2, "0")}
