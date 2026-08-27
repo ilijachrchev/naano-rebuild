@@ -193,6 +193,7 @@ function getNextAction(
         ? "Review counter-offer"
         : "Await creator response";
     case "accepted":
+      if (collaboration.approval_required === false) return "Approve and settle";
       return collaboration.brief_id ? "Await creator content" : "Attach campaign brief";
     case "brief_pending":
       return "Finalize campaign brief";

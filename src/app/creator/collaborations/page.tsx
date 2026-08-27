@@ -59,7 +59,7 @@ export default async function CreatorCollaborationsPage() {
   return (
     <CreatorShell
       creatorName={context.creator.displayName}
-      activeHref="/creator/collaborations"
+      activeHref="/creator"
       eyebrow="Creator collaborations"
       detail="Accepted work, submitted posts, and completed payouts"
       marker={`${collaborations.length} records`}
@@ -68,7 +68,7 @@ export default async function CreatorCollaborationsPage() {
         <div className="grid gap-7 border-carbon/18 border-b pb-10 xl:grid-cols-[1.15fr_0.85fr] xl:items-end">
           <div>
             <p className="text-xs font-bold tracking-[0.12em] text-aubergine uppercase">
-              Supply dossier · 03
+              Settlement workflow
             </p>
             <h1 className="display-type mt-3 max-w-4xl text-5xl leading-[0.92] sm:text-6xl xl:text-7xl">
               Take accepted work through to payout.

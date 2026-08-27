@@ -42,7 +42,7 @@ export default async function CreatorEarningsPage() {
       <div className="px-6 py-10 sm:px-10 lg:px-14 lg:py-14">
         <div className="grid gap-10 border-carbon/18 border-b pb-12 xl:grid-cols-[0.82fr_1.18fr] xl:items-end">
           <div>
-            <p className="text-xs font-bold tracking-[0.12em] text-aubergine uppercase">Supply dossier · 04</p>
+            <p className="text-xs font-bold tracking-[0.12em] text-aubergine uppercase">Supply dossier · 03</p>
             <h1 className="display-type mt-3 text-5xl leading-[0.92] sm:text-6xl">
               Earnings tied back to the work.
             </h1>

@@ -102,6 +102,9 @@ export default async function CreatorOverviewPage() {
               <h2 className="display-type mt-2 text-4xl">The handshake at a glance.</h2>
             </div>
             <div className="flex flex-wrap items-center gap-4">
+              <Link href="/creator/collaborations" className="text-sm font-bold text-aubergine hover:text-aubergine-deep">
+                Open collaborations <span aria-hidden="true">→</span>
+              </Link>
               <Link href="/creator/referrals" className="text-sm font-bold text-aubergine hover:text-aubergine-deep">
                 Referral program <span aria-hidden="true">→</span>
               </Link>
