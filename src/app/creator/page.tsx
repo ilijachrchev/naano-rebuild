@@ -101,11 +101,16 @@ export default async function CreatorOverviewPage() {
               <p className="text-xs font-bold tracking-[0.12em] text-aubergine uppercase">Live record</p>
               <h2 className="display-type mt-2 text-4xl">The handshake at a glance.</h2>
             </div>
-            {stats.incomingInvites > 0 ? (
-              <Link href="/creator/opportunities" className="primary-button min-h-0 py-3">
-                Review invitations <span aria-hidden="true">→</span>
+            <div className="flex flex-wrap items-center gap-4">
+              <Link href="/creator/referrals" className="text-sm font-bold text-aubergine hover:text-aubergine-deep">
+                Referral program <span aria-hidden="true">→</span>
               </Link>
-            ) : null}
+              {stats.incomingInvites > 0 ? (
+                <Link href="/creator/opportunities" className="primary-button min-h-0 py-3">
+                  Review invitations <span aria-hidden="true">→</span>
+                </Link>
+              ) : null}
+            </div>
           </div>
 
           <dl className="mt-7 grid border-carbon/20 border-y md:grid-cols-4">
