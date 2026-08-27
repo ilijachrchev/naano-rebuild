@@ -1,6 +1,7 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 
-import { CreatorShell } from "@/components/creator/shell";
+import { BrandMark } from "@/components/brand/dossier";
 import { SubmitContentForm } from "@/components/creator/submit-content-form";
 import { getCreatorContext } from "@/lib/creator/context";
 import {
@@ -57,13 +58,27 @@ export default async function CreatorCollaborationsPage() {
   const collaborations = await getCreatorCollaborations(context.creator.id);
 
   return (
-    <CreatorShell
-      creatorName={context.creator.displayName}
-      activeHref="/creator"
-      eyebrow="Creator collaborations"
-      detail="Accepted work, submitted posts, and completed payouts"
-      marker={`${collaborations.length} records`}
-    >
+    <main className="min-h-screen bg-mineral">
+      <section className="dossier-paper min-h-screen">
+        <header className="flex min-h-20 flex-wrap items-center justify-between gap-5 border-carbon/16 border-b px-6 py-4 sm:px-10 lg:px-14">
+          <div className="flex flex-wrap items-center gap-5 sm:gap-7">
+            <BrandMark />
+            <div className="border-carbon/18 sm:border-l sm:pl-7">
+              <p className="text-xs font-bold tracking-[0.12em] text-aubergine uppercase">
+                Creator collaborations
+              </p>
+              <p className="text-sm text-carbon/55">
+                {context.creator.displayName} · {collaborations.length} records
+              </p>
+            </div>
+          </div>
+          <Link
+            href="/creator"
+            className="text-xs font-bold tracking-[0.09em] text-carbon/56 uppercase hover:text-aubergine"
+          >
+            ← Back to creator desk
+          </Link>
+        </header>
       <div className="px-6 py-10 sm:px-10 lg:px-14 lg:py-14">
         <div className="grid gap-7 border-carbon/18 border-b pb-10 xl:grid-cols-[1.15fr_0.85fr] xl:items-end">
           <div>
@@ -170,6 +185,7 @@ export default async function CreatorCollaborationsPage() {
           </ol>
         )}
       </div>
-    </CreatorShell>
+      </section>
+    </main>
   );
 }
