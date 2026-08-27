@@ -23,17 +23,14 @@ function SubmitTopUpButton() {
 }
 
 export function TopUpForm({
-  workspaceId,
   idempotencyKey,
 }: {
-  workspaceId: string;
   idempotencyKey: string;
 }) {
   const [state, formAction] = useActionState(simulateTopUpAction, initialState);
 
   return (
     <form action={formAction}>
-      <input type="hidden" name="workspaceId" value={workspaceId} />
       <input type="hidden" name="idempotencyKey" value={idempotencyKey} />
 
       <div className="border-carbon/18 border-b pb-5">
@@ -67,6 +64,7 @@ export function TopUpForm({
             autoComplete="off"
             placeholder="500.00"
             pattern="[0-9]+([.,][0-9]{1,2})?"
+            maxLength={17}
             title="Enter a positive euro amount with up to two decimal places."
             required
           />

@@ -133,7 +133,6 @@ export default async function BrandWalletPage() {
             <aside className="border border-carbon/20 bg-paper p-5 sm:p-7">
               <TopUpForm
                 key={topUpRequestId}
-                workspaceId={workspace.id}
                 idempotencyKey={topUpRequestId}
               />
             </aside>

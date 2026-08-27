@@ -34,7 +34,20 @@ export function calculateWalletAvailableCents(
 
   for (const transaction of transactions) {
     const amountCents = toSafeCents(transaction.amountCents);
-    availableCents += transaction.type === "charge" ? -amountCents : amountCents;
+
+    switch (transaction.type) {
+      case "topup":
+      case "refund":
+        availableCents += amountCents;
+        break;
+      case "charge":
+        availableCents -= amountCents;
+        break;
+      default: {
+        const unsupportedType: never = transaction.type;
+        throw new Error(`Unsupported wallet transaction type: ${unsupportedType}`);
+      }
+    }
   }
 
   for (const hold of holds) {

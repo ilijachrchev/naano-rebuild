@@ -6,6 +6,30 @@ import type { Database } from "@/types/database";
 
 type WalletTransactionType = Database["public"]["Enums"]["wallet_txn_type"];
 type FundHoldStatus = Database["public"]["Enums"]["fund_hold_status"];
+type ServerSupabaseClient = Awaited<ReturnType<typeof createServerSupabaseClient>>;
+
+type WalletTransactionRow = {
+  id: string;
+  type: WalletTransactionType;
+  amount_cents: number;
+  currency: string;
+  collaboration_id: string | null;
+  created_at: string;
+};
+
+type FundHoldRow = {
+  id: string;
+  status: FundHoldStatus;
+  amount_cents: number;
+  currency: string;
+  collaboration_id: string;
+  created_at: string;
+};
+
+type WalletRows = {
+  transactions: WalletTransactionRow[];
+  holds: FundHoldRow[];
+};
 
 export type WalletActivity =
   | {
@@ -32,28 +56,86 @@ export type WalletSnapshot = {
 };
 
 const walletCurrency = "EUR";
+const pageSize = 1_000;
+const maxSnapshotAttempts = 3;
 
-export async function getWalletSnapshot(workspaceId: string): Promise<WalletSnapshot> {
-  const supabase = await createServerSupabaseClient();
-  const [transactionsResult, holdsResult] = await Promise.all([
-    supabase
+async function getWalletTransactions(
+  supabase: ServerSupabaseClient,
+  workspaceId: string,
+) {
+  const transactions: WalletTransactionRow[] = [];
+
+  for (let from = 0; ; from += pageSize) {
+    const { data, error } = await supabase
       .from("wallet_transactions")
       .select("id, type, amount_cents, currency, collaboration_id, created_at")
       .eq("workspace_id", workspaceId)
-      .eq("currency", walletCurrency),
-    supabase
+      .eq("currency", walletCurrency)
+      .order("created_at", { ascending: true })
+      .order("id", { ascending: true })
+      .range(from, from + pageSize - 1);
+
+    if (error) throw new Error("Unable to load wallet activity");
+
+    transactions.push(...(data ?? []));
+    if (!data || data.length < pageSize) return transactions;
+  }
+}
+
+async function getFundHolds(supabase: ServerSupabaseClient, workspaceId: string) {
+  const holds: FundHoldRow[] = [];
+
+  for (let from = 0; ; from += pageSize) {
+    const { data, error } = await supabase
       .from("fund_holds")
       .select("id, status, amount_cents, currency, collaboration_id, created_at")
       .eq("workspace_id", workspaceId)
-      .eq("currency", walletCurrency),
+      .eq("currency", walletCurrency)
+      .order("created_at", { ascending: true })
+      .order("id", { ascending: true })
+      .range(from, from + pageSize - 1);
+
+    if (error) throw new Error("Unable to load wallet activity");
+
+    holds.push(...(data ?? []));
+    if (!data || data.length < pageSize) return holds;
+  }
+}
+
+async function readWalletRows(
+  supabase: ServerSupabaseClient,
+  workspaceId: string,
+): Promise<WalletRows> {
+  const [transactions, holds] = await Promise.all([
+    getWalletTransactions(supabase, workspaceId),
+    getFundHolds(supabase, workspaceId),
   ]);
 
-  if (transactionsResult.error || holdsResult.error) {
-    throw new Error("Unable to load wallet activity");
+  return { transactions, holds };
+}
+
+function walletRowsMatch(left: WalletRows, right: WalletRows) {
+  return JSON.stringify(left) === JSON.stringify(right);
+}
+
+async function getStableWalletRows(
+  supabase: ServerSupabaseClient,
+  workspaceId: string,
+): Promise<WalletRows> {
+  let previous = await readWalletRows(supabase, workspaceId);
+
+  for (let attempt = 0; attempt < maxSnapshotAttempts; attempt += 1) {
+    const current = await readWalletRows(supabase, workspaceId);
+    if (walletRowsMatch(previous, current)) return current;
+    previous = current;
   }
 
-  const transactions = transactionsResult.data ?? [];
-  const holds = holdsResult.data ?? [];
+  throw new Error("Wallet activity changed while it was loading");
+}
+
+export async function getWalletSnapshot(workspaceId: string): Promise<WalletSnapshot> {
+  const supabase = await createServerSupabaseClient();
+  const { transactions, holds } = await getStableWalletRows(supabase, workspaceId);
   const availableCents = calculateWalletAvailableCents(
     transactions.map((transaction) => ({
       type: transaction.type,

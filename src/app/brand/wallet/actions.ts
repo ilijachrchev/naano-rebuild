@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 
+import { getBrandContext } from "@/lib/brand/context";
 import { createAdminSupabaseClient } from "@/lib/supabase/admin";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
@@ -13,9 +14,12 @@ export type TopUpActionState = {
 };
 
 const topUpSchema = z.object({
-  workspaceId: z.uuid(),
   idempotencyKey: z.uuid(),
-  amount: z.string().trim().min(1, "Enter an amount to add."),
+  amount: z
+    .string()
+    .trim()
+    .min(1, "Enter an amount to add.")
+    .max(17, "That amount is too large."),
 });
 
 function parseEuroCents(value: string) {
@@ -34,7 +38,6 @@ export async function simulateTopUpAction(
   formData: FormData,
 ): Promise<TopUpActionState> {
   const parsed = topUpSchema.safeParse({
-    workspaceId: formData.get("workspaceId"),
     idempotencyKey: formData.get("idempotencyKey"),
     amount: formData.get("amount"),
   });
@@ -54,26 +57,13 @@ export async function simulateTopUpAction(
     };
   }
 
-  const supabase = await createServerSupabaseClient();
-  const { data: claimsData } = await supabase.auth.getClaims();
-  const userId = claimsData?.claims?.sub ?? null;
-
-  if (!userId) redirect("/auth");
-
-  const { data: membership, error: membershipError } = await supabase
-    .from("workspace_members")
-    .select("workspace_id")
-    .eq("workspace_id", parsed.data.workspaceId)
-    .eq("user_id", userId)
-    .maybeSingle();
-
-  if (membershipError || !membership) {
-    return { status: "error", message: "We couldn't access that workspace." };
-  }
+  const context = await getBrandContext();
+  if (!context.userId) redirect("/auth");
+  if (!context.workspace) return { status: "error", message: "We couldn't access your wallet." };
 
   const admin = createAdminSupabaseClient();
   const { error: insertError } = await admin.from("wallet_transactions").insert({
-    workspace_id: membership.workspace_id,
+    workspace_id: context.workspace.id,
     type: "topup",
     amount_cents: amountCents,
     currency: "EUR",
@@ -83,11 +73,12 @@ export async function simulateTopUpAction(
 
   if (insertError) {
     if (insertError.code === "23505") {
+      const supabase = await createServerSupabaseClient();
       const { data: existingTransaction, error: existingError } = await supabase
         .from("wallet_transactions")
         .select("workspace_id, type, amount_cents, currency")
         .eq("idempotency_key", parsed.data.idempotencyKey)
-        .eq("workspace_id", membership.workspace_id)
+        .eq("workspace_id", context.workspace.id)
         .maybeSingle();
 
       if (
