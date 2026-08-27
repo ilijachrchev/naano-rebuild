@@ -1,7 +1,9 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, type KeyboardEvent } from "react";
 
+import { BookingOfferForm } from "@/components/brand/creators/booking-offer-form";
+import type { BookingBriefOption } from "@/lib/booking/data";
 import type {
   AudienceSegment,
   MarketplaceCreator,
@@ -79,13 +81,23 @@ function AudienceBreakdown({ title, segments }: { title: string; segments: Audie
 
 function CreatorProfileModal({
   creator,
+  briefs,
+  workspaceId,
+  defaultPostBy,
+  minPostBy,
   onDismiss,
 }: {
   creator: MarketplaceCreator | null;
+  briefs: BookingBriefOption[];
+  workspaceId: string;
+  defaultPostBy: string;
+  minPostBy: string;
   onDismiss: () => void;
 }) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const [activeTab, setActiveTab] = useState<ProfileTab>("overview");
+  const [showOffer, setShowOffer] = useState(false);
+  const [idempotencyKey, setIdempotencyKey] = useState<string | null>(null);
 
   useEffect(() => {
     const dialog = dialogRef.current;
@@ -93,6 +105,8 @@ function CreatorProfileModal({
 
     if (creator && !dialog.open) {
       setActiveTab("overview");
+      setShowOffer(false);
+      setIdempotencyKey(null);
       dialog.showModal();
     } else if (!creator && dialog.open) {
       dialog.close();
@@ -109,6 +123,30 @@ function CreatorProfileModal({
   const post = creator.samplePost;
   const totalEngagement = post ? post.reactions + post.comments + post.reposts : 0;
   const engagementRate = post?.impressions ? (totalEngagement / post.impressions) * 100 : null;
+
+  function openOffer() {
+    setIdempotencyKey(crypto.randomUUID());
+    setShowOffer(true);
+  }
+
+  function closeOffer() {
+    setShowOffer(false);
+    setIdempotencyKey(null);
+  }
+
+  function handleTabKeyDown(event: KeyboardEvent<HTMLButtonElement>, currentIndex: number) {
+    let nextIndex: number | null = null;
+    if (event.key === "ArrowRight") nextIndex = (currentIndex + 1) % tabs.length;
+    if (event.key === "ArrowLeft") nextIndex = (currentIndex - 1 + tabs.length) % tabs.length;
+    if (event.key === "Home") nextIndex = 0;
+    if (event.key === "End") nextIndex = tabs.length - 1;
+    if (nextIndex === null) return;
+
+    event.preventDefault();
+    const nextTab = tabs[nextIndex];
+    setActiveTab(nextTab.id);
+    document.getElementById(`tab-${nextTab.id}`)?.focus();
+  }
 
   return (
     <dialog
@@ -143,30 +181,60 @@ function CreatorProfileModal({
           </button>
         </header>
 
-        <div role="tablist" aria-label="Creator profile sections" className="flex border-carbon/18 border-b bg-mist/55">
-          {tabs.map((tab, index) => (
+        {showOffer ? (
+          <div className="flex min-h-14 items-center justify-between border-carbon/18 border-b bg-mist/55 px-5 sm:px-8">
+            <p className="text-[0.7rem] font-bold tracking-[0.11em] uppercase">
+              <span className="mr-2 text-aubergine">04</span> Offer
+            </p>
             <button
-              key={tab.id}
-              id={`tab-${tab.id}`}
               type="button"
-              role="tab"
-              aria-selected={activeTab === tab.id}
-              aria-controls={`panel-${tab.id}`}
-              onClick={() => setActiveTab(tab.id)}
-              className={`min-h-14 cursor-pointer border-0 border-carbon/18 border-r px-5 text-[0.7rem] font-bold tracking-[0.11em] uppercase sm:min-w-40 ${
-                activeTab === tab.id ? "bg-paper text-carbon" : "bg-transparent text-carbon/52 hover:text-carbon"
-              }`}
+              onClick={closeOffer}
+              className="cursor-pointer border-0 bg-transparent text-xs font-bold text-aubergine hover:text-aubergine-deep"
             >
-              <span className={activeTab === tab.id ? "mr-2 text-aubergine" : "mr-2"}>
-                {String(index + 1).padStart(2, "0")}
-              </span>
-              {tab.label}
+              Back to dossier
             </button>
-          ))}
-        </div>
+          </div>
+        ) : (
+          <div role="tablist" aria-label="Creator profile sections" className="flex border-carbon/18 border-b bg-mist/55">
+            {tabs.map((tab, index) => (
+              <button
+                key={tab.id}
+                id={`tab-${tab.id}`}
+                type="button"
+                role="tab"
+                aria-selected={activeTab === tab.id}
+                aria-controls={`panel-${tab.id}`}
+                tabIndex={activeTab === tab.id ? 0 : -1}
+                onClick={() => setActiveTab(tab.id)}
+                onKeyDown={(event) => handleTabKeyDown(event, index)}
+                className={`min-h-14 cursor-pointer border-0 border-carbon/18 border-r px-5 text-[0.7rem] font-bold tracking-[0.11em] uppercase sm:min-w-40 ${
+                  activeTab === tab.id ? "bg-paper text-carbon" : "bg-transparent text-carbon/52 hover:text-carbon"
+                }`}
+              >
+                <span className={activeTab === tab.id ? "mr-2 text-aubergine" : "mr-2"}>
+                  {String(index + 1).padStart(2, "0")}
+                </span>
+                {tab.label}
+              </button>
+            ))}
+          </div>
+        )}
 
         <div className="dossier-paper overflow-y-auto px-5 py-7 sm:px-8 sm:py-9">
-          {activeTab === "overview" ? (
+          {showOffer && idempotencyKey ? (
+            <BookingOfferForm
+              key={`${creator.id}-${idempotencyKey}`}
+              workspaceId={workspaceId}
+              idempotencyKey={idempotencyKey}
+              creator={creator}
+              briefs={briefs}
+              defaultPostBy={defaultPostBy}
+              minPostBy={minPostBy}
+              onBack={closeOffer}
+            />
+          ) : null}
+
+          {!showOffer && activeTab === "overview" ? (
             <section id="panel-overview" role="tabpanel" aria-labelledby="tab-overview">
               <p className="text-xs font-bold tracking-[0.12em] text-aubergine uppercase">Creator overview</p>
               <p className="display-type mt-4 max-w-3xl text-4xl leading-[1.02] sm:text-5xl">{creator.headline}</p>
@@ -186,10 +254,24 @@ function CreatorProfileModal({
                 />
                 <Stat label="Post cost" value={formatCurrency(creator.pricePerPostCents)} />
               </div>
+              <div className="mt-7 flex flex-wrap items-center justify-between gap-4 border-carbon/18 border-t pt-6">
+                <p className="max-w-lg text-sm leading-6 text-carbon/58">
+                  Attach a ready campaign brief and reserve the fixed fee from your wallet.
+                </p>
+                <button
+                  type="button"
+                  onClick={openOffer}
+                  disabled={creator.pricePerPostCents === null}
+                  className="primary-button"
+                >
+                  <span>{creator.pricePerPostCents === null ? "Rate unavailable" : "Make an offer"}</span>
+                  <span aria-hidden="true">→</span>
+                </button>
+              </div>
             </section>
           ) : null}
 
-          {activeTab === "audience" ? (
+          {!showOffer && activeTab === "audience" ? (
             <section id="panel-audience" role="tabpanel" aria-labelledby="tab-audience">
               <div className="flex flex-wrap items-end justify-between gap-4 border-carbon/18 border-b pb-6">
                 <div>
@@ -209,7 +291,7 @@ function CreatorProfileModal({
             </section>
           ) : null}
 
-          {activeTab === "content" ? (
+          {!showOffer && activeTab === "content" ? (
             <section id="panel-content" role="tabpanel" aria-labelledby="tab-content">
               <p className="text-xs font-bold tracking-[0.12em] text-aubergine uppercase">Sample post</p>
               {post ? (
@@ -321,7 +403,19 @@ function CreatorCard({ creator, onOpen }: { creator: MarketplaceCreator; onOpen:
   );
 }
 
-export function CreatorMarketplace({ creators }: { creators: MarketplaceCreator[] }) {
+export function CreatorMarketplace({
+  creators,
+  briefs,
+  workspaceId,
+  defaultPostBy,
+  minPostBy,
+}: {
+  creators: MarketplaceCreator[];
+  briefs: BookingBriefOption[];
+  workspaceId: string;
+  defaultPostBy: string;
+  minPostBy: string;
+}) {
   const [industry, setIndustry] = useState("all");
   const [country, setCountry] = useState("all");
   const [price, setPrice] = useState<PriceOption>("all");
@@ -396,7 +490,7 @@ export function CreatorMarketplace({ creators }: { creators: MarketplaceCreator[
             <select
               value={industry}
               onChange={(event) => setIndustry(event.target.value)}
-              className="mt-2 min-h-11 w-full cursor-pointer border border-carbon/24 bg-white/40 px-3 text-sm text-carbon hover:border-aubergine focus:border-aubergine focus:outline-none"
+              className="mt-2 min-h-11 w-full cursor-pointer border border-carbon/24 bg-white/40 px-3 text-sm text-carbon hover:border-aubergine focus:border-aubergine"
             >
               <option value="all">All industries</option>
               {industries.map((value) => (
@@ -411,7 +505,7 @@ export function CreatorMarketplace({ creators }: { creators: MarketplaceCreator[
             <select
               value={country}
               onChange={(event) => setCountry(event.target.value)}
-              className="mt-2 min-h-11 w-full cursor-pointer border border-carbon/24 bg-white/40 px-3 text-sm text-carbon hover:border-aubergine focus:border-aubergine focus:outline-none"
+              className="mt-2 min-h-11 w-full cursor-pointer border border-carbon/24 bg-white/40 px-3 text-sm text-carbon hover:border-aubergine focus:border-aubergine"
             >
               <option value="all">All countries</option>
               {countries.map((value) => (
@@ -426,7 +520,7 @@ export function CreatorMarketplace({ creators }: { creators: MarketplaceCreator[
             <select
               value={price}
               onChange={(event) => setPrice(event.target.value as PriceOption)}
-              className="mt-2 min-h-11 w-full cursor-pointer border border-carbon/24 bg-white/40 px-3 text-sm text-carbon hover:border-aubergine focus:border-aubergine focus:outline-none"
+              className="mt-2 min-h-11 w-full cursor-pointer border border-carbon/24 bg-white/40 px-3 text-sm text-carbon hover:border-aubergine focus:border-aubergine"
             >
               <option value="all">Any price</option>
               <option value="under-500">Under €500</option>
@@ -439,7 +533,7 @@ export function CreatorMarketplace({ creators }: { creators: MarketplaceCreator[
             <select
               value={sort}
               onChange={(event) => setSort(event.target.value as SortOption)}
-              className="mt-2 min-h-11 w-full cursor-pointer border border-carbon/24 bg-white/40 px-3 text-sm text-carbon hover:border-aubergine focus:border-aubergine focus:outline-none"
+              className="mt-2 min-h-11 w-full cursor-pointer border border-carbon/24 bg-white/40 px-3 text-sm text-carbon hover:border-aubergine focus:border-aubergine"
             >
               <option value="match">Best match</option>
               <option value="followers">Most followers</option>
@@ -454,7 +548,9 @@ export function CreatorMarketplace({ creators }: { creators: MarketplaceCreator[
       <div className="mt-7 flex items-end justify-between gap-4 border-carbon/18 border-b pb-4">
         <div>
           <p className="text-xs font-bold tracking-[0.12em] text-aubergine uppercase">Matched creators</p>
-          <p className="display-type mt-1 text-3xl">{visibleCreators.length} profiles in view</p>
+          <p className="display-type mt-1 text-3xl" role="status" aria-live="polite">
+            {visibleCreators.length} profiles in view
+          </p>
         </div>
         <p className="hidden max-w-xs text-right text-xs leading-5 text-carbon/50 sm:block">
           Match is the seeded baseline until campaign-specific scoring is connected.
@@ -487,7 +583,14 @@ export function CreatorMarketplace({ creators }: { creators: MarketplaceCreator[
         </div>
       )}
 
-      <CreatorProfileModal creator={selectedCreator} onDismiss={() => setSelectedCreator(null)} />
+      <CreatorProfileModal
+        creator={selectedCreator}
+        briefs={briefs}
+        workspaceId={workspaceId}
+        defaultPostBy={defaultPostBy}
+        minPostBy={minPostBy}
+        onDismiss={() => setSelectedCreator(null)}
+      />
     </>
   );
 }

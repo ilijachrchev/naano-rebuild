@@ -2,8 +2,16 @@ import { redirect } from "next/navigation";
 
 import { CreatorMarketplace } from "@/components/brand/creators/creator-marketplace";
 import { BrandSidebar } from "@/components/brand/sidebar";
+import { getBookingBriefOptions } from "@/lib/booking/data";
 import { getBrandContext, getBrandDestination } from "@/lib/brand/context";
 import { getMarketplaceCreators } from "@/lib/marketplace/creators";
+
+function getBookingDates() {
+  const date = new Date();
+  const minPostBy = date.toISOString().slice(0, 10);
+  date.setUTCDate(date.getUTCDate() + 14);
+  return { minPostBy, defaultPostBy: date.toISOString().slice(0, 10) };
+}
 
 export default async function BrandCreatorsPage() {
   const context = await getBrandContext();
@@ -12,7 +20,11 @@ export default async function BrandCreatorsPage() {
   if (destination !== "/brand") redirect(destination);
 
   const workspace = context.workspace!;
-  const creators = await getMarketplaceCreators(workspace.id);
+  const [creators, briefs] = await Promise.all([
+    getMarketplaceCreators(workspace.id),
+    getBookingBriefOptions(workspace.id),
+  ]);
+  const bookingDates = getBookingDates();
 
   return (
     <main className="min-h-screen bg-mineral lg:grid lg:grid-cols-[280px_minmax(0,1fr)]">
@@ -39,13 +51,19 @@ export default async function BrandCreatorsPage() {
             </div>
             <div className="border-carbon/18 border-l-2 border-l-aubergine bg-mist/38 px-5 py-4">
               <p className="text-sm leading-6 text-carbon/64">
-                Compare reach, expected efficiency, and audience evidence before opening a creator dossier. Booking and invitations are intentionally out of scope.
+                Compare audience evidence, then open a creator dossier to attach a brief, set the terms, and reserve the offer from your wallet.
               </p>
             </div>
           </div>
 
           <div className="mt-9">
-            <CreatorMarketplace creators={creators} />
+            <CreatorMarketplace
+              creators={creators}
+              briefs={briefs}
+              workspaceId={workspace.id}
+              defaultPostBy={bookingDates.defaultPostBy}
+              minPostBy={bookingDates.minPostBy}
+            />
           </div>
         </div>
       </section>
