@@ -3,10 +3,31 @@ import { NextResponse } from "next/server";
 
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
+const DEFAULT_REDIRECT_PATH = "/";
+
+function getSafeRedirectPath(request: NextRequest) {
+  const requestedPath = request.nextUrl.searchParams.get("next");
+
+  if (!requestedPath?.startsWith("/") || requestedPath.startsWith("//")) {
+    return DEFAULT_REDIRECT_PATH;
+  }
+
+  try {
+    const destination = new URL(requestedPath, request.url);
+
+    if (destination.origin !== request.nextUrl.origin) {
+      return DEFAULT_REDIRECT_PATH;
+    }
+
+    return `${destination.pathname}${destination.search}${destination.hash}`;
+  } catch {
+    return DEFAULT_REDIRECT_PATH;
+  }
+}
+
 export async function GET(request: NextRequest) {
   const code = request.nextUrl.searchParams.get("code");
-  const requestedPath = request.nextUrl.searchParams.get("next");
-  const nextPath = requestedPath?.startsWith("/") ? requestedPath : "/";
+  const nextPath = getSafeRedirectPath(request);
 
   if (!code) {
     return NextResponse.json({ error: "Missing auth code" }, { status: 400 });
