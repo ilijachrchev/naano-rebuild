@@ -15,7 +15,8 @@ const numberFormatter = new Intl.NumberFormat("en", { notation: "compact", maxim
 const currencyFormatter = new Intl.NumberFormat("en", {
   style: "currency",
   currency: "EUR",
-  maximumFractionDigits: 0,
+  minimumFractionDigits: 0,
+  maximumFractionDigits: 2,
 });
 
 function formatCount(value: number) {
