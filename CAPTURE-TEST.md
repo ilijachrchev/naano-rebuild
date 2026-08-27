@@ -132,3 +132,44 @@ pollute `.agent-logs/` with a forged-looking entry.
 - The current (setup) session cannot self-capture: Claude Code binds hooks at startup,
   so hooks added mid-session only take effect after a restart — which is why the live
   canaries above are required to prove installation.
+
+## Codex capture
+
+The Codex capture mechanism is configured in `.codex/hooks.json`. Its `UserPromptSubmit`
+and `Stop` hooks both invoke `.codex/capture.mjs`. The script reads hook JSON from stdin,
+stores the submitted prompt, and on `Stop` appends only that prompt and the final assistant
+response to a Markdown session log in `.agent-logs/`. It does not record reasoning, tool
+calls, intermediate output, or diffs.
+
+The two Codex canary log files are:
+
+- `.agent-logs/2026-08-27_09-45-16_01a0429b.md`
+- `.agent-logs/2026-08-27_09-45-42_01a0429c.md`
+
+Raw canary entries:
+
+```text
+[LOG_ENTRY type=PROMPT num=1 session=01a0429b-f1f0-7d50-9538-441abcd83ce2]
+timestamp: 2026-08-27T09:45:16.054Z
+model: gpt-5.6-luna
+
+CAPTURE TEST  8x assignment, Ilija
+
+[LOG_ENTRY type=RESPONSE num=1 session=01a0429b-f1f0-7d50-9538-441abcd83ce2]
+timestamp: 2026-08-27T09:45:20.894Z
+model: gpt-5.6-luna
+
+What would you like me to do with “CAPTURE TEST 8x assignment, Ilija”—create eight assignments, capture a test, or format this as a task?
+
+[LOG_ENTRY type=PROMPT num=1 session=01a0429c-5cd6-7360-92a9-125b7632d8d9]
+timestamp: 2026-08-27T09:45:42.994Z
+model: gpt-5.6-luna
+
+CAPTURE TEST  8x assignment, Ilija
+
+[LOG_ENTRY type=RESPONSE num=1 session=01a0429c-5cd6-7360-92a9-125b7632d8d9]
+timestamp: 2026-08-27T09:45:47.964Z
+model: gpt-5.6-luna
+
+What would you like me to do with “CAPTURE TEST 8x assignment, Ilija”? Please share the assignment or specify the desired action.
+```
