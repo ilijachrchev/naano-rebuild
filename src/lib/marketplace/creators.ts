@@ -30,7 +30,7 @@ export type MarketplaceCreator = {
   country: string;
   followers: number;
   industries: string[];
-  pricePerPostCents: number;
+  pricePerPostCents: number | null;
   estimatedViews: number;
   estimatedCpmCents: number | null;
   matchScore: number;
@@ -117,7 +117,7 @@ export async function getMarketplaceCreators(): Promise<MarketplaceCreator[]> {
   return creatorRows.map((creator) => {
     const displayName = creator.display_name?.trim() || "Creator profile";
     const estimatedViews = creator.est_impressions ?? 0;
-    const pricePerPostCents = creator.price_per_post_cents ?? 0;
+    const pricePerPostCents = creator.price_per_post_cents;
     const samplePost = latestPostByCreator.get(creator.id);
 
     return {
@@ -131,7 +131,9 @@ export async function getMarketplaceCreators(): Promise<MarketplaceCreator[]> {
       pricePerPostCents,
       estimatedViews,
       estimatedCpmCents:
-        estimatedViews > 0 ? Math.round((pricePerPostCents * 1_000) / estimatedViews) : null,
+        pricePerPostCents !== null && estimatedViews > 0
+          ? Math.round((pricePerPostCents * 1_000) / estimatedViews)
+          : null,
       matchScore: creator.match_default ?? 0,
       audience: parseAudienceSnapshot(creator.audience_snapshot),
       samplePost: samplePost

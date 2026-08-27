@@ -22,17 +22,19 @@ function formatCount(value: number) {
   return numberFormatter.format(value);
 }
 
-function formatCurrency(cents: number) {
-  return currencyFormatter.format(cents / 100);
+function formatCurrency(cents: number | null) {
+  return cents === null ? "Unavailable" : currencyFormatter.format(cents / 100);
 }
 
 function matchesPrice(creator: MarketplaceCreator, price: PriceOption) {
-  if (price === "under-500") return creator.pricePerPostCents < 50_000;
+  const postPrice = creator.pricePerPostCents;
+  if (price === "all") return true;
+  if (postPrice === null) return false;
+  if (price === "under-500") return postPrice < 50_000;
   if (price === "500-1000") {
-    return creator.pricePerPostCents >= 50_000 && creator.pricePerPostCents <= 100_000;
+    return postPrice >= 50_000 && postPrice <= 100_000;
   }
-  if (price === "over-1000") return creator.pricePerPostCents > 100_000;
-  return true;
+  return postPrice > 100_000;
 }
 
 function Stat({ label, value }: { label: string; value: string }) {
@@ -345,8 +347,13 @@ export function CreatorMarketplace({ creators }: { creators: MarketplaceCreator[
     return filtered.sort((left, right) => {
       if (sort === "followers") return right.followers - left.followers;
       if (sort === "views") return right.estimatedViews - left.estimatedViews;
-      if (sort === "price-ascending") return left.pricePerPostCents - right.pricePerPostCents;
-      if (sort === "price-descending") return right.pricePerPostCents - left.pricePerPostCents;
+      if (sort === "price-ascending" || sort === "price-descending") {
+        if (left.pricePerPostCents === null) return 1;
+        if (right.pricePerPostCents === null) return -1;
+        return sort === "price-ascending"
+          ? left.pricePerPostCents - right.pricePerPostCents
+          : right.pricePerPostCents - left.pricePerPostCents;
+      }
       return right.matchScore - left.matchScore;
     });
   }, [country, creators, industry, price, sort]);
