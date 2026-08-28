@@ -8,6 +8,7 @@ import {
   type PipelineFilter,
   type PipelineStage,
 } from "@/lib/collaborations/data";
+import { loadCollaborationMessages } from "@/lib/collaboration-messages";
 
 function normalizeBackFilter(value: string | undefined): PipelineFilter {
   return PIPELINE_STAGES.includes(value as PipelineStage) ? (value as PipelineStage) : "all";
@@ -34,11 +35,19 @@ export default async function BrandCollaborationDetailPage({
 
   if (!collaboration) notFound();
 
+  const messages = await loadCollaborationMessages({
+    collaborationId: collaboration.id,
+    workspaceId: workspace.id,
+    creatorId: collaboration.creator.id,
+  });
+
   return (
     <BrandCollaborationDetailView
       workspaceId={workspace.id}
       workspaceName={workspace.name}
+      currentUserId={context.userId!}
       collaboration={collaboration}
+      messages={messages}
       backFilter={normalizeBackFilter(status)}
     />
   );

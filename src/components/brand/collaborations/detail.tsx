@@ -2,6 +2,8 @@ import Link from "next/link";
 
 import { ApproveSettlementForm } from "@/components/brand/collaborations/approve-settlement-form";
 import { BrandSidebar } from "@/components/brand/sidebar";
+import { MessageThread } from "@/components/collaborations/message-thread";
+import type { CollaborationMessage } from "@/lib/collaboration-messages";
 import type {
   BrandCollaborationDetail,
   PipelineFilter,
@@ -21,12 +23,16 @@ function actorLabel(role: "brand" | "creator" | "system") {
 export function BrandCollaborationDetailView({
   workspaceId,
   workspaceName,
+  currentUserId,
   collaboration,
+  messages,
   backFilter,
 }: {
   workspaceId: string;
   workspaceName: string;
+  currentUserId: string;
   collaboration: BrandCollaborationDetail;
+  messages: CollaborationMessage[];
   backFilter: PipelineFilter;
 }) {
   const backHref =
@@ -229,6 +235,14 @@ export function BrandCollaborationDetailView({
               )}
             </section>
           </div>
+
+          <MessageThread
+            collaborationId={collaboration.id}
+            creatorId={collaboration.creator.id}
+            creatorName={collaboration.creator.displayName}
+            currentUserId={currentUserId}
+            messages={messages}
+          />
         </div>
       </section>
     </main>

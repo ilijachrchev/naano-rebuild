@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 
 import { CreatorShell } from "@/components/creator/shell";
@@ -152,6 +153,12 @@ export default async function CreatorCollaborationsPage() {
                       Next action
                     </p>
                     <p className="mt-3 text-sm leading-6 text-nn-ink">{status.next}</p>
+                    <Link
+                      href={`/creator/collaborations/${collaboration.id}`}
+                      className="mt-6 inline-flex items-center gap-2 text-sm font-bold text-nn-blue hover:text-nn-blue-strong"
+                    >
+                      Open collaboration <span aria-hidden="true">→</span>
+                    </Link>
                   </aside>
                 </li>
               );
