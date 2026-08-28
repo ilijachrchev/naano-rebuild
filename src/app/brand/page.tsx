@@ -15,72 +15,86 @@ export default async function BrandDashboardPage() {
   const icps = parseBrandIcps(brandProfile.icps);
 
   return (
-    <main className="min-h-screen bg-mineral lg:grid lg:grid-cols-[280px_1fr]">
+    <main className="min-h-screen bg-nn-white lg:grid lg:grid-cols-[280px_1fr]">
       <BrandSidebar workspaceName={workspace.name} activeHref="/brand" />
 
-      <section className="dossier-paper min-h-screen">
-        <header className="flex min-h-20 items-center justify-between border-carbon/16 border-b px-6 sm:px-10 lg:px-14">
+      <section className="min-h-screen bg-nn-paper">
+        <header className="flex min-h-20 flex-wrap items-center justify-between gap-4 border-nn-line border-b px-6 py-4 sm:px-10 lg:px-14">
           <div>
-            <p className="text-xs font-bold tracking-[0.12em] text-aubergine uppercase">Brand dossier</p>
-            <p className="text-sm text-carbon/55">Profile saved and ready for matching</p>
+            <p className="text-xs font-bold tracking-[0.12em] text-nn-blue uppercase">Overview</p>
+            <p className="text-sm text-nn-muted">Profile saved and ready for matching</p>
           </div>
-          <span className="flex items-center gap-2 text-xs font-bold tracking-[0.09em] uppercase">
-            <span className="h-2.5 w-2.5 rounded-full bg-signal" /> Ready
+          <span className="flex items-center gap-2 text-xs font-bold tracking-[0.09em] text-nn-muted uppercase">
+            <span className="h-2.5 w-2.5 rounded-full bg-nn-blue" aria-hidden="true" /> Ready
           </span>
         </header>
 
-        <div className="px-6 py-10 sm:px-10 lg:px-14 lg:py-14">
-          <div className="grid gap-10 border-carbon/18 border-b pb-12 xl:grid-cols-[0.72fr_1.28fr]">
+        <div className="px-6 py-12 sm:px-10 lg:px-14 lg:py-16">
+          <div className="grid gap-10 xl:grid-cols-[0.85fr_1.15fr] xl:items-start">
             <div>
-              <h1 className="display-type text-5xl leading-[0.92] sm:text-6xl">Welcome to {workspace.name}.</h1>
-              <p className="mt-5 max-w-md text-base leading-7 text-carbon/62">
-                Your brand profile is ready. Creator matching can now start from your real positioning and audience context.
+              <h1 className="display-type text-5xl leading-[0.95] text-nn-ink sm:text-6xl">
+                Welcome to {workspace.name}.
+              </h1>
+              <p className="mt-6 max-w-md text-lg leading-8 text-nn-muted">
+                Your brand profile is ready. Creator matching can now start from your real
+                positioning and audience context.
               </p>
-              <div className="mt-8 border-carbon/18 border-l-2 border-l-aubergine bg-mist/40 px-4 py-3 text-sm leading-6 text-carbon/66">
-                This dossier will become the matching brief for creator discovery.
-              </div>
             </div>
 
-            <div className="border-carbon/22 border-t pt-6 xl:border-t-0 xl:border-l xl:pt-0 xl:pl-10">
-              <p className="text-xs font-bold tracking-[0.12em] uppercase">Saved value proposition</p>
-              <p className="display-type mt-5 max-w-3xl text-4xl leading-[1.02] sm:text-5xl">
+            <div className="nn-card rounded-[1.25rem] p-8 sm:p-10">
+              <p className="text-[0.72rem] font-bold tracking-[0.14em] text-nn-muted uppercase">
+                Saved value proposition
+              </p>
+              <p className="display-type mt-5 text-3xl leading-[1.05] text-nn-ink sm:text-4xl">
                 {brandProfile.valueProp}
               </p>
             </div>
           </div>
 
-          <section className="pt-12">
+          <section className="mt-16">
             <div className="flex flex-wrap items-end justify-between gap-4">
               <div>
-                <h2 className="display-type text-4xl">Three audience signals</h2>
-                <p className="mt-2 text-sm text-carbon/58">Saved from the website analysis.</p>
+                <h2 className="display-type text-4xl text-nn-ink">Three audience signals</h2>
+                <p className="mt-2 text-sm text-nn-muted">Saved from the website analysis.</p>
               </div>
-              <span className="bg-signal px-3 py-1 text-xs font-bold tracking-[0.1em] uppercase">{icps.length} ICPs</span>
+              <span className="nn-chip">{icps.length} ICPs</span>
             </div>
 
-            <ol className="mt-7 border-carbon/20 border-y">
+            <ol className="mt-8 grid gap-5">
               {icps.map((icp, index) => (
-                <li key={`${icp.role}-${icp.companyType}`} className="grid gap-5 border-carbon/16 border-b px-0 py-6 last:border-b-0 md:grid-cols-[72px_1fr_1.25fr]">
-                  <span className="display-type text-4xl text-aubergine">{String(index + 1).padStart(2, "0")}</span>
+                <li
+                  key={`${icp.role}-${icp.companyType}`}
+                  className="nn-card grid gap-6 rounded-[1.25rem] p-6 sm:p-8 md:grid-cols-[64px_1fr_1.15fr]"
+                >
+                  <span className="nn-num display-type text-4xl text-nn-blue">
+                    {String(index + 1).padStart(2, "0")}
+                  </span>
                   <div>
-                    <h3 className="font-bold">{icp.role}</h3>
-                    <p className="mt-1 text-sm text-carbon/58">{icp.companyType}</p>
+                    <h3 className="text-lg font-bold text-nn-ink">{icp.role}</h3>
+                    <p className="mt-1 text-sm text-nn-muted">{icp.companyType}</p>
                     <div className="mt-4 flex flex-wrap gap-2">
                       {icp.tags.map((tag) => (
-                        <span key={tag} className="border border-carbon/18 px-2.5 py-1 text-xs font-semibold">
+                        <span
+                          key={tag}
+                          className="rounded-full border border-nn-line px-3 py-1 text-xs font-semibold text-nn-muted"
+                        >
                           {tag}
                         </span>
                       ))}
                     </div>
                   </div>
-                  <div className="grid gap-4 sm:grid-cols-2">
+                  <div className="grid gap-5 sm:grid-cols-2">
                     <div>
-                      <p className="text-[0.7rem] font-bold tracking-[0.1em] text-carbon/48 uppercase">Pain</p>
-                      <p className="mt-2 text-sm leading-6">{icp.pain}</p>
+                      <p className="text-[0.7rem] font-bold tracking-[0.12em] text-nn-muted uppercase">
+                        Pain
+                      </p>
+                      <p className="mt-2 text-sm leading-6 text-nn-ink">{icp.pain}</p>
                     </div>
                     <div>
-                      <p className="text-[0.7rem] font-bold tracking-[0.1em] text-carbon/48 uppercase">Product fit</p>
-                      <p className="mt-2 text-sm leading-6">{icp.productFit}</p>
+                      <p className="text-[0.7rem] font-bold tracking-[0.12em] text-nn-muted uppercase">
+                        Product fit
+                      </p>
+                      <p className="mt-2 text-sm leading-6 text-nn-ink">{icp.productFit}</p>
                     </div>
                   </div>
                 </li>

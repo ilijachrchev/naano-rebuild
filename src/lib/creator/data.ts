@@ -41,6 +41,7 @@ export type CreatorCollaborationStatus = "accepted" | "content_submitted" | "com
 
 export type CreatorCollaboration = {
   id: string;
+  workspaceId: string;
   campaignName: string;
   deliverables: string;
   postBy: string | null;
@@ -191,7 +192,7 @@ export async function getCreatorCollaborations(
   const { data: collaborations, error: collaborationsError } = await supabase
     .from("collaborations")
     .select(
-      "id, campaign_id, accepted_offer_id, deliverables, post_by, approval_required, status, content_url",
+      "id, workspace_id, campaign_id, accepted_offer_id, deliverables, post_by, approval_required, status, content_url",
     )
     .eq("creator_id", creatorId)
     .in("status", [...creatorCollaborationStatuses])
@@ -239,6 +240,7 @@ export async function getCreatorCollaborations(
     return [
       {
         id: collaboration.id,
+        workspaceId: collaboration.workspace_id,
         campaignName: campaign?.name ?? "Direct collaboration",
         deliverables: collaboration.deliverables?.trim() || "Sponsored LinkedIn post",
         postBy: collaboration.post_by,
@@ -254,6 +256,14 @@ export async function getCreatorCollaborations(
       },
     ];
   });
+}
+
+export async function getCreatorCollaboration(
+  creatorId: string,
+  collaborationId: string,
+): Promise<CreatorCollaboration | null> {
+  const collaborations = await getCreatorCollaborations(creatorId);
+  return collaborations.find((collaboration) => collaboration.id === collaborationId) ?? null;
 }
 
 export async function getCreatorPayouts(creatorId: string): Promise<CreatorPayout[]> {

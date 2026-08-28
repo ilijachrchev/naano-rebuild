@@ -22,7 +22,7 @@ export function BrandMark({ inverse = false }: { inverse?: boolean }) {
   return (
     <div className={`flex items-center gap-3 ${inverse ? "text-mineral" : "text-carbon"}`}>
       <span className="display-type text-[2rem] leading-none">naano</span>
-      <span className="h-2.5 w-2.5 bg-signal" aria-hidden="true" />
+      <span className="h-2.5 w-2.5 rounded-[3px] bg-nn-blue" aria-hidden="true" />
     </div>
   );
 }
@@ -45,11 +45,11 @@ export function ProgressIndex({
               key={step}
               aria-current={active ? "step" : undefined}
               className={`relative flex min-h-20 flex-col justify-center border-white/18 px-3 py-3 lg:min-h-0 lg:border-b lg:px-5 ${
-                active ? "text-signal" : complete ? "text-mineral" : "text-mineral/48"
+                active ? "text-nn-blue-bright" : complete ? "text-mineral" : "text-mineral/48"
               }`}
             >
               {active ? (
-                <span className="absolute top-1/2 right-[-1px] hidden h-9 w-3.5 -translate-y-1/2 bg-signal [clip-path:polygon(0_0,100%_50%,0_100%)] lg:block" />
+                <span className="absolute top-1/2 right-[-1px] hidden h-9 w-3.5 -translate-y-1/2 bg-nn-blue [clip-path:polygon(0_0,100%_50%,0_100%)] lg:block" />
               ) : null}
               <span className="display-type text-2xl leading-none">{String(index + 1).padStart(2, "0")}</span>
               <span className="mt-1 hidden text-[0.7rem] font-bold tracking-[0.1em] uppercase sm:block">{step}</span>
@@ -110,7 +110,7 @@ export function DossierTabs({
 export function EvidenceMark({ children }: { children: ReactNode }) {
   return (
     <div className="flex items-center gap-3 text-[0.7rem] font-bold tracking-[0.1em] uppercase">
-      <span className="flex h-8 w-8 items-center justify-center rounded-full bg-signal text-carbon">
+      <span className="flex h-8 w-8 items-center justify-center rounded-full bg-nn-blue text-white">
         <CheckIcon className="h-4 w-4" />
       </span>
       {children}

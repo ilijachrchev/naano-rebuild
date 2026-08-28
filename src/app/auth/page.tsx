@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 
 import { AuthForm } from "@/components/brand/auth-form";
+import { RoleSwitch } from "@/components/auth/role-switch";
 import {
   BrandMark,
   DossierShell,
@@ -33,13 +34,14 @@ export default async function AuthPage() {
             <BrandMark inverse />
             <div className="mt-12 h-px bg-mineral/35" />
             <h1 className="display-type mt-7 max-w-xl text-[clamp(3.25rem,4.5vw,4.5rem)] leading-[0.89] text-balance">
-              Turn your website into a creator brief<span className="text-signal">.</span>
+              Turn your website into a creator brief<span className="text-nn-blue-bright">.</span>
             </h1>
             <p className="mt-7 max-w-md text-base leading-7 text-mineral/68">
               Start with what your company already says. naano uses it to shape the audience you should reach.
             </p>
           </div>
-          <div className="mt-10">
+          <div className="mt-10 space-y-6">
+            <RoleSwitch active="brand" />
             <AuthForm />
           </div>
         </>
@@ -49,7 +51,7 @@ export default async function AuthPage() {
       <div className="px-6 py-10 sm:px-10 lg:px-14 lg:py-14">
         <div className="flex items-center justify-between gap-6 border-carbon/20 border-b pb-8">
           <h2 className="display-type text-4xl sm:text-5xl">Your site becomes matching context.</h2>
-          <span className="hidden h-3 w-3 bg-signal sm:block" aria-hidden="true" />
+          <span className="hidden h-3 w-3 rounded-[3px] bg-nn-blue sm:block" aria-hidden="true" />
         </div>
 
         <div className="divide-carbon/18 divide-y">

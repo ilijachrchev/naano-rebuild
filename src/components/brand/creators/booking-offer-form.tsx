@@ -113,16 +113,19 @@ export function BookingOfferForm({
     return (
       <section className="py-2" aria-live="polite">
         <div className="flex items-center gap-3">
-          <span className="flex h-8 w-8 items-center justify-center rounded-full bg-signal font-bold" aria-hidden="true">
+          <span
+            className="flex h-8 w-8 items-center justify-center rounded-full bg-nn-blue font-bold text-white"
+            aria-hidden="true"
+          >
             ✓
           </span>
-          <p className="text-xs font-bold tracking-[0.12em] uppercase">Offer reserved</p>
+          <p className="text-xs font-bold tracking-[0.12em] text-nn-muted uppercase">Offer reserved</p>
         </div>
-        <h3 className="display-type mt-5 max-w-2xl text-4xl leading-none sm:text-5xl">
+        <h3 className="display-type mt-5 max-w-2xl text-4xl leading-none text-nn-ink sm:text-5xl">
           Offer sent to {creator.displayName}.
         </h3>
-        <p className="mt-5 max-w-2xl text-sm leading-6 text-carbon/64">{state.message}</p>
-        <div className="mt-8 flex flex-wrap gap-3 border-carbon/18 border-t pt-6">
+        <p className="mt-5 max-w-2xl text-sm leading-6 text-nn-muted">{state.message}</p>
+        <div className="mt-8 flex flex-wrap gap-3 border-nn-line border-t pt-6">
           <Link href="/brand/collaborations" className="primary-button">
             <span>View collaborations</span>
             <ArrowIcon className="h-5 w-5" />
@@ -130,9 +133,9 @@ export function BookingOfferForm({
           <button
             type="button"
             onClick={onBack}
-            className="min-h-14 cursor-pointer border border-carbon bg-transparent px-5 text-sm font-bold hover:bg-carbon hover:text-mineral"
+            className="min-h-14 cursor-pointer rounded-[0.85rem] border border-nn-line-strong bg-transparent px-5 text-sm font-bold text-nn-ink transition-colors hover:border-nn-blue hover:text-nn-blue"
           >
-            Back to dossier
+            Back to profile
           </button>
         </div>
       </section>
@@ -140,7 +143,7 @@ export function BookingOfferForm({
   }
 
   return (
-    <form action={formAction} className="space-y-8">
+    <form action={formAction} className="space-y-10">
       <input type="hidden" name="workspaceId" value={workspaceId} />
       <input type="hidden" name="idempotencyKey" value={idempotencyKey} />
       <input type="hidden" name="creatorId" value={creator.id} />
@@ -148,61 +151,66 @@ export function BookingOfferForm({
       <input type="hidden" name="feeCents" value={feeCents ?? ""} />
 
       <section aria-labelledby={`offer-price-${creator.id}`}>
-        <p className="text-xs font-bold tracking-[0.12em] text-aubergine uppercase">Offer terms · 01</p>
-        <div className="mt-3 flex flex-wrap items-end justify-between gap-4 border-carbon/18 border-b pb-5">
+        <div className="flex flex-wrap items-end justify-between gap-4 border-nn-line border-b pb-5">
           <div>
-            <h3 id={`offer-price-${creator.id}`} className="display-type text-4xl">
+            <h3 id={`offer-price-${creator.id}`} className="display-type text-3xl text-nn-ink">
               Set the fee.
             </h3>
-            <p className="mt-2 text-sm text-carbon/58">
+            <p className="mt-2 text-sm text-nn-muted">
               Listed rate {listPriceCents === null ? "unavailable" : formatCurrency(listPriceCents)} per post.
             </p>
           </div>
           {feeCents !== null ? (
             <div className="text-right">
-              <p className="text-[0.72rem] font-bold tracking-[0.11em] text-carbon/48 uppercase">Offer</p>
-              <p className="display-type mt-1 text-4xl text-aubergine">{formatCurrency(feeCents)}</p>
+              <p className="text-[0.72rem] font-bold tracking-[0.12em] text-nn-muted uppercase">Offer</p>
+              <p className="nn-num display-type mt-1 text-4xl text-nn-blue">{formatCurrency(feeCents)}</p>
             </div>
           ) : null}
         </div>
 
-        <div className="mt-5 grid gap-px border border-carbon/18 bg-carbon/18 sm:grid-cols-2">
+        <div className="mt-5 grid gap-3 sm:grid-cols-2">
           <button
             type="button"
             aria-pressed={pricingMode === "listed-rate"}
             onClick={() => setPricingMode("listed-rate")}
-            className={`min-h-20 cursor-pointer px-5 text-left ${
-              pricingMode === "listed-rate" ? "bg-signal text-carbon" : "bg-paper hover:bg-mist/55"
+            className={`min-h-20 cursor-pointer rounded-[0.85rem] border px-5 text-left transition-colors ${
+              pricingMode === "listed-rate"
+                ? "border-nn-blue bg-nn-blue text-white"
+                : "border-nn-line bg-nn-white text-nn-ink hover:border-nn-blue"
             }`}
           >
             <span className="block text-xs font-bold tracking-[0.1em] uppercase">Book at listed rate</span>
-            <span className="mt-1 block text-sm opacity-70">Send the creator’s published fee.</span>
+            <span className="mt-1 block text-sm opacity-80">Send the creator’s published fee.</span>
           </button>
           <button
             type="button"
             aria-pressed={pricingMode === "negotiate"}
             onClick={() => setPricingMode("negotiate")}
-            className={`min-h-20 cursor-pointer px-5 text-left ${
-              pricingMode === "negotiate" ? "bg-signal text-carbon" : "bg-paper hover:bg-mist/55"
+            className={`min-h-20 cursor-pointer rounded-[0.85rem] border px-5 text-left transition-colors ${
+              pricingMode === "negotiate"
+                ? "border-nn-blue bg-nn-blue text-white"
+                : "border-nn-line bg-nn-white text-nn-ink hover:border-nn-blue"
             }`}
           >
             <span className="block text-xs font-bold tracking-[0.1em] uppercase">Negotiate lower</span>
-            <span className="mt-1 block text-sm opacity-70">Propose a discounted fixed fee.</span>
+            <span className="mt-1 block text-sm opacity-80">Propose a discounted fixed fee.</span>
           </button>
         </div>
 
         {pricingMode === "negotiate" && listPriceCents !== null ? (
-          <div className="mt-5 border border-carbon/18 bg-mist/30 px-5 py-5">
-            <p className="field-label">Discount from listed rate</p>
-            <div className="grid gap-px bg-carbon/18 sm:grid-cols-4">
+          <div className="mt-5 rounded-[1.25rem] bg-nn-blue-50 px-5 py-5">
+            <p className="field-label text-nn-ink">Discount from listed rate</p>
+            <div className="grid gap-2 sm:grid-cols-4">
               {discountTiers.map((tier) => (
                 <button
                   key={tier}
                   type="button"
                   aria-pressed={discount === tier}
                   onClick={() => setDiscount(tier)}
-                  className={`min-h-12 cursor-pointer text-sm font-bold ${
-                    discount === tier ? "bg-signal" : "bg-paper hover:bg-white"
+                  className={`min-h-12 cursor-pointer rounded-[0.7rem] border text-sm font-bold transition-colors ${
+                    discount === tier
+                      ? "border-nn-blue bg-nn-blue text-white"
+                      : "border-nn-line bg-nn-white text-nn-ink hover:border-nn-blue"
                   }`}
                 >
                   {tier}% lower
@@ -212,8 +220,10 @@ export function BookingOfferForm({
                 type="button"
                 aria-pressed={discount === "custom"}
                 onClick={() => setDiscount("custom")}
-                className={`min-h-12 cursor-pointer text-sm font-bold ${
-                  discount === "custom" ? "bg-signal" : "bg-paper hover:bg-white"
+                className={`min-h-12 cursor-pointer rounded-[0.7rem] border text-sm font-bold transition-colors ${
+                  discount === "custom"
+                    ? "border-nn-blue bg-nn-blue text-white"
+                    : "border-nn-line bg-nn-white text-nn-ink hover:border-nn-blue"
                 }`}
               >
                 Custom
@@ -221,7 +231,7 @@ export function BookingOfferForm({
             </div>
             {discount === "custom" ? (
               <div className="mt-5 max-w-xs">
-                <label className="field-label" htmlFor={`custom-fee-${creator.id}`}>
+                <label className="field-label text-nn-ink" htmlFor={`custom-fee-${creator.id}`}>
                   Custom offer in EUR
                 </label>
                 <input
@@ -237,14 +247,14 @@ export function BookingOfferForm({
                 />
                 <p
                   id={`custom-fee-help-${creator.id}`}
-                  className={`mt-2 text-xs leading-5 ${customFeeError ? "text-danger" : "text-carbon/54"}`}
+                  className={`mt-2 text-xs leading-5 ${customFeeError ? "text-danger" : "text-nn-muted"}`}
                 >
                   {customFeeError ?? `Enter an amount below ${formatCurrency(listPriceCents)}.`}
                 </p>
               </div>
             ) : null}
             {feeCents !== null && discountPercentage > 0 ? (
-              <p className="mt-4 text-xs font-bold tracking-[0.09em] text-aubergine uppercase">
+              <p className="mt-4 text-xs font-bold tracking-[0.09em] text-nn-blue uppercase">
                 {discountPercentage}% below listed rate
               </p>
             ) : null}
@@ -253,13 +263,12 @@ export function BookingOfferForm({
       </section>
 
       <section aria-labelledby={`offer-delivery-${creator.id}`}>
-        <p className="text-xs font-bold tracking-[0.12em] text-aubergine uppercase">Delivery · 02</p>
-        <h3 id={`offer-delivery-${creator.id}`} className="display-type mt-3 text-4xl">
+        <h3 id={`offer-delivery-${creator.id}`} className="display-type text-3xl text-nn-ink">
           Attach the working brief.
         </h3>
         <div className="mt-5 grid gap-5 sm:grid-cols-2">
           <div>
-            <label className="field-label" htmlFor={`brief-${creator.id}`}>
+            <label className="field-label text-nn-ink" htmlFor={`brief-${creator.id}`}>
               Ready brief
             </label>
             <select
@@ -280,7 +289,7 @@ export function BookingOfferForm({
             </select>
           </div>
           <div>
-            <label className="field-label" htmlFor={`post-by-${creator.id}`}>
+            <label className="field-label text-nn-ink" htmlFor={`post-by-${creator.id}`}>
               Post by
             </label>
             <input
@@ -293,21 +302,21 @@ export function BookingOfferForm({
               onChange={(event) => setPostBy(event.target.value)}
               required
             />
-            <p className="mt-2 text-xs leading-5 text-carbon/52">Defaults to 14 days from today.</p>
+            <p className="mt-2 text-xs leading-5 text-nn-muted">Defaults to 14 days from today.</p>
           </div>
         </div>
 
-        <label className="mt-5 flex cursor-pointer items-start gap-3 border border-carbon/18 bg-paper px-4 py-4">
+        <label className="mt-5 flex cursor-pointer items-start gap-3 rounded-[0.85rem] border border-nn-line bg-nn-white px-4 py-4">
           <input
             type="checkbox"
             name="approvalRequired"
-            className="mt-1 h-4 w-4 accent-aubergine"
+            className="mt-1 h-4 w-4 accent-nn-blue"
             checked={approvalRequired}
             onChange={(event) => setApprovalRequired(event.target.checked)}
           />
           <span>
-            <span className="block text-sm font-bold">Require content approval before publishing</span>
-            <span className="mt-1 block text-xs leading-5 text-carbon/54">
+            <span className="block text-sm font-bold text-nn-ink">Require content approval before publishing</span>
+            <span className="mt-1 block text-xs leading-5 text-nn-muted">
               The creator must submit content for review before the post can go live.
             </span>
           </span>
@@ -315,34 +324,35 @@ export function BookingOfferForm({
       </section>
 
       <section aria-labelledby={`reservation-summary-${creator.id}`}>
-        <p className="text-xs font-bold tracking-[0.12em] text-aubergine uppercase">Reservation · 03</p>
-        <h3 id={`reservation-summary-${creator.id}`} className="display-type mt-3 text-4xl">
+        <h3 id={`reservation-summary-${creator.id}`} className="display-type text-3xl text-nn-ink">
           Review what will be reserved.
         </h3>
-        <dl className="mt-5 grid gap-px border border-carbon/18 bg-carbon/18 sm:grid-cols-2">
-          <div className="bg-paper px-4 py-4">
-            <dt className="text-[0.72rem] font-bold tracking-[0.11em] text-carbon/48 uppercase">Fee</dt>
-            <dd className="display-type mt-2 text-2xl">{feeCents === null ? "Check amount" : formatCurrency(feeCents)}</dd>
+        <dl className="mt-5 grid gap-3 sm:grid-cols-2">
+          <div className="rounded-[0.85rem] border border-nn-line bg-nn-white px-4 py-4">
+            <dt className="text-[0.72rem] font-bold tracking-[0.12em] text-nn-muted uppercase">Fee</dt>
+            <dd className="nn-num display-type mt-2 text-2xl text-nn-ink">
+              {feeCents === null ? "Check amount" : formatCurrency(feeCents)}
+            </dd>
           </div>
-          <div className="bg-paper px-4 py-4">
-            <dt className="text-[0.72rem] font-bold tracking-[0.11em] text-carbon/48 uppercase">Campaign brief</dt>
-            <dd className="mt-2 text-sm font-bold">{selectedBrief?.title ?? "No ready brief"}</dd>
+          <div className="rounded-[0.85rem] border border-nn-line bg-nn-white px-4 py-4">
+            <dt className="text-[0.72rem] font-bold tracking-[0.12em] text-nn-muted uppercase">Campaign brief</dt>
+            <dd className="mt-2 text-sm font-bold text-nn-ink">{selectedBrief?.title ?? "No ready brief"}</dd>
           </div>
-          <div className="bg-paper px-4 py-4">
-            <dt className="text-[0.72rem] font-bold tracking-[0.11em] text-carbon/48 uppercase">Post by</dt>
-            <dd className="mt-2 text-sm font-bold">{formattedPostBy}</dd>
+          <div className="rounded-[0.85rem] border border-nn-line bg-nn-white px-4 py-4">
+            <dt className="text-[0.72rem] font-bold tracking-[0.12em] text-nn-muted uppercase">Post by</dt>
+            <dd className="mt-2 text-sm font-bold text-nn-ink">{formattedPostBy}</dd>
           </div>
-          <div className="bg-paper px-4 py-4">
-            <dt className="text-[0.72rem] font-bold tracking-[0.11em] text-carbon/48 uppercase">Content approval</dt>
-            <dd className="mt-2 text-sm font-bold">{approvalRequired ? "Required" : "Not required"}</dd>
+          <div className="rounded-[0.85rem] border border-nn-line bg-nn-white px-4 py-4">
+            <dt className="text-[0.72rem] font-bold tracking-[0.12em] text-nn-muted uppercase">Content approval</dt>
+            <dd className="mt-2 text-sm font-bold text-nn-ink">{approvalRequired ? "Required" : "Not required"}</dd>
           </div>
         </dl>
       </section>
 
       {!briefs.length ? (
-        <div className="border-l-2 border-l-aubergine bg-mist/55 px-4 py-4 text-sm leading-6">
+        <div className="rounded-[0.85rem] bg-nn-blue-50 px-4 py-4 text-sm leading-6 text-nn-ink">
           Prepare and mark a campaign brief ready before inviting a creator.{" "}
-          <Link href="/brand/campaigns" className="font-bold text-aubergine underline underline-offset-4">
+          <Link href="/brand/campaigns" className="font-bold text-nn-blue underline underline-offset-4">
             Open campaigns
           </Link>
         </div>
@@ -351,7 +361,7 @@ export function BookingOfferForm({
       {state.status === "error" ? (
         <div
           aria-live="polite"
-          className="border-l-2 border-l-danger bg-danger/8 px-4 py-4 text-sm leading-6 text-danger"
+          className="rounded-[0.85rem] bg-danger/8 px-4 py-4 text-sm leading-6 text-danger"
         >
           <p>{state.message}</p>
           {state.errorCode === "INSUFFICIENT_FUNDS" ? (
@@ -362,8 +372,8 @@ export function BookingOfferForm({
         </div>
       ) : null}
 
-      <div className="flex flex-wrap items-center justify-between gap-4 border-carbon/18 border-t pt-6">
-        <p className="max-w-lg text-xs leading-5 text-carbon/52">
+      <div className="flex flex-wrap items-center justify-between gap-4 border-nn-line border-t pt-6">
+        <p className="max-w-lg text-xs leading-5 text-nn-muted">
           Sending reserves the offer amount immediately. The creator is asked to respond within 48 hours.
         </p>
         <SubmitOfferButton disabled={!canSubmit} />

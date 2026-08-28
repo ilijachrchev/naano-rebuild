@@ -27,36 +27,32 @@ export default async function BrandCreatorsPage() {
   const bookingDates = getBookingDates();
 
   return (
-    <main className="min-h-screen bg-mineral lg:grid lg:grid-cols-[280px_minmax(0,1fr)]">
+    <main className="min-h-screen bg-nn-white lg:grid lg:grid-cols-[280px_minmax(0,1fr)]">
       <BrandSidebar workspaceName={workspace.name} activeHref="/brand/creators" />
 
-      <section className="dossier-paper min-h-screen">
-        <header className="flex min-h-20 flex-wrap items-center justify-between gap-4 border-carbon/16 border-b px-6 py-4 sm:px-10 lg:px-14">
+      <section className="min-h-screen bg-nn-paper">
+        <header className="flex min-h-20 flex-wrap items-center justify-between gap-4 border-nn-line border-b px-6 py-4 sm:px-10 lg:px-14">
           <div>
-            <p className="text-xs font-bold tracking-[0.12em] text-aubergine uppercase">Creator marketplace</p>
-            <p className="text-sm text-carbon/55">Seeded profiles, filtered through row-level security</p>
+            <p className="text-xs font-bold tracking-[0.12em] text-nn-blue uppercase">Creators</p>
+            <p className="text-sm text-nn-muted">Seeded profiles, filtered through row-level security</p>
           </div>
-          <span className="flex items-center gap-2 text-xs font-bold tracking-[0.09em] uppercase">
-            <span className="h-2.5 w-2.5 rounded-full bg-signal" aria-hidden="true" /> Matched
+          <span className="flex items-center gap-2 text-xs font-bold tracking-[0.09em] text-nn-muted uppercase">
+            <span className="h-2.5 w-2.5 rounded-full bg-nn-blue" aria-hidden="true" /> Matched
           </span>
         </header>
 
-        <div className="px-6 py-9 sm:px-10 lg:px-14 lg:py-12">
-          <div className="grid gap-7 border-carbon/18 border-b pb-10 xl:grid-cols-[1.15fr_0.85fr] xl:items-end">
-            <div>
-              <p className="text-xs font-bold tracking-[0.12em] text-aubergine uppercase">Discovery dossier · 02</p>
-              <h1 className="display-type mt-3 max-w-4xl text-5xl leading-[0.92] sm:text-6xl xl:text-7xl">
-                Creators matched to your market signal.
-              </h1>
-            </div>
-            <div className="border-carbon/18 border-l-2 border-l-aubergine bg-mist/38 px-5 py-4">
-              <p className="text-sm leading-6 text-carbon/64">
-                Compare audience evidence, then open a creator dossier to attach a brief, set the terms, and reserve the offer from your wallet.
-              </p>
-            </div>
+        <div className="px-6 py-12 sm:px-10 lg:px-14 lg:py-16">
+          <div className="grid gap-8 xl:grid-cols-[1.15fr_0.85fr] xl:items-end">
+            <h1 className="display-type max-w-3xl text-5xl leading-[0.95] text-nn-ink sm:text-6xl">
+              Creators matched to your market signal.
+            </h1>
+            <p className="max-w-md text-lg leading-8 text-nn-muted">
+              Compare audience evidence, then open a creator to attach a brief, set the terms, and
+              reserve the offer from your wallet.
+            </p>
           </div>
 
-          <div className="mt-9">
+          <div className="mt-12">
             <CreatorMarketplace
               creators={creators}
               briefs={briefs}

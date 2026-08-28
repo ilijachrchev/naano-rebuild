@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
-import { BrandMark } from "@/components/brand/dossier";
+import { CreatorShell } from "@/components/creator/shell";
 import { SubmitContentForm } from "@/components/creator/submit-content-form";
 import { getCreatorContext } from "@/lib/creator/context";
 import {
@@ -58,101 +58,76 @@ export default async function CreatorCollaborationsPage() {
   const collaborations = await getCreatorCollaborations(context.creator.id);
 
   return (
-    <main className="min-h-screen bg-mineral">
-      <section className="dossier-paper min-h-screen">
-        <header className="flex min-h-20 flex-wrap items-center justify-between gap-5 border-carbon/16 border-b px-6 py-4 sm:px-10 lg:px-14">
-          <div className="flex flex-wrap items-center gap-5 sm:gap-7">
-            <BrandMark />
-            <div className="border-carbon/18 sm:border-l sm:pl-7">
-              <p className="text-xs font-bold tracking-[0.12em] text-aubergine uppercase">
-                Creator collaborations
-              </p>
-              <p className="text-sm text-carbon/55">
-                {context.creator.displayName} · {collaborations.length} records
-              </p>
-            </div>
-          </div>
-          <Link
-            href="/creator"
-            className="text-xs font-bold tracking-[0.09em] text-carbon/56 uppercase hover:text-aubergine"
-          >
-            ← Back to creator desk
-          </Link>
-        </header>
-      <div className="px-6 py-10 sm:px-10 lg:px-14 lg:py-14">
-        <div className="grid gap-7 border-carbon/18 border-b pb-10 xl:grid-cols-[1.15fr_0.85fr] xl:items-end">
-          <div>
-            <p className="text-xs font-bold tracking-[0.12em] text-aubergine uppercase">
-              Settlement workflow
-            </p>
-            <h1 className="display-type mt-3 max-w-4xl text-5xl leading-[0.92] sm:text-6xl xl:text-7xl">
-              Take accepted work through to payout.
-            </h1>
-          </div>
-          <p className="max-w-2xl border-carbon/18 text-base leading-7 text-carbon/64 xl:border-l xl:pl-8">
+    <CreatorShell
+      creatorName={context.creator.displayName}
+      activeHref="/creator/collaborations"
+      eyebrow="Creator collaborations"
+      detail={`${context.creator.displayName} · ${collaborations.length} records`}
+      marker="Settlement workflow"
+    >
+      <div className="px-6 py-12 sm:px-10 lg:px-14 lg:py-16">
+        <div className="max-w-2xl">
+          <h1 className="nn-display text-[clamp(2rem,4.2vw,3.25rem)] text-nn-ink">
+            Take accepted work through to payout.
+          </h1>
+          <p className="mt-5 text-lg text-nn-muted">
             Submit the public LinkedIn post once it is live. The same collaboration record then
             moves to the brand for approval and settlement.
           </p>
         </div>
 
         {collaborations.length === 0 ? (
-          <section className="mt-10 border-carbon/20 border-y py-12">
-            <p className="text-xs font-bold tracking-[0.12em] text-aubergine uppercase">
-              No active work
-            </p>
-            <h2 className="display-type mt-4 text-4xl">Accepted collaborations will appear here.</h2>
-            <p className="mt-3 max-w-xl text-sm leading-6 text-carbon/58">
+          <div className="nn-card mt-10 p-8 sm:p-10">
+            <h2 className="nn-display text-2xl text-nn-ink">Accepted collaborations will appear here.</h2>
+            <p className="mt-3 max-w-xl text-sm leading-6 text-nn-muted">
               Review incoming brand invitations under Opportunities to begin a collaboration.
             </p>
-          </section>
+          </div>
         ) : (
-          <ol className="mt-10 border-carbon/20 border-y">
-            {collaborations.map((collaboration, index) => {
+          <ol className="mt-10 grid list-none gap-6 p-0">
+            {collaborations.map((collaboration) => {
               const status = statusContent[collaboration.status];
 
               return (
                 <li
                   key={collaboration.id}
-                  className="grid gap-7 border-carbon/16 border-b py-8 last:border-b-0 xl:grid-cols-[72px_minmax(0,1fr)_minmax(270px,0.62fr)]"
+                  className="nn-card grid gap-7 p-7 sm:p-8 xl:grid-cols-[minmax(0,1fr)_minmax(250px,0.5fr)]"
                 >
-                  <span className="display-type text-4xl text-aubergine">
-                    {String(index + 1).padStart(2, "0")}
-                  </span>
                   <div>
                     <div className="flex flex-wrap items-center gap-3">
-                      <h2 className="display-type text-4xl leading-none">
+                      <h2 className="nn-display text-2xl text-nn-ink">
                         {collaboration.campaignName}
                       </h2>
-                      <span className="flex items-center gap-2 text-[0.68rem] font-bold tracking-[0.09em] uppercase">
-                        <span className="h-2 w-2 rounded-full bg-signal" aria-hidden="true" />
+                      <span className="nn-chip">
+                        <span className="h-2 w-2 rounded-full bg-nn-blue" aria-hidden="true" />
                         {status.label}
                       </span>
                     </div>
-                    <p className="mt-4 max-w-2xl text-sm leading-6 text-carbon/64">
+                    <p className="mt-4 max-w-2xl text-sm leading-6 text-nn-muted">
                       {collaboration.deliverables}
                     </p>
-                    <dl className="mt-6 grid gap-4 border-carbon/16 border-t pt-5 sm:grid-cols-3">
+                    <dl className="mt-6 grid gap-4 border-nn-line border-t pt-6 sm:grid-cols-3">
                       <div>
-                        <dt className="text-[0.66rem] font-bold tracking-[0.1em] text-carbon/46 uppercase">
+                        <dt className="text-[0.66rem] font-bold tracking-[0.1em] text-nn-muted uppercase">
                           Fee
                         </dt>
-                        <dd className="display-type mt-2 text-2xl">
+                        <dd className="nn-display nn-num mt-2 text-2xl text-nn-ink">
                           {formatMoney(collaboration.offer)}
                         </dd>
                       </div>
                       <div>
-                        <dt className="text-[0.66rem] font-bold tracking-[0.1em] text-carbon/46 uppercase">
+                        <dt className="text-[0.66rem] font-bold tracking-[0.1em] text-nn-muted uppercase">
                           Post by
                         </dt>
-                        <dd className="mt-2 text-sm font-semibold">
+                        <dd className="mt-2 text-sm font-semibold text-nn-ink">
                           {formatDate(collaboration.postBy)}
                         </dd>
                       </div>
                       <div>
-                        <dt className="text-[0.66rem] font-bold tracking-[0.1em] text-carbon/46 uppercase">
+                        <dt className="text-[0.66rem] font-bold tracking-[0.1em] text-nn-muted uppercase">
                           Approval
                         </dt>
-                        <dd className="mt-2 text-sm font-semibold">
+                        <dd className="mt-2 text-sm font-semibold text-nn-ink">
                           {collaboration.approvalRequired ? "Required" : "Not required"}
                         </dd>
                       </div>
@@ -166,18 +141,24 @@ export default async function CreatorCollaborationsPage() {
                           href={collaboration.contentUrl}
                           target="_blank"
                           rel="noreferrer"
-                          className="font-bold text-aubergine hover:text-aubergine-deep"
+                          className="font-bold text-nn-blue hover:text-nn-blue-strong"
                         >
                           View submitted post <span aria-hidden="true">↗</span>
                         </a>
                       </p>
                     ) : null}
                   </div>
-                  <aside className="border-carbon/18 border-l-2 border-l-aubergine bg-mist/38 px-5 py-5">
-                    <p className="text-[0.68rem] font-bold tracking-[0.1em] text-carbon/48 uppercase">
+                  <aside className="rounded-[var(--nn-radius-sm)] bg-nn-blue-50 p-6">
+                    <p className="text-[0.68rem] font-bold tracking-[0.1em] text-nn-muted uppercase">
                       Next action
                     </p>
-                    <p className="mt-3 text-sm leading-6 text-carbon/68">{status.next}</p>
+                    <p className="mt-3 text-sm leading-6 text-nn-ink">{status.next}</p>
+                    <Link
+                      href={`/creator/collaborations/${collaboration.id}`}
+                      className="mt-6 inline-flex items-center gap-2 text-sm font-bold text-nn-blue hover:text-nn-blue-strong"
+                    >
+                      Open collaboration <span aria-hidden="true">→</span>
+                    </Link>
                   </aside>
                 </li>
               );
@@ -185,7 +166,6 @@ export default async function CreatorCollaborationsPage() {
           </ol>
         )}
       </div>
-      </section>
-    </main>
+    </CreatorShell>
   );
 }

@@ -10,25 +10,21 @@ export function BrandComingSoon({
   section: string;
 }) {
   return (
-    <main className="min-h-screen bg-mineral lg:grid lg:grid-cols-[280px_minmax(0,1fr)]">
+    <main className="min-h-screen bg-nn-white lg:grid lg:grid-cols-[280px_minmax(0,1fr)]">
       <BrandSidebar workspaceName={workspaceName} activeHref={activeHref} />
 
-      <section className="dossier-paper min-h-screen">
-        <header className="flex min-h-20 items-center border-carbon/16 border-b px-6 sm:px-10 lg:px-14">
+      <section className="min-h-screen bg-nn-paper">
+        <header className="flex min-h-20 items-center border-nn-line border-b px-6 sm:px-10 lg:px-14">
           <div>
-            <p className="text-xs font-bold tracking-[0.12em] text-aubergine uppercase">
-              Brand workspace
-            </p>
-            <p className="text-sm text-carbon/55">{section}</p>
+            <p className="text-xs font-bold tracking-[0.12em] text-nn-blue uppercase">Brand workspace</p>
+            <p className="text-sm text-nn-muted">{section}</p>
           </div>
         </header>
 
         <div className="flex min-h-[calc(100vh-5rem)] items-center px-6 py-12 sm:px-10 lg:px-14">
-          <div className="max-w-3xl border-carbon/18 border-y py-12">
-            <p className="text-xs font-bold tracking-[0.12em] text-aubergine uppercase">
-              Coming soon
-            </p>
-            <h1 className="display-type mt-4 text-5xl leading-[0.92] sm:text-6xl">
+          <div className="max-w-3xl">
+            <span className="nn-chip">Coming soon</span>
+            <h1 className="display-type mt-5 text-5xl leading-[0.95] text-nn-ink sm:text-6xl">
               {section} is coming soon.
             </h1>
           </div>

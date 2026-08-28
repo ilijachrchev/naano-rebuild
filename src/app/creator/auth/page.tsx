@@ -1,6 +1,6 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
 
+import { RoleSwitch } from "@/components/auth/role-switch";
 import { BrandMark, DossierShell, DossierTabs, EvidenceMark } from "@/components/brand/dossier";
 import { CreatorAuthForm } from "@/components/creator/auth-form";
 import { getCreatorContext } from "@/lib/creator/context";
@@ -23,24 +23,19 @@ export default async function CreatorAuthPage() {
           <div>
             <BrandMark inverse />
             <div className="mt-12 h-px bg-mineral/35" />
-            <p className="mt-7 text-xs font-bold tracking-[0.12em] text-signal uppercase">
+            <p className="mt-7 text-xs font-bold tracking-[0.12em] text-nn-blue-bright uppercase">
               Creator access
             </p>
             <h1 className="display-type mt-4 max-w-xl text-[clamp(3.25rem,4.5vw,4.5rem)] leading-[0.89] text-balance">
-              Turn your LinkedIn signal into a bookable creator card<span className="text-signal">.</span>
+              Turn your LinkedIn signal into a bookable creator card<span className="text-nn-blue-bright">.</span>
             </h1>
             <p className="mt-7 max-w-md text-base leading-7 text-mineral/68">
               This entry is for creators. Your account opens the creator desk, not a brand workspace.
             </p>
           </div>
-          <div className="mt-10">
+          <div className="mt-10 space-y-6">
+            <RoleSwitch active="creator" />
             <CreatorAuthForm />
-            <p className="mt-6 text-sm text-mineral/58">
-              Joining for a brand?{" "}
-              <Link href="/auth" className="font-bold text-mineral hover:text-signal">
-                Use brand access
-              </Link>
-            </p>
           </div>
         </>
       }
@@ -49,7 +44,7 @@ export default async function CreatorAuthPage() {
       <div className="px-6 py-10 sm:px-10 lg:px-14 lg:py-14">
         <div className="flex items-center justify-between gap-6 border-carbon/20 border-b pb-8">
           <h2 className="display-type text-4xl sm:text-5xl">One public profile becomes marketplace evidence.</h2>
-          <span className="hidden h-3 w-3 bg-signal sm:block" aria-hidden="true" />
+          <span className="hidden h-3 w-3 rounded-[3px] bg-nn-blue sm:block" aria-hidden="true" />
         </div>
 
         <div className="divide-carbon/18 divide-y">
