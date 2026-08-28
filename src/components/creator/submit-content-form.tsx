@@ -19,11 +19,11 @@ export function SubmitContentForm({ collaborationId }: { collaborationId: string
   );
 
   return (
-    <form action={formAction} className="mt-6 border-carbon/16 border-t pt-5">
+    <form action={formAction} className="mt-6 border-nn-line border-t pt-5">
       <input type="hidden" name="collaborationId" value={collaborationId} />
       <label
         htmlFor={`content-url-${collaborationId}`}
-        className="text-[0.68rem] font-bold tracking-[0.1em] text-carbon/48 uppercase"
+        className="text-[0.68rem] font-bold tracking-[0.1em] text-nn-muted uppercase"
       >
         Published post link
       </label>
@@ -37,9 +37,13 @@ export function SubmitContentForm({ collaborationId }: { collaborationId: string
           placeholder="https://www.linkedin.com/posts/..."
           required
           disabled={pending}
-          className="min-h-13 w-full rounded-sm border border-carbon/24 bg-white/55 px-4 py-3 text-sm text-carbon outline-none transition-colors placeholder:text-carbon/35 hover:border-aubergine focus:border-signal focus:bg-white focus:ring-3 focus:ring-signal/35 disabled:opacity-60"
+          className="min-h-13 w-full rounded-[var(--nn-radius-sm)] border border-nn-line-strong bg-nn-white px-4 py-3 text-sm text-nn-ink outline-none transition-colors placeholder:text-nn-muted/60 hover:border-nn-blue focus:border-nn-blue focus:ring-3 focus:ring-nn-blue/25 disabled:opacity-60"
         />
-        <button type="submit" disabled={pending} className="primary-button min-h-13 py-3">
+        <button
+          type="submit"
+          disabled={pending}
+          className="nn-btn nn-btn-primary min-h-13 py-3 disabled:cursor-wait disabled:opacity-60"
+        >
           {pending ? "Submitting…" : "Submit content"}
           <span aria-hidden="true">→</span>
         </button>
@@ -48,7 +52,7 @@ export function SubmitContentForm({ collaborationId }: { collaborationId: string
         {state.message ? (
           <p
             className={`mt-3 text-sm ${
-              state.status === "error" ? "text-danger" : "font-bold text-aubergine"
+              state.status === "error" ? "text-danger" : "font-bold text-nn-blue"
             }`}
           >
             {state.message}
