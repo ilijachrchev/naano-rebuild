@@ -70,10 +70,8 @@ function ActionFeedback({ state }: { state: CampaignActionState }) {
   return (
     <p
       aria-live="polite"
-      className={`border-l-2 px-4 py-3 text-sm leading-6 ${
-        state.error
-          ? "border-l-danger bg-danger/8 text-danger"
-          : "border-l-aubergine bg-mist/55 text-carbon/70"
+      className={`rounded-[0.85rem] px-4 py-3 text-sm leading-6 ${
+        state.error ? "bg-danger/8 text-danger" : "bg-nn-blue-50 text-nn-ink"
       }`}
     >
       {state.error ?? state.message}
@@ -114,7 +112,7 @@ export function CreateCampaignForm({ workspaceId }: { workspaceId: string }) {
           maxLength={2000}
           required
         />
-        <p className="mt-2 text-xs leading-5 text-carbon/52">
+        <p className="mt-2 text-xs leading-5 text-nn-muted">
           This objective becomes the primary instruction for the AI brief.
         </p>
       </div>
@@ -142,11 +140,11 @@ export function GenerateBriefForm({ campaignId }: { campaignId: string }) {
   return (
     <form action={formAction} className="mt-7">
       <input type="hidden" name="campaignId" value={campaignId} />
-      <div className="border border-carbon/18 bg-paper px-5 py-5 sm:px-6">
-        <p className="text-xs font-bold tracking-[0.12em] text-aubergine uppercase">
+      <div className="rounded-[1.25rem] bg-nn-blue-50 px-5 py-5 sm:px-6">
+        <p className="text-[0.72rem] font-bold tracking-[0.12em] text-nn-blue uppercase">
           Built from your saved brand profile
         </p>
-        <p className="mt-3 max-w-2xl text-sm leading-6 text-carbon/64">
+        <p className="mt-3 max-w-2xl text-sm leading-6 text-nn-ink">
           Create with AI combines this campaign objective with the workspace’s saved brand profile.
           The result stays in draft so every field can be reviewed and edited.
         </p>
@@ -236,19 +234,19 @@ export function BriefEditor({ brief }: { brief: EditableBrief }) {
       <input type="hidden" name="campaignId" value={brief.campaignId} />
 
       {brief.generationMode === "placeholder" && !placeholderRewritten ? (
-        <div className="mb-7 border border-danger/35 border-l-2 border-l-danger bg-danger/6 px-5 py-4">
-          <p className="text-xs font-bold tracking-[0.12em] text-danger uppercase">
+        <div className="mb-7 rounded-[1.25rem] bg-danger/8 px-5 py-4">
+          <p className="text-[0.72rem] font-bold tracking-[0.12em] text-danger uppercase">
             Placeholder brief
           </p>
-          <p className="mt-2 text-sm leading-6 text-carbon/68">
+          <p className="mt-2 text-sm leading-6 text-nn-ink">
             AI drafting is temporarily unavailable, so we created a clearly marked starter brief.
             Replace every field before marking it ready.
           </p>
         </div>
       ) : null}
 
-      <div className="grid gap-px border border-carbon/18 bg-carbon/18">
-        <div className="bg-paper p-5 sm:p-6">
+      <div className="grid gap-6">
+        <div>
           <label className="field-label" htmlFor={`brief-title-${brief.id}`}>
             Brief title
           </label>
@@ -264,7 +262,7 @@ export function BriefEditor({ brief }: { brief: EditableBrief }) {
           />
         </div>
 
-        <div className="bg-paper p-5 sm:p-6">
+        <div>
           <label className="field-label" htmlFor={`brief-objectives-${brief.id}`}>
             Objectives
           </label>
@@ -280,7 +278,7 @@ export function BriefEditor({ brief }: { brief: EditableBrief }) {
           />
         </div>
 
-        <div className="bg-paper p-5 sm:p-6">
+        <div>
           <label className="field-label" htmlFor={`brief-messages-${brief.id}`}>
             Key messages
           </label>
@@ -292,10 +290,10 @@ export function BriefEditor({ brief }: { brief: EditableBrief }) {
             onChange={(event) => updateDraft({ keyMessages: event.target.value })}
             required
           />
-          <p className="mt-2 text-xs leading-5 text-carbon/52">Use one message per line.</p>
+          <p className="mt-2 text-xs leading-5 text-nn-muted">Use one message per line.</p>
         </div>
 
-        <div className="bg-paper p-5 sm:p-6">
+        <div>
           <label className="field-label" htmlFor={`brief-guidelines-${brief.id}`}>
             Creator guidelines
           </label>
@@ -336,9 +334,9 @@ export function BriefEditor({ brief }: { brief: EditableBrief }) {
           {dirty ? (
             <span
               aria-live="polite"
-              className="flex items-center gap-2 text-xs font-bold tracking-[0.09em] text-carbon/58 uppercase"
+              className="flex items-center gap-2 text-xs font-bold tracking-[0.09em] text-nn-muted uppercase"
             >
-              <span className="h-2 w-2 rounded-full bg-signal" /> Unsaved changes
+              <span className="h-2 w-2 rounded-full bg-nn-blue" /> Unsaved changes
             </span>
           ) : null}
           <SubmitButton idle="Save brief" pending="Saving brief…" />
