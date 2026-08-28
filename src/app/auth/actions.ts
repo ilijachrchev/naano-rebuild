@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 import { z } from "zod";
 
+import { getBrandContext, getBrandDestination } from "@/lib/brand/context";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 export type AuthActionResult =
@@ -107,7 +108,10 @@ export async function brandAuthAction(
       };
     }
 
-    redirect("/");
+    // Land the brand on their workspace (or onboarding/setup if incomplete),
+    // never on the public landing page.
+    const brandContext = await getBrandContext();
+    redirect(getBrandDestination(brandContext));
   }
 
   const { data, error } = await supabase.auth.signUp({
