@@ -40,11 +40,14 @@ function matchesPrice(creator: MarketplaceCreator, price: PriceOption) {
   return postPrice > 100_000;
 }
 
+const selectClass =
+  "mt-2 min-h-11 w-full cursor-pointer rounded-[0.7rem] border border-nn-line-strong bg-nn-white px-3 text-sm text-nn-ink transition-colors hover:border-nn-blue focus:border-nn-blue focus:outline-none";
+
 function Stat({ label, value }: { label: string; value: string }) {
   return (
-    <div className="bg-paper px-4 py-4">
-      <p className="text-[0.72rem] font-bold tracking-[0.11em] text-carbon/48 uppercase">{label}</p>
-      <p className="display-type mt-2 text-2xl leading-none">{value}</p>
+    <div className="rounded-[0.85rem] border border-nn-line bg-nn-white px-4 py-4">
+      <p className="text-[0.72rem] font-bold tracking-[0.12em] text-nn-muted uppercase">{label}</p>
+      <p className="nn-num display-type mt-2 text-2xl leading-none text-nn-ink">{value}</p>
     </div>
   );
 }
@@ -52,28 +55,33 @@ function Stat({ label, value }: { label: string; value: string }) {
 function AudienceBreakdown({ title, segments }: { title: string; segments: AudienceSegment[] }) {
   return (
     <section>
-      <h3 className="text-xs font-bold tracking-[0.12em] uppercase">{title}</h3>
+      <h3 className="text-xs font-bold tracking-[0.12em] text-nn-muted uppercase">{title}</h3>
       {segments.length ? (
-        <ol className="mt-4 border-carbon/18 border-y">
+        <ol className="mt-4 grid gap-4">
           {segments.map((segment) => (
             <li
               key={segment.label}
-              className="grid grid-cols-[minmax(0,1fr)_3rem] items-center gap-4 border-carbon/14 border-b py-3 last:border-b-0"
+              className="grid grid-cols-[minmax(0,1fr)_3rem] items-center gap-4"
             >
               <div>
                 <div className="flex items-baseline justify-between gap-4 text-sm">
-                  <span className="font-semibold">{segment.label}</span>
+                  <span className="font-semibold text-nn-ink">{segment.label}</span>
                 </div>
-                <div className="mt-2 h-1 bg-mist" aria-hidden="true">
-                  <div className="h-full bg-aubergine" style={{ width: `${Math.min(segment.percentage, 100)}%` }} />
+                <div className="mt-2 h-1.5 rounded-full bg-nn-blue-50" aria-hidden="true">
+                  <div
+                    className="h-full rounded-full bg-nn-blue"
+                    style={{ width: `${Math.min(segment.percentage, 100)}%` }}
+                  />
                 </div>
               </div>
-              <span className="display-type text-right text-xl">{segment.percentage}%</span>
+              <span className="nn-num display-type text-right text-xl text-nn-ink">
+                {segment.percentage}%
+              </span>
             </li>
           ))}
         </ol>
       ) : (
-        <p className="mt-4 border-carbon/18 border-y py-5 text-sm text-carbon/55">No breakdown is available.</p>
+        <p className="mt-4 text-sm text-nn-muted">No breakdown is available.</p>
       )}
     </section>
   );
@@ -153,49 +161,45 @@ function CreatorProfileModal({
       ref={dialogRef}
       aria-labelledby="creator-profile-title"
       onClose={onDismiss}
-      className="m-auto max-h-[calc(100vh-2rem)] w-[min(920px,calc(100%-2rem))] overflow-hidden border border-carbon/28 bg-paper p-0 text-carbon backdrop:bg-carbon/76"
+      className="m-auto max-h-[calc(100vh-2rem)] w-[min(920px,calc(100%-2rem))] overflow-hidden rounded-[1.25rem] border border-nn-line bg-nn-white p-0 text-nn-ink shadow-[0_40px_80px_-40px_rgb(11_16_32/0.45)] backdrop:bg-nn-ink/60"
     >
       <div className="grid max-h-[calc(100vh-2rem)] grid-rows-[auto_auto_1fr]">
-        <header className="flex items-start justify-between gap-6 border-carbon/18 border-b bg-carbon px-5 py-5 text-mineral sm:px-8 sm:py-7">
+        <header className="flex items-start justify-between gap-6 border-nn-line border-b px-5 py-6 sm:px-8 sm:py-7">
           <div className="flex min-w-0 items-center gap-4">
-            <span className="display-type flex h-16 w-16 shrink-0 items-center justify-center border border-mineral/28 bg-mineral/8 text-2xl text-signal">
+            <span className="display-type flex h-16 w-16 shrink-0 items-center justify-center rounded-[0.85rem] bg-nn-blue-50 text-2xl text-nn-blue">
               {creator.avatarInitials}
             </span>
             <div className="min-w-0">
-              <p className="text-[0.72rem] font-bold tracking-[0.12em] text-signal uppercase">
-                {creator.matchScore}% match
-              </p>
-              <h2 id="creator-profile-title" className="display-type mt-1 text-4xl leading-none sm:text-5xl">
+              <span className="nn-chip">{creator.matchScore}% match</span>
+              <h2 id="creator-profile-title" className="display-type mt-2 text-4xl leading-none text-nn-ink sm:text-5xl">
                 {creator.displayName}
               </h2>
-              <p className="mt-2 text-sm text-mineral/62">{creator.country}</p>
+              <p className="mt-2 text-sm text-nn-muted">{creator.country}</p>
             </div>
           </div>
           <button
             type="button"
             onClick={onDismiss}
             aria-label="Close creator profile"
-            className="flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center border border-mineral/28 bg-transparent text-2xl leading-none text-mineral transition-colors hover:border-signal hover:text-signal"
+            className="flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded-full border border-nn-line-strong bg-transparent text-2xl leading-none text-nn-muted transition-colors hover:border-nn-blue hover:text-nn-blue"
           >
             ×
           </button>
         </header>
 
         {showOffer ? (
-          <div className="flex min-h-14 items-center justify-between border-carbon/18 border-b bg-mist/55 px-5 sm:px-8">
-            <p className="text-[0.7rem] font-bold tracking-[0.11em] uppercase">
-              <span className="mr-2 text-aubergine">04</span> Offer
-            </p>
+          <div className="flex min-h-14 items-center justify-between border-nn-line border-b bg-nn-blue-50 px-5 sm:px-8">
+            <p className="text-[0.72rem] font-bold tracking-[0.12em] text-nn-blue uppercase">Offer</p>
             <button
               type="button"
               onClick={closeOffer}
-              className="cursor-pointer border-0 bg-transparent text-xs font-bold text-aubergine hover:text-aubergine-deep"
+              className="cursor-pointer border-0 bg-transparent text-xs font-bold text-nn-blue hover:text-nn-blue-strong"
             >
-              Back to dossier
+              Back to profile
             </button>
           </div>
         ) : (
-          <div role="tablist" aria-label="Creator profile sections" className="flex border-carbon/18 border-b bg-mist/55">
+          <div role="tablist" aria-label="Creator profile sections" className="flex border-nn-line border-b px-5 sm:px-8">
             {tabs.map((tab, index) => (
               <button
                 key={tab.id}
@@ -207,20 +211,19 @@ function CreatorProfileModal({
                 tabIndex={activeTab === tab.id ? 0 : -1}
                 onClick={() => setActiveTab(tab.id)}
                 onKeyDown={(event) => handleTabKeyDown(event, index)}
-                className={`min-h-14 cursor-pointer border-0 border-carbon/18 border-r px-5 text-[0.7rem] font-bold tracking-[0.11em] uppercase sm:min-w-40 ${
-                  activeTab === tab.id ? "bg-paper text-carbon" : "bg-transparent text-carbon/52 hover:text-carbon"
+                className={`-mb-px min-h-14 cursor-pointer border-0 border-b-2 bg-transparent px-4 text-sm font-semibold transition-colors ${
+                  activeTab === tab.id
+                    ? "border-nn-blue text-nn-blue"
+                    : "border-transparent text-nn-muted hover:text-nn-ink"
                 }`}
               >
-                <span className={activeTab === tab.id ? "mr-2 text-aubergine" : "mr-2"}>
-                  {String(index + 1).padStart(2, "0")}
-                </span>
                 {tab.label}
               </button>
             ))}
           </div>
         )}
 
-        <div className="dossier-paper overflow-y-auto px-5 py-7 sm:px-8 sm:py-9">
+        <div className="overflow-y-auto bg-nn-white px-5 py-7 sm:px-8 sm:py-9">
           {showOffer && idempotencyKey ? (
             <BookingOfferForm
               key={`${creator.id}-${idempotencyKey}`}
@@ -236,16 +239,20 @@ function CreatorProfileModal({
 
           {!showOffer && activeTab === "overview" ? (
             <section id="panel-overview" role="tabpanel" aria-labelledby="tab-overview">
-              <p className="text-xs font-bold tracking-[0.12em] text-aubergine uppercase">Creator overview</p>
-              <p className="display-type mt-4 max-w-3xl text-4xl leading-[1.02] sm:text-5xl">{creator.headline}</p>
+              <p className="display-type max-w-3xl text-3xl leading-[1.08] text-nn-ink sm:text-4xl">
+                {creator.headline}
+              </p>
               <div className="mt-7 flex flex-wrap gap-2">
                 {creator.industries.map((industry) => (
-                  <span key={industry} className="border border-carbon/20 px-2.5 py-1 text-xs font-semibold">
+                  <span
+                    key={industry}
+                    className="rounded-full border border-nn-line px-3 py-1 text-xs font-semibold text-nn-muted"
+                  >
                     {industry}
                   </span>
                 ))}
               </div>
-              <div className="mt-9 grid gap-px border border-carbon/18 bg-carbon/18 sm:grid-cols-2 lg:grid-cols-4">
+              <div className="mt-9 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
                 <Stat label="Followers" value={formatCount(creator.followers)} />
                 <Stat label="Est. views" value={formatCount(creator.estimatedViews)} />
                 <Stat
@@ -254,8 +261,8 @@ function CreatorProfileModal({
                 />
                 <Stat label="Post cost" value={formatCurrency(creator.pricePerPostCents)} />
               </div>
-              <div className="mt-7 flex flex-wrap items-center justify-between gap-4 border-carbon/18 border-t pt-6">
-                <p className="max-w-lg text-sm leading-6 text-carbon/58">
+              <div className="mt-8 flex flex-wrap items-center justify-between gap-4 border-nn-line border-t pt-6">
+                <p className="max-w-lg text-sm leading-6 text-nn-muted">
                   Attach a ready campaign brief and reserve the fixed fee from your wallet.
                 </p>
                 <button
@@ -273,23 +280,18 @@ function CreatorProfileModal({
 
           {!showOffer && activeTab === "audience" ? (
             <section id="panel-audience" role="tabpanel" aria-labelledby="tab-audience">
-              <div className="flex flex-wrap items-end justify-between gap-4 border-carbon/18 border-b pb-6">
-                <div>
-                  <p className="text-xs font-bold tracking-[0.12em] text-aubergine uppercase">Audience evidence</p>
-                  <h2 className="display-type mt-2 text-4xl">Who this creator reaches.</h2>
-                </div>
+              <div className="flex flex-wrap items-end justify-between gap-4 border-nn-line border-b pb-6">
+                <h2 className="display-type text-4xl text-nn-ink">Who this creator reaches.</h2>
                 {creator.audience.sampleSize !== null ? (
-                  <span className="border border-carbon/20 px-3 py-2 text-xs font-bold tracking-[0.09em] uppercase">
-                    Sample {formatCount(creator.audience.sampleSize)}
-                  </span>
+                  <span className="nn-chip">Sample {formatCount(creator.audience.sampleSize)}</span>
                 ) : null}
               </div>
               {creator.audience.positioningSummary ? (
-                <div className="mt-7 border-carbon/18 border-l-2 border-l-aubergine bg-mist/38 px-5 py-4">
-                  <p className="text-[0.68rem] font-bold tracking-[0.1em] text-carbon/48 uppercase">
+                <div className="mt-7 rounded-[1.25rem] bg-nn-blue-50 px-5 py-5">
+                  <p className="text-[0.7rem] font-bold tracking-[0.12em] text-nn-blue uppercase">
                     Creator positioning
                   </p>
-                  <p className="mt-2 text-sm leading-6 text-carbon/66">
+                  <p className="mt-2 text-sm leading-6 text-nn-ink">
                     {creator.audience.positioningSummary}
                   </p>
                 </div>
@@ -303,12 +305,12 @@ function CreatorProfileModal({
 
           {!showOffer && activeTab === "content" ? (
             <section id="panel-content" role="tabpanel" aria-labelledby="tab-content">
-              <p className="text-xs font-bold tracking-[0.12em] text-aubergine uppercase">Sample post</p>
+              <h2 className="text-xs font-bold tracking-[0.12em] text-nn-muted uppercase">Sample post</h2>
               {post ? (
-                <div className="mt-4 border border-carbon/20 bg-paper">
-                  <div className="border-carbon/16 border-b px-5 py-5 sm:px-7">
-                    <p className="display-type text-3xl">Published LinkedIn post</p>
-                    <p className="mt-3 text-sm text-carbon/58">
+                <div className="mt-4 overflow-hidden rounded-[1.25rem] border border-nn-line bg-nn-white">
+                  <div className="border-nn-line border-b px-5 py-5 sm:px-7">
+                    <p className="display-type text-2xl text-nn-ink">Published LinkedIn post</p>
+                    <p className="mt-3 text-sm text-nn-muted">
                       {post.publishedAt
                         ? `Published ${new Intl.DateTimeFormat("en", { dateStyle: "medium" }).format(new Date(post.publishedAt))}`
                         : "Publication date unavailable"}
@@ -318,28 +320,30 @@ function CreatorProfileModal({
                         href={post.url}
                         target="_blank"
                         rel="noreferrer"
-                        className="mt-5 inline-flex border-carbon/24 border-b pb-0.5 text-sm font-bold text-aubergine hover:border-aubergine"
+                        className="mt-4 inline-flex text-sm font-bold text-nn-blue hover:text-nn-blue-strong"
                       >
                         View post on LinkedIn ↗
                       </a>
                     ) : null}
                   </div>
-                  <div className="grid gap-px bg-carbon/18 sm:grid-cols-3">
+                  <div className="grid gap-3 p-5 sm:grid-cols-3 sm:p-6">
                     <Stat label="Reactions" value={formatCount(post.reactions)} />
                     <Stat label="Comments" value={formatCount(post.comments)} />
                     <Stat label="Reposts" value={formatCount(post.reposts)} />
                   </div>
-                  <div className="flex flex-wrap items-baseline justify-between gap-4 border-carbon/16 border-t bg-mist/32 px-5 py-4 text-sm sm:px-7">
-                    <span className="font-semibold">{formatCount(totalEngagement)} total engagements</span>
-                    <span className="text-carbon/58">
+                  <div className="flex flex-wrap items-baseline justify-between gap-4 border-nn-line border-t bg-nn-blue-50 px-5 py-4 text-sm sm:px-7">
+                    <span className="font-semibold text-nn-ink">
+                      {formatCount(totalEngagement)} total engagements
+                    </span>
+                    <span className="text-nn-muted">
                       {engagementRate === null ? "Rate unavailable" : `${engagementRate.toFixed(1)}% engagement rate`}
                     </span>
                   </div>
                 </div>
               ) : (
-                <div className="mt-4 border border-carbon/20 bg-paper px-6 py-10">
-                  <p className="display-type text-3xl">No sample post is visible.</p>
-                  <p className="mt-3 max-w-xl text-sm leading-6 text-carbon/58">
+                <div className="mt-4 rounded-[1.25rem] border border-nn-line bg-nn-white px-6 py-10">
+                  <p className="display-type text-2xl text-nn-ink">No sample post is visible.</p>
+                  <p className="mt-3 max-w-xl text-sm leading-6 text-nn-muted">
                     This profile has no published post available to this workspace under row-level security.
                   </p>
                 </div>
@@ -354,59 +358,60 @@ function CreatorProfileModal({
 
 function CreatorCard({ creator, onOpen }: { creator: MarketplaceCreator; onOpen: () => void }) {
   return (
-    <article className="flex min-h-full flex-col border border-carbon/20 bg-paper">
-      <div className="flex items-start justify-between gap-4 border-carbon/16 border-b px-5 py-5">
+    <article className="nn-card flex min-h-full flex-col rounded-[1.25rem] p-6">
+      <div className="flex items-start justify-between gap-4">
         <div className="flex min-w-0 items-center gap-3">
-          <span className="display-type flex h-14 w-14 shrink-0 items-center justify-center border border-carbon/20 bg-mist/55 text-xl text-aubergine">
+          <span className="display-type flex h-14 w-14 shrink-0 items-center justify-center rounded-[0.85rem] bg-nn-blue-50 text-xl text-nn-blue">
             {creator.avatarInitials}
           </span>
           <div className="min-w-0">
-            <h2 className="display-type truncate text-3xl leading-none">{creator.displayName}</h2>
-            <p className="mt-1 text-xs text-carbon/55">{creator.country}</p>
+            <h2 className="display-type truncate text-2xl leading-none text-nn-ink">{creator.displayName}</h2>
+            <p className="mt-1 text-xs text-nn-muted">{creator.country}</p>
           </div>
         </div>
-        <span className="shrink-0 bg-signal px-2.5 py-1 text-xs font-bold tracking-[0.08em] uppercase">
-          {creator.matchScore}%
-        </span>
+        <span className="nn-chip shrink-0">{creator.matchScore}%</span>
       </div>
 
-      <div className="flex flex-1 flex-col px-5 py-5">
-        <p className="line-clamp-3 min-h-[4.5rem] text-sm leading-6 text-carbon/68">{creator.headline}</p>
+      <div className="mt-5 flex flex-1 flex-col">
+        <p className="line-clamp-3 min-h-[4.5rem] text-sm leading-6 text-nn-muted">{creator.headline}</p>
         <div className="mt-4 flex min-h-12 flex-wrap content-start gap-1.5">
           {creator.industries.map((industry) => (
-            <span key={industry} className="border border-carbon/18 px-2.5 py-1 text-[0.7rem] font-semibold">
+            <span
+              key={industry}
+              className="rounded-full border border-nn-line px-2.5 py-1 text-[0.7rem] font-semibold text-nn-muted"
+            >
               {industry}
             </span>
           ))}
         </div>
 
-        <dl className="mt-5 grid grid-cols-2 border-carbon/18 border-y">
-          <div className="border-carbon/14 border-r border-b py-4 pr-3">
-            <dt className="text-[0.72rem] font-bold tracking-[0.1em] text-carbon/45 uppercase">Followers</dt>
-            <dd className="display-type mt-1 text-2xl">{formatCount(creator.followers)}</dd>
+        <dl className="mt-5 grid grid-cols-2 gap-3 border-nn-line border-t pt-5">
+          <div>
+            <dt className="text-[0.72rem] font-bold tracking-[0.1em] text-nn-muted uppercase">Followers</dt>
+            <dd className="nn-num display-type mt-1 text-2xl text-nn-ink">{formatCount(creator.followers)}</dd>
           </div>
-          <div className="border-carbon/14 border-b py-4 pl-3">
-            <dt className="text-[0.72rem] font-bold tracking-[0.1em] text-carbon/45 uppercase">Est. views</dt>
-            <dd className="display-type mt-1 text-2xl">{formatCount(creator.estimatedViews)}</dd>
+          <div>
+            <dt className="text-[0.72rem] font-bold tracking-[0.1em] text-nn-muted uppercase">Est. views</dt>
+            <dd className="nn-num display-type mt-1 text-2xl text-nn-ink">{formatCount(creator.estimatedViews)}</dd>
           </div>
-          <div className="border-carbon/14 border-r py-4 pr-3">
-            <dt className="text-[0.72rem] font-bold tracking-[0.1em] text-carbon/45 uppercase">Est. CPM</dt>
-            <dd className="display-type mt-1 text-2xl">
+          <div>
+            <dt className="text-[0.72rem] font-bold tracking-[0.1em] text-nn-muted uppercase">Est. CPM</dt>
+            <dd className="nn-num display-type mt-1 text-2xl text-nn-ink">
               {creator.estimatedCpmCents === null ? "—" : formatCurrency(creator.estimatedCpmCents)}
             </dd>
           </div>
-          <div className="py-4 pl-3">
-            <dt className="text-[0.72rem] font-bold tracking-[0.1em] text-carbon/45 uppercase">Post cost</dt>
-            <dd className="display-type mt-1 text-2xl">{formatCurrency(creator.pricePerPostCents)}</dd>
+          <div>
+            <dt className="text-[0.72rem] font-bold tracking-[0.1em] text-nn-muted uppercase">Post cost</dt>
+            <dd className="nn-num display-type mt-1 text-2xl text-nn-ink">{formatCurrency(creator.pricePerPostCents)}</dd>
           </div>
         </dl>
 
         <button
           type="button"
           onClick={onOpen}
-          className="mt-5 flex min-h-12 cursor-pointer items-center justify-between border border-carbon bg-transparent px-4 text-sm font-bold transition-colors hover:bg-carbon hover:text-mineral"
+          className="mt-6 flex min-h-12 cursor-pointer items-center justify-between rounded-[0.85rem] border border-nn-line-strong bg-transparent px-4 text-sm font-bold text-nn-ink transition-colors hover:border-nn-blue hover:text-nn-blue"
         >
-          View creator dossier <span aria-hidden="true">→</span>
+          View creator <span aria-hidden="true">→</span>
         </button>
       </div>
     </article>
@@ -476,32 +481,25 @@ export function CreatorMarketplace({
 
   return (
     <>
-      <section aria-labelledby="creator-filters" className="border border-carbon/20 bg-paper">
-        <div className="flex flex-wrap items-center justify-between gap-3 border-carbon/16 border-b px-5 py-4">
-          <div>
-            <h2 id="creator-filters" className="text-xs font-bold tracking-[0.12em] uppercase">
-              Refine the evidence
-            </h2>
-            <p className="mt-1 text-xs text-carbon/52">Filters update the matched set locally.</p>
-          </div>
+      <section aria-labelledby="creator-filters" className="nn-card rounded-[1.25rem] p-6 sm:p-7">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <h2 id="creator-filters" className="text-sm font-bold text-nn-ink">
+            Refine the matches
+          </h2>
           {filtersActive ? (
             <button
               type="button"
               onClick={clearFilters}
-              className="cursor-pointer border-0 bg-transparent p-0 text-xs font-bold text-aubergine hover:text-aubergine-deep"
+              className="cursor-pointer border-0 bg-transparent p-0 text-xs font-bold text-nn-blue hover:text-nn-blue-strong"
             >
               Clear filters
             </button>
           ) : null}
         </div>
-        <div className="grid gap-px bg-carbon/16 sm:grid-cols-2 xl:grid-cols-4">
-          <label className="bg-paper px-4 py-4">
-            <span className="block text-[0.72rem] font-bold tracking-[0.11em] text-carbon/48 uppercase">Industry</span>
-            <select
-              value={industry}
-              onChange={(event) => setIndustry(event.target.value)}
-              className="mt-2 min-h-11 w-full cursor-pointer border border-carbon/24 bg-white/40 px-3 text-sm text-carbon hover:border-aubergine focus:border-aubergine"
-            >
+        <div className="mt-5 grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
+          <label className="block">
+            <span className="block text-[0.72rem] font-bold tracking-[0.12em] text-nn-muted uppercase">Industry</span>
+            <select value={industry} onChange={(event) => setIndustry(event.target.value)} className={selectClass}>
               <option value="all">All industries</option>
               {industries.map((value) => (
                 <option key={value} value={value}>
@@ -510,13 +508,9 @@ export function CreatorMarketplace({
               ))}
             </select>
           </label>
-          <label className="bg-paper px-4 py-4">
-            <span className="block text-[0.72rem] font-bold tracking-[0.11em] text-carbon/48 uppercase">Country</span>
-            <select
-              value={country}
-              onChange={(event) => setCountry(event.target.value)}
-              className="mt-2 min-h-11 w-full cursor-pointer border border-carbon/24 bg-white/40 px-3 text-sm text-carbon hover:border-aubergine focus:border-aubergine"
-            >
+          <label className="block">
+            <span className="block text-[0.72rem] font-bold tracking-[0.12em] text-nn-muted uppercase">Country</span>
+            <select value={country} onChange={(event) => setCountry(event.target.value)} className={selectClass}>
               <option value="all">All countries</option>
               {countries.map((value) => (
                 <option key={value} value={value}>
@@ -525,12 +519,12 @@ export function CreatorMarketplace({
               ))}
             </select>
           </label>
-          <label className="bg-paper px-4 py-4">
-            <span className="block text-[0.72rem] font-bold tracking-[0.11em] text-carbon/48 uppercase">Post price</span>
+          <label className="block">
+            <span className="block text-[0.72rem] font-bold tracking-[0.12em] text-nn-muted uppercase">Post price</span>
             <select
               value={price}
               onChange={(event) => setPrice(event.target.value as PriceOption)}
-              className="mt-2 min-h-11 w-full cursor-pointer border border-carbon/24 bg-white/40 px-3 text-sm text-carbon hover:border-aubergine focus:border-aubergine"
+              className={selectClass}
             >
               <option value="all">Any price</option>
               <option value="under-500">Under €500</option>
@@ -538,12 +532,12 @@ export function CreatorMarketplace({
               <option value="over-1000">Over €1,000</option>
             </select>
           </label>
-          <label className="bg-paper px-4 py-4">
-            <span className="block text-[0.72rem] font-bold tracking-[0.11em] text-carbon/48 uppercase">Sort by</span>
+          <label className="block">
+            <span className="block text-[0.72rem] font-bold tracking-[0.12em] text-nn-muted uppercase">Sort by</span>
             <select
               value={sort}
               onChange={(event) => setSort(event.target.value as SortOption)}
-              className="mt-2 min-h-11 w-full cursor-pointer border border-carbon/24 bg-white/40 px-3 text-sm text-carbon hover:border-aubergine focus:border-aubergine"
+              className={selectClass}
             >
               <option value="match">Best match</option>
               <option value="followers">Most followers</option>
@@ -555,14 +549,11 @@ export function CreatorMarketplace({
         </div>
       </section>
 
-      <div className="mt-7 flex items-end justify-between gap-4 border-carbon/18 border-b pb-4">
-        <div>
-          <p className="text-xs font-bold tracking-[0.12em] text-aubergine uppercase">Matched creators</p>
-          <p className="display-type mt-1 text-3xl" role="status" aria-live="polite">
-            {visibleCreators.length} profiles in view
-          </p>
-        </div>
-        <p className="hidden max-w-xs text-right text-xs leading-5 text-carbon/50 sm:block">
+      <div className="mt-9 flex items-end justify-between gap-4">
+        <p className="display-type text-3xl text-nn-ink" role="status" aria-live="polite">
+          {visibleCreators.length} profiles in view
+        </p>
+        <p className="hidden max-w-xs text-right text-xs leading-5 text-nn-muted sm:block">
           Match is the seeded baseline until campaign-specific scoring is connected.
         </p>
       </div>
@@ -574,19 +565,15 @@ export function CreatorMarketplace({
           ))}
         </div>
       ) : (
-        <div className="mt-6 border border-carbon/20 bg-paper px-6 py-14 text-center">
-          <p className="display-type text-4xl">No creators in this cut.</p>
-          <p className="mx-auto mt-3 max-w-lg text-sm leading-6 text-carbon/58">
+        <div className="mt-6 rounded-[1.25rem] border border-nn-line bg-nn-white px-6 py-14 text-center">
+          <p className="display-type text-3xl text-nn-ink">No creators in this cut.</p>
+          <p className="mx-auto mt-3 max-w-lg text-sm leading-6 text-nn-muted">
             {creators.length
               ? "Try widening the filters to bring more matched profiles back into view."
               : "Marketplace-visible creator records will appear here as soon as the seeded data is available under RLS."}
           </p>
           {filtersActive ? (
-            <button
-              type="button"
-              onClick={clearFilters}
-              className="mt-6 min-h-11 cursor-pointer bg-aubergine px-5 font-bold text-white hover:bg-aubergine-deep"
-            >
+            <button type="button" onClick={clearFilters} className="nn-btn nn-btn-primary mt-6">
               Clear filters
             </button>
           ) : null}
