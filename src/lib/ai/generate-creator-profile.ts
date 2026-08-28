@@ -22,6 +22,21 @@ function stripSourceMarkers(value: string) {
     .trim();
 }
 
+/**
+ * The model occasionally returns a `suggestedCountry` or `suggestedIndustry`
+ * that overruns the schema's max length (it works on retry), which throws a
+ * Zod error and fails onboarding on the first try. Clamp overlong values to the
+ * allowed length before validation — cutting on a word boundary when there is a
+ * sensible one so the trimmed value stays readable rather than mid-word garbage.
+ */
+function clampLength(value: string, max: number) {
+  if (value.length <= max) return value;
+  const slice = value.slice(0, max);
+  const lastSpace = slice.lastIndexOf(" ");
+  const trimmed = lastSpace > max * 0.6 ? slice.slice(0, lastSpace) : slice;
+  return trimmed.trim();
+}
+
 function createPlaceholderProfile(): GeneratedCreatorProfile {
   return generatedCreatorProfileSchema.parse({
     headline: "[Placeholder] B2B LinkedIn creator",
@@ -67,11 +82,13 @@ export async function generateCreatorProfile(
   }
 
   const sanitizedProfile = generatedCreatorProfileSchema.parse({
-    headline: stripSourceMarkers(response.output_parsed.headline),
-    suggestedCountry: stripSourceMarkers(response.output_parsed.suggestedCountry),
-    suggestedIndustries: response.output_parsed.suggestedIndustries.map(stripSourceMarkers),
+    headline: clampLength(stripSourceMarkers(response.output_parsed.headline), 180),
+    suggestedCountry: clampLength(stripSourceMarkers(response.output_parsed.suggestedCountry), 80),
+    suggestedIndustries: response.output_parsed.suggestedIndustries.map((industry) =>
+      clampLength(stripSourceMarkers(industry), 60),
+    ),
     suggestedPricePerPostCents: response.output_parsed.suggestedPricePerPostCents,
-    audienceSummary: stripSourceMarkers(response.output_parsed.audienceSummary),
+    audienceSummary: clampLength(stripSourceMarkers(response.output_parsed.audienceSummary), 600),
   });
 
   return { mode: "ai", profile: sanitizedProfile };
