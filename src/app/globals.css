@@ -230,6 +230,8 @@ a {
   --color-nn-muted: var(--nn-muted);
   --color-nn-paper: var(--nn-paper);
   --color-nn-white: var(--nn-white);
+  --color-nn-line: var(--nn-line);
+  --color-nn-line-strong: var(--nn-line-strong);
 }
 
 /* Scope: everything below applies inside the landing root only. */
