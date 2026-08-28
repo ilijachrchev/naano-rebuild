@@ -15,6 +15,16 @@ function formatRate(value: number, previous: number) {
   return `${rate < 0.1 ? rate.toFixed(2) : rate.toFixed(1)}% of prior stage`;
 }
 
+function formatCompanyProfile(company: BrandAttributionSnapshot["companies"][number]) {
+  return [
+    company.isDemo ? "Simulated/demo company" : "Qualified company signal",
+    company.industry,
+    company.companySize,
+  ]
+    .filter(Boolean)
+    .join(" · ");
+}
+
 function StatTile({ label, value, note }: { label: string; value: number; note: string }) {
   return (
     <div className="rounded-[1.25rem] border border-nn-line bg-nn-white px-6 py-6">
@@ -125,7 +135,7 @@ export function BrandAnalyticsDashboard({
               </p>
               {snapshot.isIllustrative ? (
                 <p className="mt-4 text-[0.72rem] font-bold tracking-[0.1em] text-nn-blue uppercase">
-                  Includes demo data · illustrative observations
+                  Simulated/demo data included · illustrative only
                 </p>
               ) : null}
             </div>
@@ -136,7 +146,9 @@ export function BrandAnalyticsDashboard({
               <h2 id="headline-stats-title" className="display-type text-4xl text-nn-ink">
                 The qualified-click payoff.
               </h2>
-              <p className="text-xs text-nn-muted">All available history</p>
+              <p className="text-xs text-nn-muted">
+                All available history{snapshot.isIllustrative ? " · demo included" : ""}
+              </p>
             </div>
 
             <dl className="mt-7 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
@@ -205,7 +217,12 @@ export function BrandAnalyticsDashboard({
                               {String(index + 1).padStart(2, "0")}
                             </span>
                             <span className="min-w-0">
-                              <span className="block font-bold text-nn-ink">{creator.displayName}</span>
+                              <span className="flex flex-wrap items-center gap-2">
+                                <span className="font-bold text-nn-ink">{creator.displayName}</span>
+                                {creator.isDemo ? (
+                                  <span className="nn-chip px-2 py-0.5 text-[0.62rem]">Demo activity</span>
+                                ) : null}
+                              </span>
                               <span className="mt-1 block truncate text-xs text-nn-muted">
                                 {creator.headline}
                               </span>
@@ -261,7 +278,9 @@ export function BrandAnalyticsDashboard({
                     </span>
                     <div>
                       <h3 className="font-bold text-nn-ink">{company.name}</h3>
-                      <p className="mt-1 text-xs text-nn-muted">Qualified company signal</p>
+                      <p className="mt-1 text-xs text-nn-muted">
+                        {formatCompanyProfile(company)}
+                      </p>
                     </div>
                     <div>
                       <p className="text-[0.68rem] font-bold tracking-[0.1em] text-nn-muted uppercase">

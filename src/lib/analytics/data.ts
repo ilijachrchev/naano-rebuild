@@ -25,6 +25,7 @@ type PostRow = {
   id: string;
   creatorId: string;
   impressions: number;
+  isDemo: boolean;
 };
 
 type ClickRow = {
@@ -50,6 +51,7 @@ export type CreatorAttribution = {
   clicks: number;
   qualifiedClicks: number;
   companiesDriven: number;
+  isDemo: boolean;
 };
 
 export type EngagedCompany = {
@@ -57,6 +59,9 @@ export type EngagedCompany = {
   qualifiedClicks: number;
   creators: number;
   lastEngagedAt: string;
+  industry: string | null;
+  companySize: string | null;
+  isDemo: boolean;
 };
 
 export type BrandAttributionSnapshot = {
@@ -80,6 +85,12 @@ export type BrandAttributionSnapshot = {
 
 function isDemoContext(context: Json) {
   return typeof context === "object" && context !== null && !Array.isArray(context) && context.demo === true;
+}
+
+function getContextString(context: Json, key: string) {
+  if (typeof context !== "object" || context === null || Array.isArray(context)) return null;
+  const value = context[key];
+  return typeof value === "string" && value.trim() ? value.trim() : null;
 }
 
 function normalizeCompany(company: string | null) {
@@ -106,18 +117,32 @@ function buildSnapshot({
   );
   const creatorTotals = new Map<
     string,
-    { posts: number; clicks: number; qualifiedClicks: number; companies: Set<string> }
+    { posts: number; clicks: number; qualifiedClicks: number; companies: Set<string>; isDemo: boolean }
   >();
   const companyTotals = new Map<
     string,
-    { name: string; qualifiedClicks: number; creators: Set<string>; lastEngagedAt: string }
+    {
+      name: string;
+      qualifiedClicks: number;
+      creators: Set<string>;
+      lastEngagedAt: string;
+      industry: string | null;
+      companySize: string | null;
+      isDemo: boolean;
+    }
   >();
 
   function getCreatorTotals(creatorId: string) {
     const existing = creatorTotals.get(creatorId);
     if (existing) return existing;
 
-    const totals = { posts: 0, clicks: 0, qualifiedClicks: 0, companies: new Set<string>() };
+    const totals = {
+      posts: 0,
+      clicks: 0,
+      qualifiedClicks: 0,
+      companies: new Set<string>(),
+      isDemo: false,
+    };
     creatorTotals.set(creatorId, totals);
     return totals;
   }
@@ -125,12 +150,15 @@ function buildSnapshot({
   for (const creatorId of activatedCreatorIds) getCreatorTotals(creatorId);
 
   for (const post of posts) {
-    getCreatorTotals(post.creatorId).posts += 1;
+    const totals = getCreatorTotals(post.creatorId);
+    totals.posts += 1;
+    totals.isDemo ||= post.isDemo;
   }
 
   for (const click of clicks) {
     const totals = getCreatorTotals(click.creatorId);
     totals.clicks += 1;
+    totals.isDemo ||= isDemoContext(click.context);
     if (!click.isQualified) continue;
 
     totals.qualifiedClicks += 1;
@@ -143,12 +171,18 @@ function buildSnapshot({
       current.qualifiedClicks += 1;
       current.creators.add(click.creatorId);
       if (click.occurredAt > current.lastEngagedAt) current.lastEngagedAt = click.occurredAt;
+      current.industry ??= getContextString(click.context, "industry");
+      current.companySize ??= getContextString(click.context, "companySize");
+      current.isDemo ||= isDemoContext(click.context);
     } else {
       companyTotals.set(company.key, {
         name: company.name,
         qualifiedClicks: 1,
         creators: new Set([click.creatorId]),
         lastEngagedAt: click.occurredAt,
+        industry: getContextString(click.context, "industry"),
+        companySize: getContextString(click.context, "companySize"),
+        isDemo: isDemoContext(click.context),
       });
     }
   }
@@ -164,6 +198,7 @@ function buildSnapshot({
         clicks: totals.clicks,
         qualifiedClicks: totals.qualifiedClicks,
         companiesDriven: totals.companies.size,
+        isDemo: totals.isDemo,
       };
     })
     .sort(
@@ -178,6 +213,9 @@ function buildSnapshot({
       qualifiedClicks: company.qualifiedClicks,
       creators: company.creators.size,
       lastEngagedAt: company.lastEngagedAt,
+      industry: company.industry,
+      companySize: company.companySize,
+      isDemo: company.isDemo,
     }))
     .sort(
       (left, right) =>
@@ -204,7 +242,8 @@ function buildSnapshot({
     },
     creators: creatorAttribution,
     companies: engagedCompanies,
-    isIllustrative: clicks.some((click) => isDemoContext(click.context)),
+    isIllustrative:
+      posts.some((post) => post.isDemo) || clicks.some((click) => isDemoContext(click.context)),
   };
 }
 
@@ -240,7 +279,7 @@ async function loadPosts(supabase: ServerSupabaseClient, workspaceId: string) {
   for (let from = 0; ; from += pageSize) {
     const { data, error } = await supabase
       .from("posts")
-      .select("id, impressions, collaborations!inner(workspace_id, creator_id)")
+      .select("id, linkedin_url, impressions, collaborations!inner(workspace_id, creator_id)")
       .eq("collaborations.workspace_id", workspaceId)
       .not("published_at", "is", null)
       .order("id", { ascending: true })
@@ -252,6 +291,7 @@ async function loadPosts(supabase: ServerSupabaseClient, workspaceId: string) {
         id: row.id,
         creatorId: row.collaborations.creator_id,
         impressions: row.impressions ?? 0,
+        isDemo: row.linkedin_url?.includes("naano-simulated-performance-demo") ?? false,
       })),
     );
     if (!data || data.length < pageSize) return rows;
