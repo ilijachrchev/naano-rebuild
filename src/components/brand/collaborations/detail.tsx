@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { ApproveSettlementForm } from "@/components/brand/collaborations/approve-settlement-form";
+import { SimulatePerformanceForm } from "@/components/brand/collaborations/simulate-performance-form";
 import { BrandSidebar } from "@/components/brand/sidebar";
 import type {
   BrandCollaborationDetail,
@@ -139,6 +140,25 @@ export function BrandCollaborationDetailView({
                 </p>
               </div>
               <ApproveSettlementForm workspaceId={workspaceId} collaborationId={collaboration.id} />
+            </section>
+          ) : null}
+
+          {collaboration.status === "published" || collaboration.status === "completed" ? (
+            <section className="grid gap-7 border-nn-line border-b py-10 xl:grid-cols-[1fr_auto] xl:items-center">
+              <div className="rounded-[1.25rem] border border-nn-blue/20 bg-nn-blue-50 px-6 py-6">
+                <h2 className="display-type text-3xl text-nn-ink">
+                  Simulate post performance (demo).
+                </h2>
+                <p className="mt-3 max-w-3xl text-sm leading-6 text-nn-ink">
+                  Add one clearly simulated post and a realistic demo click mix to this real
+                  collaboration. Qualified clicks use named demo companies; two filtered clicks
+                  show the qualification boundary. Running it again will not duplicate data.
+                </p>
+                <p className="mt-3 text-xs font-bold tracking-[0.08em] text-nn-blue uppercase">
+                  Simulated data · illustrative only
+                </p>
+              </div>
+              <SimulatePerformanceForm collaborationId={collaboration.id} />
             </section>
           ) : null}
 
