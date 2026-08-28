@@ -7,10 +7,15 @@ import { BrandMark } from "@/components/brand/dossier";
 const navigation = [
   { label: "Overview", href: "/creator" },
   { label: "Opportunities", href: "/creator/opportunities" },
+  { label: "Collaborations", href: "/creator/collaborations" },
   { label: "Earnings", href: "/creator/earnings" },
+  { label: "Referrals", href: "/creator/referrals" },
 ] as const;
 
 export type CreatorNavigationHref = (typeof navigation)[number]["href"];
+
+const activeClass = "bg-nn-blue text-white shadow-[0_8px_20px_-10px_rgb(31_68_255/0.55)]";
+const idleClass = "text-nn-muted hover:bg-nn-blue-50 hover:text-nn-blue";
 
 export function CreatorShell({
   creatorName,
@@ -28,38 +33,33 @@ export function CreatorShell({
   children: ReactNode;
 }) {
   return (
-    <main className="min-h-screen bg-mineral lg:grid lg:grid-cols-[280px_minmax(0,1fr)]">
-      <aside className="flex bg-carbon px-6 py-6 text-mineral lg:min-h-screen lg:flex-col lg:px-8 lg:py-8">
-        <div className="flex w-full items-center justify-between lg:block">
-          <BrandMark inverse />
-          <div className="ml-auto text-right lg:mt-14 lg:ml-0 lg:text-left">
-            <p className="text-[0.7rem] font-bold tracking-[0.12em] text-mineral/45 uppercase">
+    <main className="min-h-screen bg-nn-white lg:grid lg:grid-cols-[280px_minmax(0,1fr)]">
+      <aside className="flex flex-col gap-6 border-nn-line border-b bg-nn-white px-6 py-6 text-nn-ink lg:min-h-screen lg:border-r lg:border-b-0 lg:px-7 lg:py-8">
+        <div className="flex items-center justify-between gap-4 lg:flex-col lg:items-start lg:gap-8">
+          <BrandMark />
+          <div className="text-right lg:text-left">
+            <p className="text-[0.68rem] font-bold tracking-[0.14em] text-nn-muted/70 uppercase">
               Creator
             </p>
-            <p className="mt-1 font-bold">{creatorName}</p>
+            <p className="mt-1 font-bold text-nn-ink">{creatorName}</p>
           </div>
         </div>
 
-        <nav aria-label="Creator navigation" className="mt-10 hidden lg:block">
-          <ul className="space-y-1">
-            {navigation.map((item, index) => {
+        <nav aria-label="Creator navigation" className="lg:mt-4">
+          <ul className="flex gap-1 overflow-x-auto pb-1 lg:flex-col lg:overflow-visible lg:pb-0">
+            {navigation.map((item) => {
               const active = item.href === activeHref;
 
               return (
-                <li key={item.href}>
+                <li key={item.href} className="shrink-0 lg:shrink">
                   <Link
                     href={item.href}
                     aria-current={active ? "page" : undefined}
-                    className={`flex w-full items-center justify-between px-3 py-3 text-sm font-semibold ${
-                      active
-                        ? "bg-signal text-carbon"
-                        : "text-mineral/72 hover:text-signal"
+                    className={`block rounded-[0.7rem] px-4 py-2.5 text-sm font-semibold whitespace-nowrap transition-colors lg:px-3.5 lg:py-3 ${
+                      active ? activeClass : idleClass
                     }`}
                   >
                     {item.label}
-                    <span className="display-type text-base">
-                      {String(index + 1).padStart(2, "0")}
-                    </span>
                   </Link>
                 </li>
               );
@@ -67,46 +67,23 @@ export function CreatorShell({
           </ul>
         </nav>
 
-        <form action={signOutCreator} className="mt-auto hidden border-white/18 border-t pt-6 lg:block">
-          <button className="cursor-pointer border-0 bg-transparent p-0 text-sm font-semibold text-mineral/65 hover:text-signal">
+        <form action={signOutCreator} className="mt-auto hidden border-nn-line border-t pt-6 lg:block">
+          <button className="cursor-pointer border-0 bg-transparent p-0 text-sm font-semibold text-nn-muted hover:text-nn-blue">
             Sign out
           </button>
         </form>
       </aside>
 
       <section className="dossier-paper min-h-screen">
-        <header className="flex min-h-20 flex-wrap items-center justify-between gap-4 border-carbon/16 border-b px-6 py-4 sm:px-10 lg:px-14">
+        <header className="flex min-h-20 flex-wrap items-center justify-between gap-4 border-nn-line border-b px-6 py-4 sm:px-10 lg:px-14">
           <div>
-            <p className="text-xs font-bold tracking-[0.12em] text-aubergine uppercase">
-              {eyebrow}
-            </p>
-            <p className="text-sm text-carbon/55">{detail}</p>
+            <p className="text-xs font-bold tracking-[0.12em] text-nn-blue uppercase">{eyebrow}</p>
+            <p className="text-sm text-nn-muted">{detail}</p>
           </div>
-          <span className="flex items-center gap-2 text-xs font-bold tracking-[0.09em] uppercase">
-            <span className="h-2.5 w-2.5 rounded-full bg-signal" aria-hidden="true" /> {marker}
+          <span className="flex items-center gap-2 text-xs font-bold tracking-[0.09em] text-nn-muted uppercase">
+            <span className="h-2.5 w-2.5 rounded-full bg-nn-blue" aria-hidden="true" /> {marker}
           </span>
         </header>
-
-        <nav aria-label="Creator navigation" className="border-carbon/16 border-b bg-mist/45 lg:hidden">
-          <ul className="grid grid-cols-3">
-            {navigation.map((item) => {
-              const active = item.href === activeHref;
-              return (
-                <li key={item.href}>
-                  <Link
-                    href={item.href}
-                    aria-current={active ? "page" : undefined}
-                    className={`block px-3 py-4 text-center text-[0.68rem] font-bold tracking-[0.08em] uppercase ${
-                      active ? "bg-signal text-carbon" : "text-carbon/58"
-                    }`}
-                  >
-                    {item.label}
-                  </Link>
-                </li>
-              );
-            })}
-          </ul>
-        </nav>
 
         {children}
       </section>

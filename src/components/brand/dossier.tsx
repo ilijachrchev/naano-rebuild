@@ -22,7 +22,7 @@ export function BrandMark({ inverse = false }: { inverse?: boolean }) {
   return (
     <div className={`flex items-center gap-3 ${inverse ? "text-mineral" : "text-carbon"}`}>
       <span className="display-type text-[2rem] leading-none">naano</span>
-      <span className="h-2.5 w-2.5 bg-signal" aria-hidden="true" />
+      <span className="h-2.5 w-2.5 rounded-[3px] bg-nn-blue" aria-hidden="true" />
     </div>
   );
 }

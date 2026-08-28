@@ -27,7 +27,7 @@ export default async function CreatorReferralsPage() {
   return (
     <CreatorShell
       creatorName={context.creator.displayName}
-      activeHref="/creator"
+      activeHref="/creator/referrals"
       eyebrow="Referral program"
       detail="Creator-scoped referral and attribution record"
       marker="Tracked simulation only"
