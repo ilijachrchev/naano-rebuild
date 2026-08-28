@@ -1,5 +1,7 @@
 import "server-only";
 
+import { isAuthError, isAuthSessionMissingError } from "@supabase/supabase-js";
+
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 export type CreatorProfile = {
@@ -20,12 +22,37 @@ export type CreatorContext = {
   creator: CreatorProfile | null;
 };
 
+const staleSessionErrorCodes = new Set([
+  "bad_jwt",
+  "no_authorization",
+  "refresh_token_already_used",
+  "refresh_token_not_found",
+  "session_expired",
+  "session_not_found",
+  "user_not_found",
+]);
+
+function isStaleSessionError(error: unknown) {
+  return (
+    isAuthSessionMissingError(error) ||
+    (isAuthError(error) &&
+      (error.name === "AuthInvalidJwtError" ||
+        (error.code !== undefined && staleSessionErrorCodes.has(error.code))))
+  );
+}
+
 export async function getCreatorContext(): Promise<CreatorContext> {
   const supabase = await createServerSupabaseClient();
-  const { data: claimsData } = await supabase.auth.getClaims();
+  const { data: claimsData, error: claimsError } = await supabase.auth.getClaims();
   const userId = claimsData?.claims?.sub ?? null;
 
-  if (!userId) return { userId: null, registeredAsCreator: false, creator: null };
+  if (!userId) {
+    if (claimsError && !isStaleSessionError(claimsError)) {
+      throw new Error("Unable to load creator profile", { cause: claimsError });
+    }
+
+    return { userId: null, registeredAsCreator: false, creator: null };
+  }
 
   const [{ data: creator, error }, { data: userData, error: userError }] = await Promise.all([
     supabase
@@ -38,8 +65,25 @@ export async function getCreatorContext(): Promise<CreatorContext> {
     supabase.auth.getUser(),
   ]);
 
-  if (error || userError) throw new Error("Unable to load creator profile");
-  const registeredAsCreator = creator !== null || userData.user.app_metadata?.role === "creator";
+  if (userError) {
+    if (isStaleSessionError(userError)) {
+      return { userId: null, registeredAsCreator: false, creator: null };
+    }
+
+    throw new Error("Unable to load creator profile", { cause: userError });
+  }
+
+  const registeredByRole = userData.user.app_metadata?.role === "creator";
+
+  if (error) {
+    if (!registeredByRole) {
+      return { userId, registeredAsCreator: false, creator: null };
+    }
+
+    throw new Error("Unable to load creator profile", { cause: error });
+  }
+
+  const registeredAsCreator = creator !== null || registeredByRole;
   if (!creator) return { userId, registeredAsCreator, creator: null };
 
   return {
