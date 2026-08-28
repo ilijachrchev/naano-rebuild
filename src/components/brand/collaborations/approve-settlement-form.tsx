@@ -36,7 +36,7 @@ export function ApproveSettlementForm({
         {state.message ? (
           <p
             className={`mt-3 max-w-xl text-sm ${
-              state.status === "error" ? "text-danger" : "font-bold text-aubergine"
+              state.status === "error" ? "text-danger" : "font-bold text-nn-blue"
             }`}
           >
             {state.message}
