@@ -27,7 +27,7 @@ export default async function BrandCreatorsPage() {
   const bookingDates = getBookingDates();
 
   return (
-    <main className="min-h-screen bg-mineral lg:grid lg:grid-cols-[280px_minmax(0,1fr)]">
+    <main className="min-h-screen bg-nn-white lg:grid lg:grid-cols-[280px_minmax(0,1fr)]">
       <BrandSidebar workspaceName={workspace.name} activeHref="/brand/creators" />
 
       <section className="min-h-screen bg-nn-paper">
