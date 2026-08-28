@@ -1,4 +1,4 @@
-import { BrandSidebar, type BrandNavigationHref } from "@/components/brand/sidebar";
+import { BrandSidebar } from "@/components/brand/sidebar";
 import type { BrandAttributionSnapshot } from "@/lib/analytics/data";
 
 const numberFormat = new Intl.NumberFormat("en");
@@ -8,10 +8,6 @@ const dateFormat = new Intl.DateTimeFormat("en", {
   year: "numeric",
   timeZone: "UTC",
 });
-
-// Analytics is intentionally absent from the shared navigation in this PR.
-// A nonmatching href leaves the existing sidebar items unselected on this route.
-const analyticsHref = "/brand/analytics" as BrandNavigationHref;
 
 function formatRate(value: number, previous: number) {
   if (previous === 0) return "—";
@@ -111,7 +107,7 @@ export function BrandAnalyticsDashboard({
     <main className="min-h-screen bg-mineral lg:grid lg:grid-cols-[280px_minmax(0,1fr)]">
       <BrandSidebar
         workspaceName={workspaceName}
-        activeHref={analyticsHref}
+        activeHref="/brand/analytics"
       />
 
       <section className="dossier-paper min-h-screen">
