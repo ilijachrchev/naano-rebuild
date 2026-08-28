@@ -33,12 +33,9 @@ export function TopUpForm({
     <form action={formAction}>
       <input type="hidden" name="idempotencyKey" value={idempotencyKey} />
 
-      <div className="border-carbon/18 border-b pb-5">
-        <p className="text-xs font-bold tracking-[0.12em] text-aubergine uppercase">
-          Simulated top-up
-        </p>
-        <h2 className="display-type mt-2 text-4xl">Add demo funds.</h2>
-        <p className="mt-3 text-sm leading-6 text-carbon/62">
+      <div className="border-nn-line border-b pb-5">
+        <h2 className="display-type text-3xl text-nn-ink">Add demo funds.</h2>
+        <p className="mt-3 text-sm leading-6 text-nn-muted">
           No card is charged and no payment processor is connected. This adds a demo credit to
           the immutable EUR ledger.
         </p>
@@ -50,7 +47,7 @@ export function TopUpForm({
         </label>
         <div className="relative">
           <span
-            className="pointer-events-none absolute inset-y-0 left-4 flex items-center font-bold text-carbon/48"
+            className="pointer-events-none absolute inset-y-0 left-4 flex items-center font-bold text-nn-muted"
             aria-hidden="true"
           >
             €
@@ -69,7 +66,7 @@ export function TopUpForm({
             required
           />
         </div>
-        <p className="mt-2 text-xs leading-5 text-carbon/50">
+        <p className="mt-2 text-xs leading-5 text-nn-muted">
           Demo funds are immediately available for creator offer reservations.
         </p>
       </div>
@@ -77,10 +74,8 @@ export function TopUpForm({
       {state.message ? (
         <p
           aria-live="polite"
-          className={`mb-5 border-l-2 px-4 py-3 text-sm leading-6 ${
-            state.status === "error"
-              ? "border-l-danger bg-danger/8 text-danger"
-              : "border-l-aubergine bg-mist/55 text-carbon/70"
+          className={`mb-5 rounded-[0.85rem] px-4 py-3 text-sm leading-6 ${
+            state.status === "error" ? "bg-danger/8 text-danger" : "bg-nn-blue-50 text-nn-ink"
           }`}
         >
           {state.message}

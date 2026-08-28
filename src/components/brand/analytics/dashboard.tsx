@@ -17,14 +17,12 @@ function formatRate(value: number, previous: number) {
 
 function StatTile({ label, value, note }: { label: string; value: number; note: string }) {
   return (
-    <div className="bg-paper px-5 py-5 sm:px-6 sm:py-6">
-      <dt className="text-[0.7rem] font-bold tracking-[0.12em] text-carbon/48 uppercase">
-        {label}
-      </dt>
-      <dd className="display-type mt-3 text-4xl leading-none sm:text-5xl">
+    <div className="rounded-[1.25rem] border border-nn-line bg-nn-white px-6 py-6">
+      <dt className="text-[0.7rem] font-bold tracking-[0.12em] text-nn-muted uppercase">{label}</dt>
+      <dd className="nn-num display-type mt-3 text-4xl leading-none text-nn-ink sm:text-5xl">
         {numberFormat.format(value)}
       </dd>
-      <p className="mt-3 text-xs leading-5 text-carbon/52">{note}</p>
+      <p className="mt-3 text-xs leading-5 text-nn-muted">{note}</p>
     </div>
   );
 }
@@ -59,37 +57,33 @@ function Funnel({ funnel }: { funnel: BrandAttributionSnapshot["funnel"] }) {
   ];
 
   return (
-    <ol className="mt-7 grid border border-carbon/18 bg-carbon/18 md:grid-cols-5">
+    <ol className="mt-7 grid gap-4 md:grid-cols-5">
       {stages.map((stage, index) => (
         <li
           key={stage.label}
-          className={`relative min-h-44 bg-paper px-5 py-5 ${
-            index < stages.length - 1 ? "border-carbon/18 border-b md:border-r md:border-b-0" : ""
-          }`}
+          className="relative min-h-44 rounded-[1.25rem] border border-nn-line bg-nn-white px-5 py-5"
         >
           <div className="flex items-center justify-between gap-3">
-            <span className="display-type text-xl text-aubergine">
+            <span className="nn-num display-type text-xl text-nn-blue">
               {String(index + 1).padStart(2, "0")}
             </span>
             {index < stages.length - 1 ? (
-              <span className="text-lg text-carbon/28" aria-hidden="true">
+              <span className="text-lg text-nn-blue/40" aria-hidden="true">
                 →
               </span>
             ) : null}
           </div>
-          <p className="mt-6 text-[0.68rem] font-bold tracking-[0.1em] text-carbon/48 uppercase">
+          <p className="mt-6 text-[0.68rem] font-bold tracking-[0.1em] text-nn-muted uppercase">
             {stage.label}
           </p>
           <p
-            className={`display-type mt-2 leading-none ${
-              typeof stage.value === "string" && stage.value === "Not connected"
-                ? "text-2xl text-carbon/54"
-                : "text-4xl"
+            className={`nn-num display-type mt-2 leading-none ${
+              stage.value === "Not connected" ? "text-2xl text-nn-muted" : "text-4xl text-nn-ink"
             }`}
           >
             {stage.value}
           </p>
-          <p className="mt-3 text-xs leading-5 text-carbon/50">{stage.note}</p>
+          <p className="mt-3 text-xs leading-5 text-nn-muted">{stage.note}</p>
         </li>
       ))}
     </ol>
@@ -104,63 +98,48 @@ export function BrandAnalyticsDashboard({
   snapshot: BrandAttributionSnapshot;
 }) {
   return (
-    <main className="min-h-screen bg-mineral lg:grid lg:grid-cols-[280px_minmax(0,1fr)]">
-      <BrandSidebar
-        workspaceName={workspaceName}
-        activeHref="/brand/analytics"
-      />
+    <main className="min-h-screen bg-nn-white lg:grid lg:grid-cols-[280px_minmax(0,1fr)]">
+      <BrandSidebar workspaceName={workspaceName} activeHref="/brand/analytics" />
 
-      <section className="dossier-paper min-h-screen">
-        <header className="flex min-h-20 flex-wrap items-center justify-between gap-4 border-carbon/16 border-b px-6 py-4 sm:px-10 lg:px-14">
+      <section className="min-h-screen bg-nn-paper">
+        <header className="flex min-h-20 flex-wrap items-center justify-between gap-4 border-nn-line border-b px-6 py-4 sm:px-10 lg:px-14">
           <div>
-            <p className="text-xs font-bold tracking-[0.12em] text-aubergine uppercase">
-              Attribution analytics
-            </p>
-            <p className="text-sm text-carbon/55">All-time evidence · workspace-scoped under RLS</p>
+            <p className="text-xs font-bold tracking-[0.12em] text-nn-blue uppercase">Analytics</p>
+            <p className="text-sm text-nn-muted">All-time evidence · workspace-scoped under RLS</p>
           </div>
-          <span className="flex items-center gap-2 text-xs font-bold tracking-[0.09em] uppercase">
-            <span className="h-2.5 w-2.5 rounded-full bg-signal" aria-hidden="true" />
+          <span className="flex items-center gap-2 text-xs font-bold tracking-[0.09em] text-nn-muted uppercase">
+            <span className="h-2.5 w-2.5 rounded-full bg-nn-blue" aria-hidden="true" />
             Qualified signal
           </span>
         </header>
 
-        <div className="px-6 py-9 sm:px-10 lg:px-14 lg:py-12">
-          <div className="grid gap-7 border-carbon/18 border-b pb-10 xl:grid-cols-[1.1fr_0.9fr] xl:items-end">
+        <div className="px-6 py-12 sm:px-10 lg:px-14 lg:py-16">
+          <div className="grid gap-8 xl:grid-cols-[1.1fr_0.9fr] xl:items-end">
+            <h1 className="display-type max-w-3xl text-5xl leading-[0.95] text-nn-ink sm:text-6xl">
+              See which creators turned attention into company signal.
+            </h1>
             <div>
-              <p className="text-xs font-bold tracking-[0.12em] text-aubergine uppercase">
-                Attribution dossier · 05
-              </p>
-              <h1 className="display-type mt-3 max-w-4xl text-5xl leading-[0.92] sm:text-6xl xl:text-7xl">
-                See which creators turned attention into company signal.
-              </h1>
-            </div>
-            <div className="border-carbon/18 border-l-2 border-l-aubergine bg-mist/38 px-5 py-4">
-              <p className="text-sm leading-6 text-carbon/64">
+              <p className="max-w-md text-lg leading-8 text-nn-muted">
                 Every number below is derived from published posts and immutable click events tied
                 back to this workspace’s collaborations.
               </p>
               {snapshot.isIllustrative ? (
-                <p className="mt-3 text-[0.68rem] font-bold tracking-[0.1em] text-aubergine uppercase">
+                <p className="mt-4 text-[0.72rem] font-bold tracking-[0.1em] text-nn-blue uppercase">
                   Includes demo data · illustrative observations
                 </p>
               ) : null}
             </div>
           </div>
 
-          <section className="pt-10" aria-labelledby="headline-stats-title">
+          <section className="mt-16" aria-labelledby="headline-stats-title">
             <div className="flex flex-wrap items-end justify-between gap-3">
-              <div>
-                <p className="text-xs font-bold tracking-[0.12em] text-aubergine uppercase">
-                  Headline evidence
-                </p>
-                <h2 id="headline-stats-title" className="display-type mt-2 text-4xl">
-                  The qualified-click payoff.
-                </h2>
-              </div>
-              <p className="text-xs text-carbon/50">All available history</p>
+              <h2 id="headline-stats-title" className="display-type text-4xl text-nn-ink">
+                The qualified-click payoff.
+              </h2>
+              <p className="text-xs text-nn-muted">All available history</p>
             </div>
 
-            <dl className="mt-7 grid gap-px border border-carbon/18 bg-carbon/18 sm:grid-cols-2 xl:grid-cols-4">
+            <dl className="mt-7 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
               <StatTile
                 label="Creators activated"
                 value={snapshot.stats.creatorsActivated}
@@ -184,17 +163,12 @@ export function BrandAnalyticsDashboard({
             </dl>
           </section>
 
-          <section className="pt-14" aria-labelledby="funnel-title">
-            <div className="grid gap-5 border-carbon/18 border-b pb-6 lg:grid-cols-[1fr_auto] lg:items-end">
-              <div>
-                <p className="text-xs font-bold tracking-[0.12em] text-aubergine uppercase">
-                  Signal funnel
-                </p>
-                <h2 id="funnel-title" className="display-type mt-2 text-4xl sm:text-5xl">
-                  From post reach to attributable demand.
-                </h2>
-              </div>
-              <p className="max-w-lg text-sm leading-6 text-carbon/58">
+          <section className="mt-16" aria-labelledby="funnel-title">
+            <div className="grid gap-5 border-nn-line border-b pb-6 lg:grid-cols-[1fr_auto] lg:items-end">
+              <h2 id="funnel-title" className="display-type text-4xl text-nn-ink sm:text-5xl">
+                From post reach to attributable demand.
+              </h2>
+              <p className="max-w-lg text-sm leading-6 text-nn-muted">
                 Stage rates use the preceding observed stage. Company engagement only counts
                 qualified events with a named company.
               </p>
@@ -202,59 +176,52 @@ export function BrandAnalyticsDashboard({
             <Funnel funnel={snapshot.funnel} />
           </section>
 
-          <section className="pt-14" aria-labelledby="creator-attribution-title">
-            <div className="flex flex-wrap items-end justify-between gap-4 border-carbon/18 border-b pb-6">
-              <div>
-                <p className="text-xs font-bold tracking-[0.12em] text-aubergine uppercase">
-                  Creator attribution
-                </p>
-                <h2 id="creator-attribution-title" className="display-type mt-2 text-4xl sm:text-5xl">
-                  Who actually drove business interest.
-                </h2>
-              </div>
-              <span className="bg-signal px-3 py-1 text-xs font-bold tracking-[0.1em] uppercase">
-                {numberFormat.format(snapshot.creators.length)} creators
-              </span>
+          <section className="mt-16" aria-labelledby="creator-attribution-title">
+            <div className="flex flex-wrap items-end justify-between gap-4 border-nn-line border-b pb-6">
+              <h2 id="creator-attribution-title" className="display-type text-4xl text-nn-ink sm:text-5xl">
+                Who actually drove business interest.
+              </h2>
+              <span className="nn-chip">{numberFormat.format(snapshot.creators.length)} creators</span>
             </div>
 
             {snapshot.creators.length ? (
-              <div className="overflow-x-auto">
+              <div className="nn-card mt-6 overflow-x-auto rounded-[1.25rem]">
                 <table className="w-full min-w-[760px] border-collapse text-left">
                   <thead>
-                    <tr className="border-carbon/16 border-b text-[0.68rem] font-bold tracking-[0.1em] text-carbon/48 uppercase">
-                      <th className="py-4 pr-6">Creator</th>
+                    <tr className="border-nn-line border-b text-[0.68rem] font-bold tracking-[0.1em] text-nn-muted uppercase">
+                      <th className="px-6 py-4">Creator</th>
                       <th className="px-4 py-4 text-right">Posts</th>
                       <th className="px-4 py-4 text-right">Clicks</th>
                       <th className="px-4 py-4 text-right">Qualified clicks</th>
-                      <th className="py-4 pl-4 text-right">Companies driven</th>
+                      <th className="px-6 py-4 text-right">Companies driven</th>
                     </tr>
                   </thead>
                   <tbody>
                     {snapshot.creators.map((creator, index) => (
-                      <tr key={creator.id} className="border-carbon/14 border-b last:border-b-0">
-                        <td className="py-5 pr-6">
+                      <tr key={creator.id} className="border-nn-line border-b last:border-b-0">
+                        <td className="px-6 py-5">
                           <div className="grid grid-cols-[42px_minmax(0,1fr)] items-center gap-3">
-                            <span className="display-type text-2xl text-aubergine/72">
+                            <span className="nn-num display-type text-2xl text-nn-blue">
                               {String(index + 1).padStart(2, "0")}
                             </span>
                             <span className="min-w-0">
-                              <span className="block font-bold">{creator.displayName}</span>
-                              <span className="mt-1 block truncate text-xs text-carbon/48">
+                              <span className="block font-bold text-nn-ink">{creator.displayName}</span>
+                              <span className="mt-1 block truncate text-xs text-nn-muted">
                                 {creator.headline}
                               </span>
                             </span>
                           </div>
                         </td>
-                        <td className="display-type px-4 py-5 text-right text-2xl">
+                        <td className="nn-num display-type px-4 py-5 text-right text-2xl text-nn-ink">
                           {numberFormat.format(creator.posts)}
                         </td>
-                        <td className="display-type px-4 py-5 text-right text-2xl">
+                        <td className="nn-num display-type px-4 py-5 text-right text-2xl text-nn-ink">
                           {numberFormat.format(creator.clicks)}
                         </td>
-                        <td className="display-type px-4 py-5 text-right text-2xl text-aubergine">
+                        <td className="nn-num display-type px-4 py-5 text-right text-2xl text-nn-blue">
                           {numberFormat.format(creator.qualifiedClicks)}
                         </td>
-                        <td className="display-type py-5 pl-4 text-right text-2xl">
+                        <td className="nn-num display-type px-6 py-5 text-right text-2xl text-nn-ink">
                           {numberFormat.format(creator.companiesDriven)}
                         </td>
                       </tr>
@@ -263,65 +230,60 @@ export function BrandAnalyticsDashboard({
                 </table>
               </div>
             ) : (
-              <div className="border-carbon/18 border-b py-10">
-                <p className="display-type text-3xl">No attributed creator activity yet.</p>
-                <p className="mt-2 text-sm text-carbon/55">
+              <div className="mt-6 rounded-[1.25rem] border border-nn-line bg-nn-white px-6 py-10">
+                <p className="display-type text-3xl text-nn-ink">No attributed creator activity yet.</p>
+                <p className="mt-2 text-sm text-nn-muted">
                   Published posts and tracked clicks will appear here when available.
                 </p>
               </div>
             )}
           </section>
 
-          <section className="pt-14" aria-labelledby="companies-title">
-            <div className="grid gap-5 border-carbon/18 border-b pb-6 lg:grid-cols-[1fr_auto] lg:items-end">
-              <div>
-                <p className="text-xs font-bold tracking-[0.12em] text-aubergine uppercase">
-                  Companies engaged
-                </p>
-                <h2 id="companies-title" className="display-type mt-2 text-4xl sm:text-5xl">
-                  Qualified accounts behind the clicks.
-                </h2>
-              </div>
-              <p className="text-xs leading-5 text-carbon/50">
+          <section className="mt-16" aria-labelledby="companies-title">
+            <div className="grid gap-5 border-nn-line border-b pb-6 lg:grid-cols-[1fr_auto] lg:items-end">
+              <h2 id="companies-title" className="display-type text-4xl text-nn-ink sm:text-5xl">
+                Qualified accounts behind the clicks.
+              </h2>
+              <p className="text-xs leading-5 text-nn-muted">
                 Distinct company names from qualified click events only
               </p>
             </div>
 
             {snapshot.companies.length ? (
-              <ol className="border-carbon/18 border-b">
+              <ol className="mt-6 grid gap-4">
                 {snapshot.companies.map((company, index) => (
                   <li
                     key={company.name}
-                    className="grid gap-5 border-carbon/14 border-b py-6 last:border-b-0 lg:grid-cols-[64px_minmax(0,1fr)_repeat(3,minmax(110px,auto))] lg:items-center"
+                    className="grid gap-5 rounded-[1.25rem] border border-nn-line bg-nn-white px-6 py-6 lg:grid-cols-[64px_minmax(0,1fr)_repeat(3,minmax(110px,auto))] lg:items-center"
                   >
-                    <span className="display-type text-3xl text-aubergine">
+                    <span className="nn-num display-type text-3xl text-nn-blue">
                       {String(index + 1).padStart(2, "0")}
                     </span>
                     <div>
-                      <h3 className="font-bold">{company.name}</h3>
-                      <p className="mt-1 text-xs text-carbon/48">Qualified company signal</p>
+                      <h3 className="font-bold text-nn-ink">{company.name}</h3>
+                      <p className="mt-1 text-xs text-nn-muted">Qualified company signal</p>
                     </div>
                     <div>
-                      <p className="text-[0.68rem] font-bold tracking-[0.1em] text-carbon/42 uppercase">
+                      <p className="text-[0.68rem] font-bold tracking-[0.1em] text-nn-muted uppercase">
                         Qualified clicks
                       </p>
-                      <p className="display-type mt-1 text-2xl">
+                      <p className="nn-num display-type mt-1 text-2xl text-nn-ink">
                         {numberFormat.format(company.qualifiedClicks)}
                       </p>
                     </div>
                     <div>
-                      <p className="text-[0.68rem] font-bold tracking-[0.1em] text-carbon/42 uppercase">
+                      <p className="text-[0.68rem] font-bold tracking-[0.1em] text-nn-muted uppercase">
                         Creators
                       </p>
-                      <p className="display-type mt-1 text-2xl">
+                      <p className="nn-num display-type mt-1 text-2xl text-nn-ink">
                         {numberFormat.format(company.creators)}
                       </p>
                     </div>
                     <div>
-                      <p className="text-[0.68rem] font-bold tracking-[0.1em] text-carbon/42 uppercase">
+                      <p className="text-[0.68rem] font-bold tracking-[0.1em] text-nn-muted uppercase">
                         Last signal
                       </p>
-                      <p className="mt-2 text-sm">
+                      <p className="mt-2 text-sm text-nn-ink">
                         {dateFormat.format(new Date(company.lastEngagedAt))}
                       </p>
                     </div>
@@ -329,9 +291,9 @@ export function BrandAnalyticsDashboard({
                 ))}
               </ol>
             ) : (
-              <div className="border-carbon/18 border-b py-10">
-                <p className="display-type text-3xl">No qualified companies yet.</p>
-                <p className="mt-2 text-sm text-carbon/55">
+              <div className="mt-6 rounded-[1.25rem] border border-nn-line bg-nn-white px-6 py-10">
+                <p className="display-type text-3xl text-nn-ink">No qualified companies yet.</p>
+                <p className="mt-2 text-sm text-nn-muted">
                   Named companies will appear after their clicks pass qualification.
                 </p>
               </div>
